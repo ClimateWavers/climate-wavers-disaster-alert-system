@@ -44,7 +44,7 @@ const ForgotPassword = () => {
         style={{ backgroundImage: `url(${bgReset})` }}
       ></div>
       <div className="w-[100%] lg:w-[30%] md:w-[40%] py-8 lg:px-16 md:px-16 px-6 m-auto text-center max-sm:pt-[200px]">
-        <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-[#047857] font-serif font-[500]  mb-4">
+        <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-[#2F4F4F] font-serif font-[500]  mb-4">
           Forgotten Password
         </h1>
         <p className="lg:text-[24px] md:text-[24px] text-[18px] font-serif mb-10">
@@ -62,8 +62,8 @@ const ForgotPassword = () => {
         <button
           className={
             isDisabled
-              ? "blur-[1px] bg-[#047857]  rounded-md text-white py-4 w-[100%] m-2 mt-4"
-              : "bg-[#047857]  rounded-md text-white py-4 w-[100%] m-2 mt-4"
+              ? "blur-[1px] bg-[#2F4F4F]  rounded-md text-white py-4 w-[100%] m-2 mt-4"
+              : "bg-[#2F4F4F]  rounded-md text-white py-4 w-[100%] m-2 mt-4"
           }
           onClick={handleSubmit}
           disabled={isDisabled}

@@ -44,12 +44,12 @@ const AiReportAnalyse = ({ isWaiting, recommendation }) => {
       </h1>
       <div className={` flex items-end justify-center`}>
         <img
-          src="/Group.png"
+          src="/logo.jpg"
           alt="WaverX"
           className={` mt-8 h-48 ${isWaiting && "animate-rotate-smooth"}`}
         />
       </div>
-      <button className="bg-[#008080] rounded-md md:w-[15%] h-12 w-[50%] px-2 relative md:left-12 mt-4 left-4  text-white" onClick={openSafety}>
+      <button className="bg-[#2F4F4F] rounded-md md:w-[15%] h-12 w-[50%] px-2 relative md:left-12 mt-4 left-4  text-white" onClick={openSafety}>
         Safety first
       </button>
       </div>

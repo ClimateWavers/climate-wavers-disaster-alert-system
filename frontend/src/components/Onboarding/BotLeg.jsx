@@ -21,7 +21,7 @@ const BotLeg = () => {
           <img alt="" src={"/Ellipse.png"} className="w-[80%]  ml-4" />
         </div>
         <div className="flex flex-col gap-y-4 relative right-24 text-start text-xl leading-6 font-serif">
-          <span className="bg-[#008080]  px-2 border-0 py-2 rounded-2xl shadow-md  h-fit  md:w-[100%] max-sm:w-[60vw]">
+          <span className="bg-[#2F4F4F]  px-2 border-0 py-2 rounded-2xl shadow-md  h-fit  md:w-[100%] max-sm:w-[60vw]">
           Alright got my legs lets move on 😅
           </span>
         

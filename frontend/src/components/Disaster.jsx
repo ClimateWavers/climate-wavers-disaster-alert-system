@@ -21,7 +21,7 @@ const Disasters = ({ disasters }) => {
           <div >
             <Link to={`/disasters/${disaster.id}`} className="flex justify-between">
               {" "}
-              <h2 className="capitalize font-bold text-[#047857] md:text-2xl text-xl">
+              <h2 className="capitalize font-bold text-[#2F4F4F] md:text-2xl text-xl">
                 {disaster.region + ", " + disaster.country}: {disaster.disasterType} - {formattedDate}
               </h2>
             

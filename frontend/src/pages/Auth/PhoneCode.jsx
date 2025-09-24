@@ -26,7 +26,7 @@ const PhoneCode = () => {
         style={{ backgroundImage: `url(${bgReset})` }}
       ></div>
       <div className="w-[100%] lg:w-[30%] md:w-[50%] py-8 lg:px-16 md:px-16 px-6 m-auto text-center max-sm:pt-[200px]">
-        <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-[#008080] font-bold font-serif  mb-4">
+        <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-[#2F4F4F] font-bold font-serif  mb-4">
        Phone Verification
         </h1>
         <p className="lg:text-[24px] md:text-[24px] font-serif text-[18px] mb-10">
@@ -54,7 +54,7 @@ const PhoneCode = () => {
             label="Password"
           />
         </FormControl>
-        <button className="bg-[#008080] text-white py-4 w-[70%] m-2  rounded-md mt-4" onClick={() => navigate('/passwordreset')}>
+        <button className="bg-[#2F4F4F] text-white py-4 w-[70%] m-2  rounded-md mt-4" onClick={() => navigate('/passwordreset')}>
           Confirm
         </button>
       </div>

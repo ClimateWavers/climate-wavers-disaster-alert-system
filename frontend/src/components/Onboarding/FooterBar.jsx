@@ -94,7 +94,7 @@ const Footer = ({ setIsOpen }) => {
         >
           {({ isActive }) =>
             isActive ? (
-              <MdCampaign className="w-[38px]" size={35} color="#008080" />
+              <MdCampaign className="w-[38px]" size={35} color="#2F4F4F" />
             ) : (
               <MdOutlineCampaign
                 className="w-[38px]"

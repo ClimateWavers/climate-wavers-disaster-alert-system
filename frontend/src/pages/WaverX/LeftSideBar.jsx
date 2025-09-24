@@ -34,7 +34,7 @@ export default function WaverxLeftBar({
           <div>
             <GoSidebarExpand
               size={32}
-              color={"#008080"}
+              color={"#2F4F4F"}
               role="button"
               onClick={() => setIsMenuOpen(true)}
             />
@@ -50,7 +50,7 @@ export default function WaverxLeftBar({
             />
             <h1
               size="headingxl"
-              className="!font-semibold md:text-[26px] text-[#008080] sm:text-[24px]"
+              className="!font-semibold md:text-[26px] text-[#2F4F4F] sm:text-[24px]"
             >
               WaverX
             </h1>

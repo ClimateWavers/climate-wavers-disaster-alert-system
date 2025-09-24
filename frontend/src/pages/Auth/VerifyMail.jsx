@@ -19,13 +19,13 @@ const VerifyMail = () => {
 
   return (
     <div className="lg:h-[100vh] md:h-[100vh] flex justify-between">
-      <div className="bg-[#047857] h-[100vh] lg:w-[50%] md:w-[50%] hidden md:flex justify-center ">
+      <div className="bg-[#2F4F4F] h-[100vh] lg:w-[50%] md:w-[50%] hidden md:flex justify-center ">
         <div className="self-end">
           <img src="../../../HandsShow1.png" alt="" />
         </div>
       </div>
       <div className="w-[100%] lg:w-[30%] md:w-[40%] py-8 lg:px-16 md:px-16 px-6 mx-auto mt-16 text-center">
-        <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-[#008080] font-serif font-bold  mb-4">
+        <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-[#2F4F4F] font-serif font-bold  mb-4">
           Verify Your Account
         </h1>
         <p className="lg:text-[24px] md:text-[24px] text-[18px] mb-10 font-serif">
@@ -67,7 +67,7 @@ const VerifyMail = () => {
         <a href="#" className="underline text-[#001F3F]">
           Resend in 60, sec
         </a>
-        <button className="bg-[#047857] rounded-md text-white py-4 w-[100%] m-2 mt-24">
+        <button className="bg-[#2F4F4F] rounded-md text-white py-4 w-[100%] m-2 mt-24">
           Confirm
         </button>
       </div>

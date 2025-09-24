@@ -22,7 +22,7 @@ const DisasterImages = ({ disasters }) => {
             </h2>
             <p className="h-[60px] py-4 md:text-xl md:h-fit md:max-h-[150px] overflow-hidden">{disaster.details}</p>
             <Link to={`/disasters/${disaster.id}`}>
-              <button className="rounded-lg bg-[#008080] w-fit h-12 my-2 px-4">
+              <button className="rounded-lg bg-[#2F4F4F] w-fit h-12 my-2 px-4">
                 {" "}
                 See details
               </button>

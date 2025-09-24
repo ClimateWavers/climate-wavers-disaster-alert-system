@@ -17,6 +17,8 @@ import {
 } from "./pages/Auth";
 
 import LandingPage from "./pages/LandingPage";
+import AboutPage from "./pages/AboutPage";
+import ImpactPage from "./pages/ImpactPage";
 import {
   OnboardingLayout,
   Welcome,
@@ -63,6 +65,8 @@ function App() {
           {/* Landing page as the default route */}
           <Route path="/" element={<LandingPage/>} />
           <Route path="/landing" element={<LandingPage/>} />
+          <Route path="/about" element={<AboutPage/>} />
+          <Route path="/impact" element={<ImpactPage/>} />
 
           {/* Authenticated routes */}
           <Route path="/app" element={<AuthSharedLayout />}>

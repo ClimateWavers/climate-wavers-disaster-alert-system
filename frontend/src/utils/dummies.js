@@ -20,7 +20,7 @@ export const dummyNotification = [
   },
   {
     id: 11,
-    image: "/Group.png",
+    image: "/logo.jpg",
     content: "new post from waverx",
   },
 ];

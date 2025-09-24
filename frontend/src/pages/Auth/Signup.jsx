@@ -70,7 +70,7 @@ const Signup = () => {
 
   return (
     <div className="h-[100vh] signup flex">
-      <div className="bg-[#008080] hidden md:flex md:min-h-screen md:overflow-hidden lg:w-[50%] md:w-[50%] flex justify-center banner ">
+      <div className="bg-[#2F4F4F] hidden md:flex md:min-h-screen md:overflow-hidden lg:w-[50%] md:w-[50%] flex justify-center banner ">
         <div className="self-center">
           <div className="writeup">
             <h2>Join Climate Wavers</h2>
@@ -80,13 +80,13 @@ const Signup = () => {
               protect the world. Be part of the solution — Sign up Now!
             </p>
           </div>
-          <img src="../../../logolargewhite.png" alt="" />
+          <img src="/logo.jpg" alt="" />
         </div>
       </div>
       <div className="w-[100%] lg:w-[50%] md:w-[50%] flex justify-center  ">
         <div className="lg:w-[75%] self-center mb-12 md:w-[100%] w-full  px-12 ">
          
-          <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-primary font-bold font-serif text-[#008080] text-center mb-8">
+          <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-primary font-bold font-serif text-[#2F4F4F] text-center mb-8">
             Sign Up
           </h1>
           <Box
@@ -249,8 +249,8 @@ const Signup = () => {
               onClick={handleSubmit(onSubmit)}
               className={
                 isDisabled
-                  ? "blur-[1px] bg-[#008080] rounded-md text-white py-4"
-                  : "bg-[#008080] rounded-md text-white py-4"
+                  ? "blur-[1px] bg-[#2F4F4F] rounded-md text-white py-4"
+                  : "bg-[#2F4F4F] rounded-md text-white py-4"
               }
               disabled={isDisabled}
             >
@@ -259,7 +259,7 @@ const Signup = () => {
             <div className="flex justify-center items-center flex-col text-center">
               <NavLink to="/login">
                 Already have an account?{" "}
-                <span className="text-[#008080] font-[700] font-serif text-xl px-2 font-[500]">
+                <span className="text-[#2F4F4F] font-[700] font-serif text-xl px-2 font-[500]">
                   Sign In
                 </span>{" "}
               </NavLink>

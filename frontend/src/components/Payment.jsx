@@ -58,7 +58,7 @@ const Payment = ({ campaignId, campaignTitle, targetAmount }) => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2F4F4F]"
             placeholder="Enter your email"
             required
           />
@@ -72,7 +72,7 @@ const Payment = ({ campaignId, campaignTitle, targetAmount }) => {
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2F4F4F]"
             placeholder="Enter amount"
             min="100"
             required
@@ -87,7 +87,7 @@ const Payment = ({ campaignId, campaignTitle, targetAmount }) => {
         
         <button
           onClick={handlePayment}
-          className="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="w-full bg-[#2F4F4F] text-white py-3 px-4 rounded-md hover:bg-[#1F3F3F] focus:outline-none focus:ring-2 focus:ring-[#2F4F4F]"
         >
           Donate Now
         </button>

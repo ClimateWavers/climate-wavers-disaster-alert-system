@@ -51,7 +51,7 @@ const Donations = () => {
           <div className="max-w-2xl mx-auto">
             <button
               onClick={() => setSelectedCampaign(null)}
-              className="mb-6 text-green-600 hover:text-green-700 font-medium"
+              className="mb-6 text-[#2F4F4F] hover:text-[#1F3F3F] font-medium"
             >
               ← Back to Campaigns
             </button>
@@ -88,7 +88,7 @@ const Donations = () => {
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
-                        className="bg-green-600 h-2 rounded-full"
+                        className="bg-[#2F4F4F] h-2 rounded-full"
                         style={{
                           width: `${getProgressPercentage(campaign.raisedAmount, campaign.targetAmount)}%`
                         }}
@@ -101,7 +101,7 @@ const Donations = () => {
                   
                   <button
                     onClick={() => setSelectedCampaign(campaign)}
-                    className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors"
+                    className="w-full bg-[#2F4F4F] text-white py-2 px-4 rounded-md hover:bg-[#1F3F3F] transition-colors"
                   >
                     Donate Now
                   </button>

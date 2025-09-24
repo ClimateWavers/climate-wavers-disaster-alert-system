@@ -44,7 +44,7 @@ const ChatInput = ({ body, handleClick }) => {
           body.current.value = "";
         }}
         className="items-end p-.5 ml-1 cursor-pointer "
-        color="#008080"
+        color="#2F4F4F"
         type="submit"
       />
     </div>

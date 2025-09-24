@@ -81,8 +81,8 @@ const Createcomment = ({ type, postId, parentId, button = "reply" }) => {
           <button
             className={
               isDisabled
-                ? "blur-[1px] text-center py-2 items-center w-fit px-10 h-[50px] md:max-w-[10vw] capitalize hidden md:flex  bg-[#008080]  text-white rounded-full cursor-pointer"
-                : " px-10 h-[50px] md:max-w-[10vw]  items-center py-2 capitalize hidden md:flex  bg-[#008080]  text-white rounded-full cursor-pointer"
+                ? "blur-[1px] text-center py-2 items-center w-fit px-10 h-[50px] md:max-w-[10vw] capitalize hidden md:flex  bg-[#2F4F4F]  text-white rounded-full cursor-pointer"
+                : " px-10 h-[50px] md:max-w-[10vw]  items-center py-2 capitalize hidden md:flex  bg-[#2F4F4F]  text-white rounded-full cursor-pointer"
             }
             type="submit"
             disabled={isDisabled}
@@ -92,7 +92,7 @@ const Createcomment = ({ type, postId, parentId, button = "reply" }) => {
           <IoSend
             size={34}
             className="md:hidden absolute right-4 cursor-pointer "
-            color="#008080"
+            color="#2F4F4F"
             type="submit"
             onClick={handleSubmit(onSubmit)}
             disabled={isDisabled}
@@ -127,7 +127,7 @@ const Createcomment = ({ type, postId, parentId, button = "reply" }) => {
             id="image"
             type="file"
             accept="image/*"
-            className="p-0  hidden border rounded focus:border-green focus:outline-none"
+            className="p-0  hidden border rounded focus:border-[#2F4F4F] focus:outline-none"
             {...register("image", {
               required: false,
               onChange: handleImageChange,

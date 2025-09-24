@@ -36,7 +36,7 @@ const DisasterPage = () => {
             {disaster?.region}, {disaster?.country}: {disaster?.disasterType} -{" "}
             {disaster?.startDate && formatDate(disaster.startDate)}
           </h2>
-          <h3 className="capitalize text-[#047857] md:text-xl font-semibold">
+          <h3 className="capitalize text-[#2F4F4F] md:text-xl font-semibold">
             Description
           </h3>
           <div
@@ -54,7 +54,7 @@ const DisasterPage = () => {
                 : "/placeholde-disaster-img.jpg"
             }
           />
-          <h4 className="py-2 font-semibold text-[#047857] text-xl">
+          <h4 className="py-2 font-semibold text-[#2F4F4F] text-xl">
             Comments
           </h4>
 

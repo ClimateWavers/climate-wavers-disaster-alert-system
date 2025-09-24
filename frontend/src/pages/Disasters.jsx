@@ -48,7 +48,7 @@ const DisasterPage = () => {
               type="text"
               placeholder="🔍 Search disaster keywords"
             />
-            <button className="bg-[#047857]  text-white font-serif border relative md:w-[20%] w-[25%] rounded-lg">
+            <button className="bg-[#2F4F4F]  text-white font-serif border relative md:w-[20%] w-[25%] rounded-lg">
               Search
             </button>
           </div>

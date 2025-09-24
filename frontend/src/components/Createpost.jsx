@@ -69,7 +69,7 @@ export default function Createpost({ type, postId, parentId, closeModal }) {
           className="w-12 h-12 rounded-full h-10"
         />
         <select
-          className=" rounded-full px-2  mb-3 border-2 border-[#008080] text-xl font-bold text-[#008080] focus:border-green focus:outline-none"
+          className=" rounded-full px-2  mb-3 border-2 border-[#2F4F4F] text-xl font-bold text-[#2F4F4F] focus:border-[#2F4F4F] focus:outline-none"
           {...register("visibility", { required: true })}
         >
           <option value="Everyone">Everyone</option>
@@ -81,7 +81,7 @@ export default function Createpost({ type, postId, parentId, closeModal }) {
       <textarea
         type="text"
         placeholder="What's on your mind"
-        className=" p-8 w-full border-b-2 h-full max-sm:placeholder:text-[20px] text-black text-3xl overflow-y-auto focus:border-b-2 focus:outline-none focus:border-[#008080]"
+        className=" p-8 w-full border-b-2 h-full max-sm:placeholder:text-[20px] text-black text-3xl overflow-y-auto focus:border-b-2 focus:outline-none focus:border-[#2F4F4F]"
         {...register("content", { required: true })}
       />
       {imagePreview && (
@@ -122,7 +122,7 @@ export default function Createpost({ type, postId, parentId, closeModal }) {
             id="image"
             type="file"
             accept="image/*"
-            className="p-0 mb-1 hidden border rounded focus:border-green focus:outline-none"
+            className="p-0 mb-1 hidden border rounded focus:border-[#2F4F4F] focus:outline-none"
             {...register("image", {
               required: false,
               onChange: handleImageChange,
@@ -132,8 +132,8 @@ export default function Createpost({ type, postId, parentId, closeModal }) {
         <button
           className={
             isDisabled
-              ? "blur-[1px] text-center w-fit px-12 h-[60px] max-sm:hidden capitalize bg-[#008080] text-white text-lg rounded-full cursor-pointer z-10"
-              : " px-12 h-[60px] max-sm:hidden capitalize bg-[#008080] text-white text-lg rounded-full cursor-pointer z-10 "
+              ? "blur-[1px] text-center w-fit px-12 h-[60px] max-sm:hidden capitalize bg-[#2F4F4F] text-white text-lg rounded-full cursor-pointer z-10"
+              : " px-12 h-[60px] max-sm:hidden capitalize bg-[#2F4F4F] text-white text-lg rounded-full cursor-pointer z-10 "
           }
           onClick={handleSubmit(onSubmit)}
           disabled={isDisabled}
@@ -143,7 +143,7 @@ export default function Createpost({ type, postId, parentId, closeModal }) {
         <IoSend
           size={34}
           className="md:hidden absolute right-4 pt-1 cursor-pointer "
-          color="#008080"
+          color="#2F4F4F"
           onClick={handleSubmit(onSubmit)}
           disabled={isDisabled}
         />

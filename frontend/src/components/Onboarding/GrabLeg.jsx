@@ -21,7 +21,7 @@ const GrabLeg = () => {
           <img alt="" src={"/Ellipse.png"} className="w-[80%] " />
         </div>
         <div className="flex flex-col  relative max-sm:bottom-4 text-xl leading-6 right-24 text-start text-xl leading-5 font-serif">
-          <span className="bg-[#008080]  px-2 border-0 py-2 rounded-2xl shadow-md h-fit  md:w-[100%] max-sm:w-[60vw]">
+          <span className="bg-[#2F4F4F]  px-2 border-0 py-2 rounded-2xl shadow-md h-fit  md:w-[100%] max-sm:w-[60vw]">
           Give me a moment while I grab my legs 😅
           </span>
         

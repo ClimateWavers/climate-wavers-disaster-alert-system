@@ -5,24 +5,24 @@ const data = [
   {
     questionText: "What’s the current global average temperature?",
     imageSrc: "../../globe.png",
-    color: "bg-[#008080]",
+    color: "bg-[#2F4F4F]",
   },
   {
     questionText: "How can I reduce my carbon footprint?",
     imageSrc: "../../foot.png",
-    color: "bg-[#004040]",
+    color: "bg-[#2F4F4F]",
   },
   {
     questionText:
       "Tell me about the impact of deforestation on climate change.",
     imageSrc: "../../tree.png",
-    color: "bg-[#126180]",
+    color: "bg-[#2F4F4F]",
   },
   {
     questionText:
       "What are the most common natural disasters and their causes?",
     imageSrc: "../../leaf.png",
-    color: "bg-[#0093AF]",
+    color: "bg-[#2F4F4F]",
   },
 ];
 
@@ -31,11 +31,11 @@ export default function NewChat({handleClick}) {
     <div className="md:h-[80vh] h-[76vh] max-sm:w-[100%] md:px-8 max-sm:px-1 grid gap-y-4 place-content-end">
       <div className="flex flex-row">
         <img
-          src="/Group.png"
+          src="/logo.jpg"
           alt="WaverX"
           className="h-[80px] object-cover"
         />
-        <h1 className="text-[#047857] ml-2 font-serif font-[300px] max-sm:self-center  md:text-[65px] max-sm:text-4xl">
+        <h1 className="text-[#2F4F4F] ml-2 font-serif font-[300px] max-sm:self-center  md:text-[65px] max-sm:text-4xl">
           Waver
         </h1>
         <div>

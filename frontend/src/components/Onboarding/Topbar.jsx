@@ -22,7 +22,7 @@ const Topbar = () => {
 
       {isOpen === true ? <Mobilemenu setIsOpen={setIsOpen} /> : null}
       <div className="flex hidden md:flex justify-self-center md:justify-self-start px-4">
-        <img alt="logo" src="../../Logo.png" />
+        <img alt="logo" src="/logo.jpg" />
       </div>
       <div className="px-8 w-[80%] justify-center  flex hidden md:flex">
         <input
@@ -57,7 +57,7 @@ const Topbar = () => {
                   <IoIosNotifications
                     className=" w-12"
                     size={40}
-                    color="#008080"
+                    color="#2F4F4F"
                   />
                 ) : (
                   <IoIosNotificationsOutline className="w-12" size={40} />

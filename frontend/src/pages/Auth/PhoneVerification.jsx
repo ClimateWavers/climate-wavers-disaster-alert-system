@@ -23,7 +23,7 @@ const PhoneVerification = () => {
         style={{ backgroundImage: `url(${bgReset})` }}
       ></div>
       <div className="w-[100%] lg:w-[30%] md:w-[50%] py-8 lg:px-16 md:px-16 px-6 m-auto text-center max-sm:pt-[200px]">
-        <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-[#008080] font-bold font-serif  mb-4">
+        <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-[#2F4F4F] font-bold font-serif  mb-4">
          Forgotten Password
         </h1>
         <p className="lg:text-[24px] md:text-[24px] text-[18px] mb-10">Input Phone Number</p>
@@ -51,7 +51,7 @@ const PhoneVerification = () => {
             color="success"
           />
           </div>
-        <button className="bg-[#008080] text-white py-4 w-[100%] rounded-md mt-4" onClick={() => navigate('/phonecode')}>Confirm</button>
+        <button className="bg-[#2F4F4F] text-white py-4 w-[100%] rounded-md mt-4" onClick={() => navigate('/phonecode')}>Confirm</button>
         <div className="flex items-center justify-between my-6">
             <p className="border-b border-gray-400 w-[45%]"></p>
           <p>Or</p>

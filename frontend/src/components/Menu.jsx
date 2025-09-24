@@ -15,10 +15,10 @@ const Menu = ({ setIsOpen }) => {
   }, []);
 
   const activeStyle = {
-    borderLeft: "5px solid #008080",
+    borderLeft: "5px solid #2F4F4F",
     borderRadius: "20px",
     paddingLeft: "4px",
-    backgroundColor: "#00808014",
+    backgroundColor: "#2F4F4F14",
     width: "100%",
     height: "60px",
     fontWeight: "500",
@@ -121,7 +121,7 @@ const Menu = ({ setIsOpen }) => {
           {({ isActive }) => (
             <div className="w-[200%] flex">
               {isActive ? (
-                <MdCampaign className="mr-2" size={40} color="#008080" />
+                <MdCampaign className="mr-2" size={40} color="#2F4F4F" />
               ) : (
                 <MdOutlineCampaign className="mr-2" size={40} color="#434343" />
               )}
@@ -168,7 +168,7 @@ const Menu = ({ setIsOpen }) => {
                 <IoIosNotifications
                   className="mr-2"
                   size={40}
-                  color="#008080"
+                  color="#2F4F4F"
                 />
               ) : (
                 <IoIosNotificationsOutline className="mr-2" size={40} />
@@ -181,7 +181,7 @@ const Menu = ({ setIsOpen }) => {
       {/* Post btn */}
       <button
         // to={"./createpost"}
-        className="text-xl text-center font-semibold bg-[#008080] text-white shadow-xl self-center shadow-white-300 w-[80%] max-sm:w-[80%] py-4 rounded-3xl"
+        className="text-xl text-center font-semibold bg-[#2F4F4F] text-white shadow-xl self-center shadow-white-300 w-[80%] max-sm:w-[80%] py-4 rounded-3xl"
         onClick={() => {
           setIsModalOpen(true);
         }}

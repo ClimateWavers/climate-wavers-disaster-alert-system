@@ -64,7 +64,7 @@ const EmailCode = () => {
         style={{ backgroundImage: `url(${bgReset})` }}
       ></div>
       <div className="w-[100%] lg:w-[35%] md:w-[50%] py-8 lg:px-16 md:px-16 px-6 m-auto text-center max-sm:pt-[200px]">
-        <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-[#008080] font-serif font-bold  mb-4">
+        <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-[#2F4F4F] font-serif font-bold  mb-4">
           Email Verification
         </h1>
         <p className="lg:text-[24px] md:text-[24px] text-[18px] font-serif mb-10">
@@ -109,8 +109,8 @@ const EmailCode = () => {
           onClick={handleSubmit}
           className={
             isDisabled
-              ? "blur-[1px] bg-[#008080] text-white rounded-md py-4 w-[70%] m-2 mt-4"
-              : "bg-[#008080] text-white rounded-md py-4 w-[70%] m-2 mt-4"
+              ? "blur-[1px] bg-[#2F4F4F] text-white rounded-md py-4 w-[70%] m-2 mt-4"
+              : "bg-[#2F4F4F] text-white rounded-md py-4 w-[70%] m-2 mt-4"
           }
           disabled={isDisabled}
         >

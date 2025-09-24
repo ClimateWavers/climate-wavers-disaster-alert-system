@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 export default function QuestionContainer({
   questionText = "What’s the current global average temperature?",
   imageSrc = "../../../tree.png",
-  color = "bg-[#008080]",
+  color = "bg-[#2F4F4F]",
   handleClick,
 }) {
   return (

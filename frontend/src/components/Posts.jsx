@@ -128,7 +128,7 @@ const Posts = ({
               >
                 {post?.content?.split(/(\s+)/).map((word, index) =>
                   word.startsWith("#") ? (
-                    <span key={index} style={{ color: "#047857" }}>
+                    <span key={index} style={{ color: "#2F4F4F" }}>
                       {word}
                     </span>
                   ) : (
@@ -182,7 +182,7 @@ const Posts = ({
                 <AiOutlineRetweet
                   size={25}
                   className="transition active:animate-ping ease-in-out duration-150 hover:scale-125"
-                  color={post?.is_reposted ? "#047857" : ""}
+                  color={post?.is_reposted ? "#2F4F4F" : ""}
                 />
                 <p className="text-xs ml-1 ">{post?.total_reposts}</p>
               </button>

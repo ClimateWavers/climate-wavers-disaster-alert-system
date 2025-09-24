@@ -38,7 +38,7 @@ class Client {
           title: 'Validation Error',
           html: errorMessages.join('<br>'),
           confirmButtonText: 'Try Again',
-          confirmButtonColor: '#008080'
+          confirmButtonColor: '#2F4F4F'
         });
         return true;
       }
@@ -70,7 +70,7 @@ class Client {
       title: title,
       text: message,
       confirmButtonText: 'Continue',
-      confirmButtonColor: '#008080'
+      confirmButtonColor: '#2F4F4F'
     }).then((result) => {
       if (result.isConfirmed && callback) {
         callback();

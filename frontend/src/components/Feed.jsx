@@ -25,7 +25,7 @@ const Feed = ({ feeds, feedData }) => {
               key={pageFeed}
               className={`cursor-pointer capitalize ${
                 feed === pageFeed
-                  ? "border-b-4 text-capitalize border-[#008080]"
+                  ? "border-b-4 text-capitalize border-[#2F4F4F]"
                   : null
               } `}
               onClick={() => {

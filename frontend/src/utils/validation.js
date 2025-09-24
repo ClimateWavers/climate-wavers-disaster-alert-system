@@ -25,7 +25,7 @@ export const showValidationError = (title, message) => {
     title: title,
     text: message,
     confirmButtonText: 'Try Again',
-    confirmButtonColor: '#008080'
+    confirmButtonColor: '#2F4F4F'
   });
 };
 
@@ -36,7 +36,7 @@ export const showSuccessMessage = (title, message, callback = null) => {
     title: title,
     text: message,
     confirmButtonText: 'Continue',
-    confirmButtonColor: '#008080'
+    confirmButtonColor: '#2F4F4F'
   }).then((result) => {
     if (result.isConfirmed && callback) {
       callback();

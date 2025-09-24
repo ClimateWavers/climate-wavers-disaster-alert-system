@@ -61,7 +61,7 @@ const PasswordReset = () => {
         style={{ backgroundImage: `url(${resetBg})` }}
       ></div>
       <div className="w-[100%] lg:w-[30%] md:w-[40%] p-8 pt-1 m-auto text-center ">
-        <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-primary font-bold font-serif text-[#008080] text-center mb-8">
+        <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-primary font-bold font-serif text-[#2F4F4F] text-center mb-8">
           Set New Password
         </h1>
         <p className="lg:text-[24px] md:text-[24px] text-[18px] mb-10 font-serif">
@@ -136,8 +136,8 @@ const PasswordReset = () => {
             onClick={handleSubmit(onSubmit)}
             className={
               isDisabled
-                ? "blur-[1px] bg-[#008080] rounded-md text-white py-4"
-                : "bg-[#008080] rounded-md text-white py-4"
+                ? "blur-[1px] bg-[#2F4F4F] rounded-md text-white py-4"
+                : "bg-[#2F4F4F] rounded-md text-white py-4"
             }
             disabled={isDisabled}
           >

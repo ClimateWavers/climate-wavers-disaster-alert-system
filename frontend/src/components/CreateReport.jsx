@@ -72,7 +72,7 @@ const CreateReport = ({ closeModal, showRecommendation}) => {
 
   return (
     <div className="md:mb-12  h-[90vh] w-[90vw] md:w-[100%] md:h-[100%] px-12 ">
-      <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-primary font-bold font-serif text-[#008080] md:text-center text-start md:mb-8 mb-2">
+      <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-primary font-bold font-serif text-[#2F4F4F] md:text-center text-start md:mb-8 mb-2">
         Report Disaster
       </h1>
       <div className="grid place-content-center">
@@ -174,8 +174,8 @@ const CreateReport = ({ closeModal, showRecommendation}) => {
             type="submit"
             className={
               isDisabled
-                ? "blur-[1px] bg-[#047857] rounded-md w-[80%] text-white py-4"
-                : "bg-[#047857] rounded-md w-[80%] text-white py-4"
+                ? "blur-[1px] bg-[#2F4F4F] rounded-md w-[80%] text-white py-4"
+                : "bg-[#2F4F4F] rounded-md w-[80%] text-white py-4"
             }
             disabled={isDisabled}
           >

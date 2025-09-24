@@ -50,13 +50,13 @@ const UploadPhoto = () => {
 
   return (
     <div className="lg:h-[100vh] md:h-[100vh] flex justify-between">
-      <div className="bg-[#047857] h-[100vh] lg:w-[50%] md:w-[50%] hidden md:flex justify-center ">
+      <div className="bg-[#2F4F4F] h-[100vh] lg:w-[50%] md:w-[50%] hidden md:flex justify-center ">
         <div className="self-end">
           <img src="../../../HandsShow.png" alt="" />
         </div>
       </div>
       <div className="w-[90%] lg:w-[50%] md:w-[50%] grid px-4 place-content-center m-auto pt-20">
-        <h1 className="lg:text-[40px] md:text-[40px] text-[24px] font-[bold font-serif text-[#047857] text-center mb-8">
+        <h1 className="lg:text-[40px] md:text-[40px] text-[24px] font-[bold font-serif text-[#2F4F4F] text-center mb-8">
           Upload Profile Photo
         </h1>
 
@@ -86,7 +86,7 @@ const UploadPhoto = () => {
 
         <button
           onClick={onSubmit}
-          className="bg-[#047857]  rounded-md text-white py-4 w-[100%]"
+          className="bg-[#2F4F4F]  rounded-md text-white py-4 w-[100%]"
         >
           Confirm
         </button>
