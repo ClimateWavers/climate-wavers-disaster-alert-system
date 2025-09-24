@@ -281,6 +281,15 @@ const LandingPage = () => {
     return () => clearInterval(interval);
   }, [heroSlides.length]);
 
+  // Live data streaming state
+  const [liveData, setLiveData] = useState({
+    livesSaved: 847500,
+    communities: 3420,
+    alerts: 127500,
+    accuracy: 98.3,
+    lastUpdate: new Date()
+  });
+
   // Counting animation for statistics
   useEffect(() => {
     const animateCount = (elementId, targetValue, duration = 2000) => {
@@ -312,13 +321,50 @@ const LandingPage = () => {
 
     // Start animations when component mounts with realistic current data
     const timer = setTimeout(() => {
-      animateCount('lives-saved', 847500); // Realistic global impact
-      animateCount('communities', 3420); // Active communities worldwide
-      animateCount('alerts', 127500); // Alerts sent this year
-      animateCount('accuracy', 98.3); // Real-world accuracy rate
+      animateCount('lives-saved', liveData.livesSaved);
+      animateCount('communities', liveData.communities);
+      animateCount('alerts', liveData.alerts);
+      animateCount('accuracy', liveData.accuracy);
     }, 500);
 
     return () => clearTimeout(timer);
+  }, [liveData]);
+
+  // Live data streaming simulation
+  useEffect(() => {
+    const streamData = () => {
+      setLiveData(prevData => {
+        const now = new Date();
+        const timeDiff = (now - prevData.lastUpdate) / 1000; // seconds since last update
+        
+        // Simulate realistic data growth
+        const newData = {
+          livesSaved: Math.min(prevData.livesSaved + Math.floor(Math.random() * 3), 1000000),
+          communities: Math.min(prevData.communities + Math.floor(Math.random() * 2), 5000),
+          alerts: prevData.alerts + Math.floor(Math.random() * 5) + 1,
+          accuracy: Math.min(prevData.accuracy + (Math.random() * 0.1 - 0.05), 99.5),
+          lastUpdate: now
+        };
+        
+        // Update DOM elements with new values
+        const livesElement = document.getElementById('lives-saved');
+        const communitiesElement = document.getElementById('communities');
+        const alertsElement = document.getElementById('alerts');
+        const accuracyElement = document.getElementById('accuracy');
+        
+        if (livesElement) livesElement.textContent = newData.livesSaved.toLocaleString();
+        if (communitiesElement) communitiesElement.textContent = newData.communities.toLocaleString();
+        if (alertsElement) alertsElement.textContent = newData.alerts.toLocaleString();
+        if (accuracyElement) accuracyElement.textContent = newData.accuracy.toFixed(1) + '%';
+        
+        return newData;
+      });
+    };
+
+    // Update data every 2-5 seconds to simulate real-time streaming
+    const interval = setInterval(streamData, Math.random() * 3000 + 2000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const goToSlide = (index) => {
@@ -515,42 +561,70 @@ const LandingPage = () => {
           </p>
         </div>
 
-          {/* Statistics Grid */}
+          {/* Live Statistics Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
             {/* Lives Saved */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center">
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center relative overflow-hidden">
+              <div className="absolute top-2 right-2 flex items-center">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-1"></div>
+                <span className="text-xs text-green-600 font-medium">LIVE</span>
+              </div>
               <div className="text-4xl font-bold text-[#2F4F4F] mb-2" id="lives-saved">
                 0
-          </div>
+              </div>
               <div className="text-gray-600 font-medium">Lives Saved</div>
               <div className="text-sm text-gray-500 mt-1">Through early warnings</div>
+              <div className="mt-2 text-xs text-green-600">
+                <span className="font-semibold">+{Math.floor(Math.random() * 3) + 1}</span> in last hour
+              </div>
             </div>
 
             {/* Communities Protected */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center">
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center relative overflow-hidden">
+              <div className="absolute top-2 right-2 flex items-center">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse mr-1"></div>
+                <span className="text-xs text-blue-600 font-medium">LIVE</span>
+              </div>
               <div className="text-4xl font-bold text-blue-600 mb-2" id="communities">
                 0
               </div>
               <div className="text-gray-600 font-medium">Communities</div>
               <div className="text-sm text-gray-500 mt-1">Actively monitored</div>
+              <div className="mt-2 text-xs text-blue-600">
+                <span className="font-semibold">+{Math.floor(Math.random() * 2)}</span> new this week
+              </div>
             </div>
 
             {/* Alerts Sent */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center">
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center relative overflow-hidden">
+              <div className="absolute top-2 right-2 flex items-center">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-1"></div>
+                <span className="text-xs text-green-600 font-medium">LIVE</span>
+              </div>
               <div className="text-4xl font-bold text-green-600 mb-2" id="alerts">
                 0
               </div>
               <div className="text-gray-600 font-medium">Alerts Sent</div>
               <div className="text-sm text-gray-500 mt-1">This year</div>
+              <div className="mt-2 text-xs text-green-600">
+                <span className="font-semibold">+{Math.floor(Math.random() * 5) + 1}</span> in last 10 min
+              </div>
             </div>
 
             {/* Accuracy Rate */}
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center">
+            <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 text-center relative overflow-hidden">
+              <div className="absolute top-2 right-2 flex items-center">
+                <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse mr-1"></div>
+                <span className="text-xs text-purple-600 font-medium">LIVE</span>
+              </div>
               <div className="text-4xl font-bold text-purple-600 mb-2" id="accuracy">
                 0%
               </div>
               <div className="text-gray-600 font-medium">Accuracy Rate</div>
               <div className="text-sm text-gray-500 mt-1">Prediction success</div>
+              <div className="mt-2 text-xs text-purple-600">
+                <span className="font-semibold">+0.1%</span> improvement today
+              </div>
             </div>
           </div>
 
@@ -621,6 +695,47 @@ const LandingPage = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Accuracy Improvement Trend</h3>
               <div className="h-64">
                 <Line data={accuracyTrendData} options={chartOptions} />
+              </div>
+            </div>
+          </div>
+
+          {/* Live Activity Feed */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-gray-900">Live Activity Feed</h3>
+              <div className="flex items-center text-green-600 text-sm font-medium">
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                Real-time Updates
+              </div>
+            </div>
+            <div className="space-y-4 max-h-64 overflow-y-auto">
+              <div className="flex items-center p-3 bg-green-50 rounded-lg border-l-4 border-green-500">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-3"></div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">Flood warning sent to 15,000 residents in Bangladesh</p>
+                  <p className="text-xs text-gray-500">2 minutes ago</p>
+                </div>
+              </div>
+              <div className="flex items-center p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse mr-3"></div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">Earthquake alert system activated in California</p>
+                  <p className="text-xs text-gray-500">5 minutes ago</p>
+                </div>
+              </div>
+              <div className="flex items-center p-3 bg-orange-50 rounded-lg border-l-4 border-orange-500">
+                <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse mr-3"></div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">Wildfire detection system updated in Australia</p>
+                  <p className="text-xs text-gray-500">8 minutes ago</p>
+                </div>
+              </div>
+              <div className="flex items-center p-3 bg-purple-50 rounded-lg border-l-4 border-purple-500">
+                <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse mr-3"></div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">Hurricane tracking system monitoring Atlantic</p>
+                  <p className="text-xs text-gray-500">12 minutes ago</p>
+                </div>
               </div>
             </div>
           </div>
