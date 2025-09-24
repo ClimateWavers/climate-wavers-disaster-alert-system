@@ -1,0 +1,105 @@
+.signup .banner{
+    /* height: 110vh; */
+    text-align: center;
+    position: relative;
+    top: -50px;
+}
+
+.signup{
+    padding-top: 40px;
+    box-sizing: border-box;
+}
+
+.signup .banner h2{
+    color: white !important;
+    font-size: 48px;
+    font-weight: 650;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.signup .banner img{
+    align-self: center;
+    display: block;
+    position: relative;
+    left: 25%;
+    top: 5%;
+}
+
+.signup .writeup{
+    text-align: left;
+    display: inline-block;
+    width: 90%;
+    margin-left: 25px;
+    position: relative;
+    top: -120px;
+}
+
+.signup .writeup p{
+    font-size: 22px;
+    margin-top: 35px;
+    color: white;
+}
+
+.signup .form-main{
+    display: inline-block;
+    position: relative;
+    top: -50px;
+    padding-top: 60px;
+    /* height: 105vh; */
+    box-sizing: border-box;
+    padding-bottom: 45px;
+    display: inline-block !important;
+    text-align: center !important;
+}
+
+.signup .google-btn{
+    margin-top: 15px;
+    /* width: 90%; */
+    max-width: 380px;
+    margin-bottom: 35px;
+}
+
+.google-btn{
+    display: inline-flex;
+    padding: 20px 45px;
+    border-radius: 65px;
+    background: none;
+    background-color: white;
+    border: 2px solid rgba(0, 0, 0, 0.155);
+    justify-content: space-between;
+}
+.google-btn .icn{
+    margin-right: 15px;
+}
+
+.social-icn{
+
+}
+
+.social-wrapper{
+    /* border: 1px solid red; */
+    height: 45px;
+    margin: 20px 0px 25px;
+    /* display: inline-block; */
+    /* width: 350px; */
+}
+
+.signup .or{
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    font-size: 22px;
+    font-weight: 550;
+}
+
+@media screen and (max-width: 1260px){
+    .signup .banner{
+        display: none;
+    }
+
+    .signup .form-main{
+        width: 100%;
+        clear: both;
+    }
+}
