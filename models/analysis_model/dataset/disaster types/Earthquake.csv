@@ -1,0 +1,46 @@
+Disaster Type,Magnitude,Magnitude Scale,Minimum Temperature,Maximum Temperature,Dew Point,Temperature,Wind Speed Min,Wind Speed Max,Wind Speed Mean,Wind Direction,Relative Humidity Min,Relative Humidity Max,Relative Humidity Mean,Weather Type,Precipitation,Cloud Cover,Sea Level Pressure,Precipitation Cover
+Earthquake,6.7,Richter,43.1,59.9,49.9,53.2,0.3,18.1,6.7,251.46,76.19,97.96,88.69,"Drizzle, Mist, Rain, Rain Showers, Light Rain, Sky Coverage Increasing, Smoke Or Haze",1.14,79.3,1004.4,16.67
+Earthquake,6.6,Richter,71.0,80.1,70.3,74.0,2.3,12.5,6.8,230.5,75.14,97.98,88.64,"Rain Showers, Sky Coverage Increasing",0.04,91.1,1001.5,8.33
+Earthquake,6.2,Richter,56.7,69.9,60.0,61.6,0.0,17.9,6.8,314.16,82.88,100.0,94.43,"Drizzle, Mist, Rain Showers, Sky Coverage Increasing",0.22,83.6,1006.3,8.33
+Earthquake,8.0,Richter,57.3,69.9,55.2,61.6,0.0,11.4,4.3,208.67,60.25,88.02,80.14,"Mist, Light Drizzle, Sky Unchanged",0.0,93.3,1016.0,0.0
+Earthquake,4.1,Richter,67.4,82.5,62.3,77.0,9.2,18.3,14.3,331.67,48.1,85.5,61.85,Smoke Or Haze,0.0,39.2,1015.3,0.0
+Earthquake,6.7,Richter,44.1,58.4,46.5,51.0,3.7,16.6,8.7,250.17,72.39,91.2,84.7,"Drizzle, Heavy Drizzle, Mist, Rain, Rain Showers, Fog, Light Rain, Smoke Or Haze",0.56,84.3,1003.3,12.5
+Earthquake,8.0,Richter,53.9,66.3,54.9,61.0,2.2,12.8,6.2,189.0,72.59,93.65,80.8,"Mist, Sky Coverage Increasing",0.0,64.5,1015.8,0.0
+Earthquake,5.3,Richter,64.2,86.1,65.6,75.1,0.0,17.2,10.7,248.35,51.77,94.86,73.83,Mist,0.0,44.2,1016.5,0.0
+Earthquake,7.4,Richter,70.9,84.3,68.6,76.9,0.0,9.6,5.5,78.86,59.09,90.12,76.52,"Precipitation In Vicinity, Sky Coverage Decreasing, Sky Coverage Increasing, Sky Unchanged",0.16,44.3,1011.5,8.7
+Earthquake,7.4,Richter,70.9,84.3,68.6,76.9,0.0,9.6,5.5,78.86,59.09,90.12,76.52,"Precipitation In Vicinity, Sky Coverage Decreasing, Sky Coverage Increasing, Sky Unchanged",0.16,44.3,1011.5,8.7
+Earthquake,7.4,Richter,70.9,84.3,68.6,76.9,0.0,9.6,5.5,78.86,59.09,90.12,76.52,"Precipitation In Vicinity, Sky Coverage Decreasing, Sky Coverage Increasing, Sky Unchanged",0.16,44.3,1011.5,8.7
+Earthquake,8.0,Richter,53.9,66.3,54.9,61.0,2.2,12.8,6.2,189.0,72.59,93.65,80.8,"Mist, Sky Coverage Increasing",0.0,64.5,1015.8,0.0
+Earthquake,5.3,Richter,64.2,86.1,65.6,75.1,0.0,17.2,10.7,248.35,51.77,94.86,73.83,Mist,0.0,44.2,1016.5,0.0
+Earthquake,7.4,Richter,70.9,84.3,68.6,76.9,0.0,9.6,5.5,78.86,59.09,90.12,76.52,"Precipitation In Vicinity, Sky Coverage Decreasing, Sky Coverage Increasing, Sky Unchanged",0.16,44.3,1011.5,8.7
+Earthquake,7.4,Richter,70.9,84.3,68.6,76.9,0.0,9.6,5.5,78.86,59.09,90.12,76.52,"Precipitation In Vicinity, Sky Coverage Decreasing, Sky Coverage Increasing, Sky Unchanged",0.16,44.3,1011.5,8.7
+Earthquake,7.4,Richter,70.9,84.3,68.6,76.9,0.0,9.6,5.5,78.86,59.09,90.12,76.52,"Precipitation In Vicinity, Sky Coverage Decreasing, Sky Coverage Increasing, Sky Unchanged",0.16,44.3,1011.5,8.7
+Earthquake,7.4,Richter,70.9,84.3,68.6,76.9,0.0,9.6,5.5,78.86,59.09,90.12,76.52,"Precipitation In Vicinity, Sky Coverage Decreasing, Sky Coverage Increasing, Sky Unchanged",0.16,44.3,1011.5,8.7
+Earthquake,7.4,Richter,70.9,84.3,68.6,76.9,0.0,9.6,5.5,78.86,59.09,90.12,76.52,"Precipitation In Vicinity, Sky Coverage Decreasing, Sky Coverage Increasing, Sky Unchanged",0.16,44.3,1011.5,8.7
+Earthquake,7.4,Richter,70.9,84.3,68.6,76.9,0.0,9.6,5.5,78.86,59.09,90.12,76.52,"Precipitation In Vicinity, Sky Coverage Decreasing, Sky Coverage Increasing, Sky Unchanged",0.16,44.3,1011.5,8.7
+Earthquake,4.6,Richter,49.6,65.1,49.4,55.6,7.0,16.6,12.7,35.54,62.87,91.32,80.45,"Sky Coverage Increasing, Sky Unchanged, Smoke Or Haze",0.0,63.1,1021.8,0.0
+Earthquake,5.6,Richter,14.8,23.1,15.7,17.8,0.0,6.7,4.0,141.83,79.49,100.0,91.68,"Snow Showers, Mist, Light Snow, Fog, Snow",0.01,98.3,1033.0,4.17
+Earthquake,4.5,Richter,55.5,75.4,49.2,63.5,0.0,17.7,7.6,168.77,33.93,82.27,62.07,Smoke Or Haze,0.04,69.3,1015.0,4.17
+Earthquake,7.9,Richter,62.7,84.3,57.4,72.4,2.2,8.9,3.8,318.75,40.31,82.76,61.04,"Mist, Smoke Or Haze",0.0,24.3,1013.0,0.0
+Earthquake,6.4,Richter,64.3,77.1,62.7,70.9,0.0,9.9,4.6,247.95,51.99,93.93,76.71,Light Rain,0.0,50.2,1010.6,0.0
+Earthquake,6.9,Richter,51.8,76.2,48.5,64.4,2.1,13.0,6.2,192.54,36.78,81.94,58.6,"Rain, Rain Showers, Sky Coverage Decreasing, Smoke Or Haze",0.0,54.3,1006.1,0.0
+Earthquake,6.8,Richter,72.7,80.5,71.8,75.7,4.3,9.7,6.5,184.42,76.32,93.46,87.78,"Mist, Thunderstorm, Rain, Thunderstorm Without Precipitation, Rain Showers, Light Rain",0.24,93.0,1007.8,8.33
+Earthquake,6.8,Richter,69.2,79.0,71.2,74.7,2.6,8.3,4.2,200.0,77.06,92.76,88.84,"Mist, Light Drizzle, Rain, Rain Showers, Fog, Light Rain, Sky Coverage Increasing",0.16,94.0,1006.5,12.5
+Earthquake,6.0,Richter,69.4,79.5,60.4,73.7,0.0,7.9,3.4,239.67,50.08,80.79,64.11,Rain Showers,0.0,79.6,1002.2,0.0
+Earthquake,6.1,Richter,82.6,99.3,77.8,89.8,0.0,25.2,10.6,201.33,28.86,82.92,69.13,"Mist, Smoke Or Haze",0.0,0.0,1003.4,0.0
+Earthquake,4.8,Richter,51.5,74.0,50.1,59.9,0.0,2.2,1.5,201.17,39.1,90.77,72.79,Fog,0.0,53.9,1016.8,0.0
+Earthquake,5.9,Richter,55.5,78.5,62.6,66.7,0.0,10.3,3.4,200.3,61.64,95.53,87.55,"Drizzle, Light Drizzle, Precipitation In Vicinity, Rain, Light Rain",0.0,73.3,1018.6,0.0
+Earthquake,6.3,Richter,46.5,70.1,47.0,58.0,0.0,10.4,4.5,250.68,42.14,93.51,69.0,"Mist, Thunderstorm Without Precipitation",0.01,24.9,1015.1,4.17
+Earthquake,7.3,Richter,83.6,89.7,78.7,87.7,0.0,20.8,9.4,99.09,66.59,84.01,75.01,Smoke Or Haze,0.0,65.4,1010.7,0.0
+Earthquake,5.7,Richter,77.3,87.2,66.8,81.3,4.5,11.2,7.0,144.29,51.92,68.56,62.01,Lightning Without Thunder,0.0,92.9,998.8,0.0
+Earthquake,6.2,Richter,75.6,82.3,76.7,78.9,2.6,10.2,5.3,78.04,85.63,98.63,93.13,"Mist, Rain, Rain Showers, Heavy Rain, Light Rain, Sky Coverage Increasing",2.32,91.6,1007.3,16.67
+Earthquake,5.5,Richter,54.8,73.0,47.3,63.9,0.0,14.6,9.3,206.91,38.86,74.8,55.91,"Light Drizzle, Rain",0.0,68.2,1015.8,0.0
+Earthquake,5.0,Richter,71.7,89.7,70.7,79.9,0.0,11.4,5.7,213.13,49.67,94.06,74.83,"Mist, Smoke Or Haze",0.0,11.9,1013.3,0.0
+Earthquake,7.1,Richter,75.8,87.9,77.6,82.4,0.0,2.2,0.6,180.0,73.05,98.81,86.26,"Precipitation In Vicinity, Smoke Or Haze",0.0,31.4,1005.8,0.0
+Earthquake,5.0,Richter,52.1,72.8,49.4,62.0,0.0,4.5,3.0,145.0,40.79,85.74,65.98,Mist,0.0,16.7,1025.1,0.0
+Earthquake,6.5,Richter,48.1,62.1,49.9,53.9,0.0,6.9,2.0,54.58,68.06,96.34,86.73,Mist,0.01,28.5,1019.4,4.17
+Earthquake,5.1,Richter,42.5,53.7,41.6,48.7,2.2,4.5,2.5,200.0,62.26,88.84,76.99,Mist,0.0,86.3,1017.3,0.0
+Earthquake,8.8,Richter,53.2,66.2,54.9,59.1,0.0,6.9,3.7,150.0,72.76,95.15,86.62,Mist,0.0,0.0,1015.5,0.0
+Earthquake,6.1,Richter,41.8,51.0,40.9,46.3,0.0,5.7,1.5,147.54,65.44,92.66,81.71,Sky Coverage Increasing,0.0,97.4,1024.0,0.0
+Earthquake,7.0,Richter,77.3,89.0,77.2,83.1,0.0,9.2,5.0,238.33,69.35,97.06,83.16,"Lightning Without Thunder, Precipitation In Vicinity, Rain, Thunderstorm, Light Rain, Smoke Or Haze",0.03,94.3,1008.6,14.29
+Earthquake,5.8,Richter,87.8,102.5,82.3,93.9,0.0,15.2,8.1,182.75,47.47,94.48,71.73,"Mist, Smoke Or Haze",0.0,6.3,992.5,0.0

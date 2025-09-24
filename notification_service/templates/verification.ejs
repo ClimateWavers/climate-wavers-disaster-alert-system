@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 100%;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .header {
+            padding: 10px 0;
+            background-color: #f4f4f4;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+
+        .header img {
+            width: 50px;
+            height: auto;
+        }
+
+        .header h1 {
+            font-family: Montserrat, sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            color: #047857;
+            margin: 0 0 0 15px;
+        }
+
+        .body {
+            margin-top: 20px;
+        }
+
+        h4 {
+            font-size: 18px;
+            color: #008080;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <img src="https://res.cloudinary.com/lahri/image/upload/v1726333240/disax/tnbbn9m9vpueskb66qd3.png"
+                alt="Climate Wavers Logo">
+            <h1>Your Verification Code</h1>
+        </div>
+
+        <!-- Body -->
+        <div class="body">
+            <p>Here is your <%= code.length %>-digit verification code:</p>
+            <h4>
+                <%= code %>
+            </h4>
+            <p>Please use the above code to verify your account.</p>
+        </div>
+    </div>
+</body>
+
+</html>

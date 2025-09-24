@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate Wavers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            overflow-x: hidden;
+            /* Prevent horizontal scrolling */
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            /* Ensure it doesn't exceed the viewport width */
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 0 auto;
+            /* Center the content */
+        }
+
+        .header {
+            width: 100%;
+            padding: 10px 0;
+            background-color: #f4f4f4;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-family: Montserrat, sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            line-height: 24.38px;
+            color: #047857;
+            margin: 0;
+            margin-left: 15px;
+        }
+
+        .header img {
+            width: 50px;
+            height: auto;
+        }
+
+        .body {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .date {
+            font-family: Montserrat, sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .time {
+            font-family: Montserrat, sans-serif;
+            font-size: 12px;
+            color: #555;
+            margin-left: 15px;
+        }
+
+        .message-content {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            padding-left: 10px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <!-- Logo -->
+            <img src="https://res.cloudinary.com/lahri/image/upload/v1726333240/disax/tnbbn9m9vpueskb66qd3.png"
+                alt="Climate Wavers Logo">
+            <h1>Notification from HR</h1>
+        </div>
+
+        <!-- Body Section with Multiple Messages -->
+        <div class="body">
+            <!-- Message 1 -->
+            <div class="message">
+                <div class="message-header">
+                    <!-- Date and Time -->
+                    <div class="date">
+                        <%= date %>
+                    </div>
+                    <div class="time">
+                        <%= time %>
+                    </div>
+                </div>
+                <!-- Message Content -->
+                <div class="message-content">
+                    <p>
+                        <%= content %>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
