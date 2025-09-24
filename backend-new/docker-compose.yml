@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: sh entrypoint.sh
+    volumes:
+      - .:/backend
+    env_file:
+      - ./.env
+    environment:
+      - DB_HOST=backend-new.db
+    ports:
+      - 8000:8000
+    container_name: backend-new
+    networks:
+      - climatewavers
+    depends_on:
+      - db
+      - redis
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  db:
+    image: postgres
+    env_file:
+      - ./.env
+    environment:
+      - POSTGRES_USER=waverx
+      - POSTGRES_DB=climatewaver
+      - POSTGRES_PASSWORD=waverx_pass
+    ports:
+      - 5432:5432
+    container_name: backend-new.db
+    volumes:
+      - data:/var/lib/postgres
+    networks:
+      - climatewavers
+
+  queue-consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    command: sh worker.sh
+    
+    environment:
+      - DB_HOST=backend-new.db
+    container_name: backend-new.worker
+    ports:
+      - 8002:8000
+    volumes:
+      - .:/backend
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    depends_on:
+      - db
+      - redis
+    networks:
+      - climatewavers
+
+
+  redis:
+    image: redis:6.2
+    restart: always
+    ports:
+      - "6380:6379"
+    volumes:
+      - redisdata:/data
+    networks:
+      - climatewavers
+
+volumes:
+  data:
+    name: "data"
+  redisdata:
+    name: "redisdata"
+
+networks:
+  climatewavers:
+    driver: bridge
+    external: true
+    name: climatewavers
