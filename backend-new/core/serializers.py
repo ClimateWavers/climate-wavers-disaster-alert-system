@@ -57,6 +57,11 @@ def reverse_geocode(latitude, longitude):
 class UserSerializer(serializers.ModelSerializer):
     is_following = serializers.SerializerMethodField()
     profile_picture = serializers.ReadOnlyField()
+    cover_image = serializers.URLField(source='cover', required=False, allow_blank=True, allow_null=True)
+    
+    # Allow cover and profile_pic fields to be updated
+    cover = serializers.URLField(required=False, allow_blank=True, allow_null=True)
+    profile_pic = serializers.URLField(required=False, allow_blank=True, allow_null=True)
 
     def get_is_following(self, obj):
         user = self.get_user_from_context()

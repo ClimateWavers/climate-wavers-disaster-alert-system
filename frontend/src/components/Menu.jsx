@@ -13,6 +13,21 @@ const Menu = ({ setIsOpen }) => {
 
   useEffect(() => {
     setUser(getUser());
+    
+    // Listen for localStorage changes
+    const handleStorageChange = () => {
+      setUser(getUser());
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also listen for custom events (for same-tab updates)
+    window.addEventListener('userUpdated', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userUpdated', handleStorageChange);
+    };
   }, []);
 
   const getNavLinkClassName = (isActive) => 

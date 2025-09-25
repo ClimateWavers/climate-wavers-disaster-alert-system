@@ -298,6 +298,37 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_object(self):
         return User.objects.get(pk=self.kwargs["pk"])
 
+    def update(self, request, *args, **kwargs):
+        """
+        Custom update method for user profiles.
+        """
+        try:
+            user = self.get_object()
+            
+            # Check if user is updating their own profile
+            if request.user.is_authenticated and request.user.id == user.id:
+                serializer = self.get_serializer(user, data=request.data, partial=True)
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(serializer.data)
+                else:
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response(
+                    {"detail": "You can only update your own profile"}, 
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "User not found"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {"detail": f"Error updating profile: {str(e)}"}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
     @action(detail=False, methods=["post"], permission_classes=[IsAuthenticated])
     def activity(self, request):
         """
@@ -352,6 +383,12 @@ class UserViewSet(viewsets.ModelViewSet):
             polls_data = PollSerializer(polls, many=True, context={'request': request}).data
             user_data = UserSerializer(user, context={'request': request}).data
             
+            print(f"DEBUG: User profile_pic: {user.profile_pic}")
+            print(f"DEBUG: User picture: {user.picture}")
+            print(f"DEBUG: User default_avatar: {user.default_avatar}")
+            print(f"DEBUG: User profile_picture property: {user.profile_picture}")
+            print(f"DEBUG: User cover: {user.cover}")
+            print(f"DEBUG: Serialized user data: {user_data}")
             print(f"DEBUG: Serialized data counts - Posts: {len(posts_data)}, Comments: {len(comments_data)}, Reactions: {len(reactions_data)}")
             print(f"DEBUG: Reposts: {len(reposts_data)}, Bookmarks: {len(bookmarks_data)}, Polls: {len(polls_data)}")
             

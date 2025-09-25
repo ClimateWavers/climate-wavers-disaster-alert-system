@@ -32,10 +32,14 @@ const UploadPhoto = () => {
   const onSubmit = async () => {
     const uploaded_image = await uploadFiles(image);
     try {
+      // Extract the first URL from the array
+      const profilePicUrl = uploaded_image && uploaded_image.length > 0 ? uploaded_image[0] : null;
+      console.log("Profile picture URL:", profilePicUrl);
+      
       await client.run(
         "patch",
         endpoints?.user,
-        { profile_pic: uploaded_image },
+        { profile_pic: profilePicUrl },
         true,
         toastMsg,
         false,

@@ -21,7 +21,26 @@ const Topbar = () => {
     markAsRead();
   };
 
-  const user = getUser();
+  const [user, setUser] = useState(getUser());
+
+  useEffect(() => {
+    const currentUser = getUser();
+    console.log("Topbar - current user:", currentUser);
+    setUser(currentUser);
+    
+    // Listen for user updates
+    const handleUserUpdate = () => {
+      const updatedUser = getUser();
+      console.log("Topbar - user updated:", updatedUser);
+      setUser(updatedUser);
+    };
+    
+    window.addEventListener('userUpdated', handleUserUpdate);
+    
+    return () => {
+      window.removeEventListener('userUpdated', handleUserUpdate);
+    };
+  }, []);
 
   // Handle click outside to close user menu
   useEffect(() => {
@@ -115,10 +134,10 @@ const Topbar = () => {
             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
             className="ml-2 hidden md:flex self-end rounded-full h-12 w-12 overflow-hidden hover:ring-2 hover:ring-[#2F4F4F] transition-all duration-200"
           >
-            <img
+        <img
               src={user?.profile_picture || "/avatar.png"}
               className="w-full h-full object-cover"
-              alt="Profile Pic"
+          alt="Profile Pic"
               onError={(e) => {
                 e.target.src = "/avatar.png";
               }}

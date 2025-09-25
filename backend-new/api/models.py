@@ -63,6 +63,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     auth_provider = models.CharField(
         max_length=50, default=AUTH_PROVIDERS.get("email"))
     picture = models.URLField(max_length=500, blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True, null=True, verbose_name=_("Phone"))
+    website = models.URLField(max_length=500, blank=True, null=True, verbose_name=_("Website"))
+    location = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Location"))
     is_onboarded = models.BooleanField(default=True)
 
     USERNAME_FIELD = "email"

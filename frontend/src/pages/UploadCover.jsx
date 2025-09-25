@@ -30,10 +30,14 @@ const UploadCover = () => {
   const onSubmit = async () => {
     const uploaded_image = await uploadFiles(image);
     try {
+      // Extract the first URL from the array
+      const coverUrl = uploaded_image && uploaded_image.length > 0 ? uploaded_image[0] : null;
+      console.log("Cover image URL:", coverUrl);
+      
       await client.run(
         "patch",
         endpoints?.user,
-        { cover: uploaded_image },
+        { cover: coverUrl },
         true,
         toastMsg,
         false,
