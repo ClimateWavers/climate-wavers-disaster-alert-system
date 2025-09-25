@@ -30,7 +30,12 @@ export const getUser = () => {
 
   if (raw) {
     try {
-      return JSON.parse(raw);
+      const userData = JSON.parse(raw);
+      console.log("getUser - user data from cookies:", userData);
+      console.log("getUser - profile_picture:", userData?.profile_picture);
+      console.log("getUser - profile_pic:", userData?.profile_pic);
+      console.log("getUser - picture:", userData?.picture);
+      return userData;
     } catch (error) {
       console.error("Failed to parse user data from cookies:", error);
       Cookies.remove("user");

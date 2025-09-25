@@ -100,6 +100,11 @@ const ProfileEditModal = ({ isOpen, onClose, user, onProfileUpdate }) => {
       // Update profile
       const response = await client.run("put", `${endpoints?.users}${user.id}/`, formData, true);
       
+      console.log("ProfileEditModal - API response:", response);
+      console.log("ProfileEditModal - profile_picture:", response?.profile_picture);
+      console.log("ProfileEditModal - profile_pic:", response?.profile_pic);
+      console.log("ProfileEditModal - picture:", response?.picture);
+      
       toast.success("Profile updated successfully!");
       onProfileUpdate(response);
       onClose();

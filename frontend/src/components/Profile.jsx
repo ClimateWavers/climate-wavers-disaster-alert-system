@@ -127,7 +127,9 @@ const Profile = () => {
     }
     
     // Dispatch custom event to notify other components
+    console.log("Profile - Dispatching userUpdated event");
     window.dispatchEvent(new CustomEvent('userUpdated'));
+    console.log("Profile - userUpdated event dispatched");
     
     // Show success message
     toast.success("Profile updated successfully!");

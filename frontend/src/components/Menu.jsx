@@ -16,7 +16,11 @@ const Menu = ({ setIsOpen }) => {
     
     // Listen for localStorage changes
     const handleStorageChange = () => {
-      setUser(getUser());
+      console.log("Menu - userUpdated event received");
+      const updatedUser = getUser();
+      console.log("Menu - updated user data:", updatedUser);
+      console.log("Menu - profile_picture:", updatedUser?.profile_picture);
+      setUser(updatedUser);
     };
     
     window.addEventListener('storage', handleStorageChange);
