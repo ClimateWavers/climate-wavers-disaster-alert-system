@@ -1,6 +1,7 @@
 import Feed from "./Feed";
 import Trending from "./Trending";
 import { useFeedData } from "../hooks/useFeedData";
+import { useTrending } from "../hooks/useTrending";
 import { useState } from "react";
 
 const Community = () => {
@@ -15,6 +16,13 @@ const Community = () => {
 
   // Fetch data for the active feed
   const { data: feedData, isLoading, error } = useFeedData(activeFeed);
+  
+  // Fetch trending data separately for better integration
+  const {
+    data: trendingData,
+    isLoading: trendingLoading,
+    error: trendingError,
+  } = useTrending();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -32,6 +40,9 @@ const Community = () => {
                   setActiveFeed={setActiveFeed}
                   isLoading={isLoading}
                   error={error}
+                  trendingData={trendingData}
+                  trendingLoading={trendingLoading}
+                  trendingError={trendingError}
                 />
               </div>
             </div>
@@ -42,14 +53,22 @@ const Community = () => {
           {/* Trending Sidebar - Desktop */}
           <div className="hidden lg:block lg:col-span-1">
             <div className="space-y-4">
-              <Trending />
+              <Trending 
+                trendingData={trendingData}
+                isLoading={trendingLoading}
+                error={trendingError}
+              />
               {/* Add more sidebar content here if needed */}
             </div>
           </div>
           
           {/* Trending for Mobile - Below posts */}
           <div className="lg:hidden mt-4 sm:mt-6">
-            <Trending />
+            <Trending 
+              trendingData={trendingData}
+              isLoading={trendingLoading}
+              error={trendingError}
+            />
           </div>
         </div>
       </div>

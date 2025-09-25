@@ -15,6 +15,12 @@ class Client {
   handleValidationErrors(error) {
     if (error.response && error.response.data) {
       const errorData = error.response.data;
+      
+      // Skip showing popup for follow-related errors (these are handled by components)
+      if (errorData.detail === "You are already following this user.") {
+        return false;
+      }
+      
       let errorMessages = [];
 
       // Handle different types of validation errors

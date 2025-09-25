@@ -395,7 +395,7 @@ export default function Createpost({ type, postId, parentId, closeModal }) {
       formData.append('location', selectedLocation || '');
       
       // Add post/comment relationships
-      if (postId) formData.append('post', postId);
+      if (postId) formData.append('post_id', postId);
       if (parentId) formData.append('parent_comment', parentId);
       
       // Handle image files - upload to Cloudinary and send URL

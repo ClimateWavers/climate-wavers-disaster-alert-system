@@ -178,7 +178,7 @@ const Createcomment = ({ type, postId, parentId, button = "reply" }) => {
     }
     
     // Add post/comment relationships
-    if (postId) formData.append('post', postId);
+    if (postId) formData.append('post_id', postId);
     if (parentId) formData.append('parent_comment', parentId);
     
     // Handle image files - upload to Cloudinary and send URL

@@ -14,7 +14,7 @@ const useFeedData = (feedType) => {
       let url;
       
       if (feedType === 'Trending') {
-        url = `${endpoints.post}trending/`;
+        url = '/api/v1/post/trending/';
       } else {
         const hashtag = feedHashtags[feedType];
         if (!hashtag) {

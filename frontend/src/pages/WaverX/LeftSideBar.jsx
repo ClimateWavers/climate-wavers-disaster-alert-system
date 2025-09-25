@@ -39,7 +39,7 @@ export default function WaverxLeftBar({
               onClick={() => setIsMenuOpen(true)}
             />
             {isMenuOpen === true ? (
-              <Mobilemenu setIsOpen={setIsMenuOpen} />
+              <Mobilemenu setIsOpen={() => setIsMenuOpen(false)} />
             ) : null}
           </div>
           <div className="flex flex-2 gap-3.5">

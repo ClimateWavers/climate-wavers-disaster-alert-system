@@ -90,16 +90,49 @@ const Profile = () => {
   };
 
   const follow = async (userId) => {
-    await client.run("post", endpoints?.follow, { following: userId }, true);
+    console.log("Profile - Attempting to follow user:", userId, "Current isFollow state:", isFollow);
+    try {
+      await client.run("post", endpoints?.follow, { following: userId }, true);
+      console.log("Profile - Follow successful, updating state to true");
+      setIsFollow(true);
+    } catch (error) {
+      console.log("Profile - Follow error:", error.response?.data);
+      // Handle specific follow errors
+      if (error.response?.data?.detail === "You are already following this user.") {
+        // User is already following, update UI to reflect this
+        console.log("Profile - User already being followed, updating UI state");
+        setIsFollow(true);
+        return;
+      }
+      // Revert UI state on other errors
+      console.log("Profile - Other error, reverting state to false");
+      setIsFollow(false);
+      throw error;
+    }
   };
 
   const unfollow = async (userId) => {
-    await client.run("delete", `${endpoints?.follow}${userId}/`, {}, true);
+    console.log("Profile - Attempting to unfollow user:", userId);
+    try {
+      await client.run("delete", `${endpoints?.follow}${userId}/`, {}, true);
+      console.log("Profile - Unfollow successful, updating state to false");
+      setIsFollow(false);
+    } catch (error) {
+      console.log("Profile - Unfollow error:", error.response?.data);
+      // Revert UI state on error
+      console.log("Profile - Unfollow error, reverting state to true");
+      setIsFollow(true);
+      throw error;
+    }
   };
+  
   const handleFollow = async (userId) => {
+    console.log("Profile - handleFollow called - isFollow:", isFollow, "userId:", userId);
     if (!isFollow) {
+      console.log("Profile - User is not being followed, calling follow");
       await follow(userId);
     } else {
+      console.log("Profile - User is already being followed, calling unfollow");
       await unfollow(userId);
     }
   };

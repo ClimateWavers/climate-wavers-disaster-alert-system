@@ -1,26 +1,64 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { endpoints } from "../utils/endpoints";
 import { client } from "../api";
 import { Link } from "react-router-dom";
 import { getUser } from "../utils/factory";
 
-const Accountcard = ({ user }) => {
+const Accountcard = ({ user, onFollowChange }) => {
   const [isFollow, setIsFollow] = useState(user?.is_following);
   const me = getUser();
 
+  // Sync follow status when user prop changes
+  useEffect(() => {
+    setIsFollow(user?.is_following);
+  }, [user?.is_following]);
+
   const follow = async (userId) => {
-    await client.run("post", endpoints?.follow, { following: userId }, true);
+    try {
+      await client.run("post", endpoints?.follow, { following: userId }, true);
+      setIsFollow(true);
+      // Notify parent component of follow change
+      if (onFollowChange) {
+        onFollowChange(userId, true);
+      }
+    } catch (error) {
+      // Handle specific follow errors
+      if (error.response?.data?.detail === "You are already following this user.") {
+        // User is already following, update UI to reflect this
+        setIsFollow(true);
+        // Notify parent component of follow change
+        if (onFollowChange) {
+          onFollowChange(userId, true);
+        }
+        return;
+      }
+      // Revert UI state on other errors
+      setIsFollow(false);
+      throw error;
+    }
   };
 
   const unfollow = async (userId) => {
-    await client.run("delete", `${endpoints?.follow}${userId}/`, {}, true);
+    try {
+      await client.run("delete", `${endpoints?.follow}${userId}/`, {}, true);
+      setIsFollow(false);
+      // Notify parent component of follow change
+      if (onFollowChange) {
+        onFollowChange(userId, false);
+      }
+    } catch (error) {
+      // Revert UI state on error
+      setIsFollow(true);
+      throw error;
+    }
   };
+  
   const handleFollow = async (userId) => {
-    if (!isFollow) {
-      await follow(userId);
-    } else {
+    if (isFollow) {
       await unfollow(userId);
+    } else {
+      await follow(userId);
     }
   };
 
@@ -50,7 +88,6 @@ const Accountcard = ({ user }) => {
       {me.id !== user?.id && (
         <button
           onClick={() => {
-            setIsFollow(!isFollow);
             handleFollow(user?.id);
           }}
           className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 flex-shrink-0 ${
@@ -68,6 +105,7 @@ const Accountcard = ({ user }) => {
 
 Accountcard.propTypes = {
   user: PropTypes.object,
+  onFollowChange: PropTypes.func,
 };
 
 export default Accountcard;

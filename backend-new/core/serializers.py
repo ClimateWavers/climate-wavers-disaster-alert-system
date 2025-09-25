@@ -188,6 +188,7 @@ class CommentSerializer(serializers.ModelSerializer):
     total_bookmarks = serializers.IntegerField(read_only=True)
     user = UserSerializer(read_only=True)
     post = PostSerializer(read_only=True)
+    post_id = serializers.IntegerField(write_only=True, required=False)
     is_reposted = serializers.SerializerMethodField()
     is_reacted = serializers.SerializerMethodField()
     is_bookmarked = serializers.SerializerMethodField()
@@ -224,6 +225,17 @@ class CommentSerializer(serializers.ModelSerializer):
         user = self.get_user_from_context()
         if user and user.is_authenticated:
             validated_data["user"] = user
+        
+        # Handle post_id if provided
+        post_id = validated_data.pop('post_id', None)
+        if post_id:
+            from .models import Post
+            try:
+                post = Post.objects.get(id=post_id)
+                validated_data['post'] = post
+            except Post.DoesNotExist:
+                raise serializers.ValidationError("Post not found")
+        
         return super().create(validated_data)
 
 

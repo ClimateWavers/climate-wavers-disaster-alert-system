@@ -2,8 +2,13 @@ import React from 'react';
 import { useTrending } from '../hooks/useTrending';
 import RealtimeIndicator from './RealtimeIndicator';
 
-const Trending = () => {
-  const { data: trendingData, isLoading, error, isFetching } = useTrending();
+const Trending = ({ trendingData: propTrendingData, isLoading: propIsLoading, error: propError }) => {
+  const { data: hookTrendingData, isLoading: hookIsLoading, error: hookError, isFetching } = useTrending();
+  
+  // Use props if provided, otherwise use hook data
+  const trendingData = propTrendingData || hookTrendingData;
+  const isLoading = propIsLoading !== undefined ? propIsLoading : hookIsLoading;
+  const error = propError || hookError;
 
   if (isLoading) {
     return (
