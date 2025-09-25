@@ -92,6 +92,10 @@ function App() {
               path="/app/:postId/:commentId/comments"
               element={<AuthComment type={"comments"} />}
             />
+            <Route
+              path="/app/post/:postId"
+              element={<AuthComment type={"post"} />}
+            />
           </Route>
           <Route path="/onboarding" element={<OnboardingLayout />}>
             <Route index element={<Welcome />} />

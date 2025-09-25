@@ -260,7 +260,18 @@ class FollowSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         # Add the user from the request context to the validated data
-        validated_data["follower"] = self.context["request"].user
+        follower = self.context["request"].user
+        following = validated_data.get("following")
+        
+        # Check if the follow relationship already exists
+        if Follow.objects.filter(follower=follower, following=following).exists():
+            raise serializers.ValidationError("You are already following this user.")
+        
+        # Check if user is trying to follow themselves
+        if follower == following:
+            raise serializers.ValidationError("You cannot follow yourself.")
+        
+        validated_data["follower"] = follower
         return super().create(validated_data)
 
 

@@ -97,6 +97,33 @@ class PostViewSet(viewsets.ModelViewSet):
         post.hashtags = post.extract_hashtags(post.content)
         post.save()
 
+    def destroy(self, request, *args, **kwargs):
+        """
+        Override destroy to ensure only the post owner can delete their posts.
+        """
+        post = self.get_object()
+        
+        # Check if user is authenticated
+        if not request.user.is_authenticated:
+            return Response(
+                {"detail": "Authentication required to delete posts."},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        # Check if user is the owner of the post
+        if post.user != request.user:
+            return Response(
+                {"detail": "You can only delete your own posts."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Delete the post
+        post.delete()
+        return Response(
+            {"detail": "Post deleted successfully."},
+            status=status.HTTP_200_OK
+        )
+
     def get_queryset(self):
         """
         Override get_queryset to add annotations for comment, reaction, view, and repost counts.
@@ -346,9 +373,29 @@ class UserViewSet(viewsets.ModelViewSet):
         Custom action to follow a user.
         """
         user_to_follow = self.get_object()
-        Follow.objects.create(
-            follower=request.user, following=user_to_follow)
-        return Response({"status": f"following {user_to_follow.username}"})
+        
+        # Check if already following
+        if Follow.objects.filter(follower=request.user, following=user_to_follow).exists():
+            return Response(
+                {"detail": "You are already following this user."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if trying to follow self
+        if request.user == user_to_follow:
+            return Response(
+                {"detail": "You cannot follow yourself."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            Follow.objects.create(follower=request.user, following=user_to_follow)
+            return Response({"status": f"following {user_to_follow.username}"})
+        except Exception as e:
+            return Response(
+                {"detail": f"Error following user: {str(e)}"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
     def unfollow(self, request, pk=None):
@@ -496,6 +543,20 @@ class FollowViewSet(viewsets.ModelViewSet):
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
     permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        try:
+            return super().create(request, *args, **kwargs)
+        except Exception as e:
+            if "UNIQUE constraint failed" in str(e) or "already following" in str(e):
+                return Response(
+                    {"detail": "You are already following this user."}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            return Response(
+                {"detail": f"Error creating follow relationship: {str(e)}"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     def destroy(self, request, *args, **kwargs):
         following_id = kwargs.get('pk')

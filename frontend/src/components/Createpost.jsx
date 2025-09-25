@@ -897,7 +897,7 @@ export default function Createpost({ type, postId, parentId, closeModal }) {
 
 Createpost.propTypes = {
   closeModal: PropTypes.func,
-  postId: PropTypes.string,
+  postId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   type: PropTypes.string,
-  parentId: PropTypes.string,
+  parentId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };

@@ -465,8 +465,8 @@ const Createcomment = ({ type, postId, parentId, button = "reply" }) => {
 };
 
 Createcomment.propTypes = {
-  postId: PropTypes.string,
-  parentId: PropTypes.string,
+  postId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  parentId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   type: PropTypes.string,
   button: PropTypes.string,
   closeModal: PropTypes.func,

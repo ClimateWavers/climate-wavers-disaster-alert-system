@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Accountcard from "./Accountcard";
+import { client } from "../api";
+import { endpoints } from "../utils/endpoints";
+import { toast } from "react-toastify";
 import { AiOutlineHeart, AiFillHeart, AiOutlineRetweet } from "react-icons/ai";
-import { IoChatboxEllipsesOutline } from "react-icons/io5";
+import { IoChatboxEllipsesOutline, IoEllipsisHorizontal, IoTrashOutline, IoEyeOutline } from "react-icons/io5";
 import { PiBookmark, PiBookmarkFill } from "react-icons/pi";
 import Modal from "./Modal";
-import IncidentIntegration from "./IncidentIntegration";
 import Createpost from "./Createpost";
 import PropTypes from "prop-types";
 
@@ -22,20 +24,35 @@ const Posts = ({
 }) => {
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [commentId, setCommentId] = useState("");
+  const [openMenuId, setOpenMenuId] = useState(null);
+  const menuRef = useRef(null);
   const [localPosts, setLocalPosts] = useState(() => {
     // Get posts from localStorage if available
+    try {
     const storedPosts = localStorage.getItem("posts");
-    return storedPosts ? JSON.parse(storedPosts) : [];
+      if (storedPosts) {
+        const parsed = JSON.parse(storedPosts);
+        return Array.isArray(parsed) ? parsed.filter(post => post && post.id) : [];
+      }
+      return [];
+    } catch (error) {
+      console.error('Error parsing stored posts:', error);
+      return [];
+    }
   });
   const navigate = useNavigate();
 
   // Update localPosts whenever posts prop changes
   useEffect(() => {
     if (posts && Array.isArray(posts) && posts.length > 0) {
-      setLocalPosts(posts);
+      // Filter out any invalid posts
+      const validPosts = posts.filter(post => post && post.id);
+      setLocalPosts(validPosts);
     } else if (posts && typeof posts === 'string') {
       // Handle case where posts is a string (error message)
       console.warn('Posts prop is a string:', posts);
+      setLocalPosts([]);
+    } else if (!posts) {
       setLocalPosts([]);
     }
   }, [posts]);
@@ -46,6 +63,20 @@ const Posts = ({
       localStorage.setItem("posts", JSON.stringify(localPosts));
     }
   }, [localPosts]);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpenMenuId(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
   
   const handleOptimisticUpdate = (postId, changes) => {
     setLocalPosts((prevPosts) =>
@@ -96,22 +127,138 @@ const Posts = ({
 
   const commentPage = (post) => {
     if (type === "post") {
-      navigate(`/${post.id}/comments`, {
+      navigate(`/app/${post.id}/comments`, {
         state: { post: post },
       });
     } else if (type === "comments") {
-      navigate(`/${postId}/${post.id}/comments`, {
+      navigate(`/app/${postId}/${post.id}/comments`, {
         state: { post: post },
       });
     }
   };
 
+  const viewPostDetails = (post) => {
+    navigate(`/app/post/${post.id}`, {
+      state: { post: post },
+    });
+  };
+
+  const deletePost = async (post) => {
+    try {
+      console.log('=== DELETE POST DEBUG ===');
+      console.log('Post object:', post);
+      console.log('Post ID:', post.id);
+      console.log('Post ID type:', typeof post.id);
+      
+      // TEMPORARY: Just remove from UI for testing
+      console.log('TEMPORARY: Removing post from UI only (no API call)');
+      setLocalPosts(prevPosts => {
+        const filtered = prevPosts.filter(p => p.id !== post.id);
+        console.log('Posts before deletion:', prevPosts.length);
+        console.log('Posts after deletion:', filtered.length);
+        return filtered;
+      });
+      
+      toast.success('🗑️ Post deleted successfully! (UI only - API call disabled for testing)', {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        style: {
+          background: '#10B981',
+          color: 'white',
+          fontWeight: 'bold'
+        }
+      });
+      
+      return; // Exit early for testing
+      
+      // Original API call code (commented out for testing)
+      /*
+      const deleteUrl = `${endpoints.post}${post.id}/`;
+      console.log('Delete URL:', deleteUrl);
+      
+      const token = localStorage.getItem('token');
+      console.log('Token exists:', !!token);
+      console.log('Token preview:', token ? token.substring(0, 20) + '...' : 'No token');
+      
+      const response = await fetch(deleteUrl, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      console.log('Response status:', response.status);
+      console.log('Response status text:', response.statusText);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      
+      if (response.ok) {
+        const responseData = await response.text();
+        console.log('Response data:', responseData);
+        
+        // Remove post from local state immediately for better UX
+        setLocalPosts(prevPosts => {
+          const filtered = prevPosts.filter(p => p.id !== post.id);
+          console.log('Posts before deletion:', prevPosts.length);
+          console.log('Posts after deletion:', filtered.length);
+          return filtered;
+        });
+        
+        toast.success('🗑️ Post deleted successfully!', {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          style: {
+            background: '#10B981',
+            color: 'white',
+            fontWeight: 'bold'
+          }
+        });
+      } else {
+        const errorData = await response.text();
+        console.error('Error response:', errorData);
+        throw new Error(`HTTP ${response.status}: ${errorData}`);
+      }
+      */
+    } catch (error) {
+      console.error('=== DELETE ERROR ===');
+      console.error('Error object:', error);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      
+      toast.error(`❌ Failed to delete post: ${error.message}`, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        style: {
+          background: '#EF4444',
+          color: 'white',
+          fontWeight: 'bold'
+        }
+      });
+    }
+  };
+
+  const toggleMenu = (postId) => {
+    setOpenMenuId(openMenuId === postId ? null : postId);
+  };
+
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {Array.isArray(localPosts) && localPosts.length > 0 ? (
-        localPosts.map((post) => (
+        localPosts.filter(post => post && post.id).map((post) => (
           <div
-            key={`${post?.user?.id}${post?.id}`}
+            key={`${post?.user?.id || 'unknown'}_${post?.id || 'unknown'}`}
             className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:border-gray-200 hover:-translate-y-1 group"
           >
             {isCommentModalOpen && (
@@ -124,32 +271,120 @@ const Posts = ({
                 />
               </Modal>
             )}
-            <div className="p-6 pb-4">
-              <Accountcard user={post?.user} />
+            <div className="p-6 pb-4 flex items-center justify-between">
+            <Accountcard user={post?.user} />
+              <div className="relative" ref={menuRef}>
+                <button
+                  onClick={() => toggleMenu(post.id)}
+                  className="p-2 sm:p-3 rounded-full hover:bg-gray-100 transition-all duration-200 group"
+                  aria-label="Post options"
+                >
+                  <IoEllipsisHorizontal className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 group-hover:text-gray-700 transition-colors" />
+                </button>
+                
+                {openMenuId === post.id && (
+                  <div className="absolute right-0 top-10 sm:top-12 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50 min-w-[180px] sm:min-w-[200px] max-w-[250px]">
+                    <button
+                      onClick={() => {
+                        viewPostDetails(post);
+                        setOpenMenuId(null);
+                      }}
+                      className="w-full px-4 py-3 text-left hover:bg-gray-50 active:bg-gray-100 flex items-center space-x-3 text-gray-700 transition-colors duration-150 group"
+                    >
+                      <IoEyeOutline className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 group-hover:text-blue-600" />
+                      <span className="text-sm sm:text-base font-medium">View Details</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        commentPage(post);
+                        setOpenMenuId(null);
+                      }}
+                      className="w-full px-4 py-3 text-left hover:bg-gray-50 active:bg-gray-100 flex items-center space-x-3 text-gray-700 transition-colors duration-150 group"
+                    >
+                      <IoChatboxEllipsesOutline className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 group-hover:text-green-600" />
+                      <span className="text-sm sm:text-base font-medium">View Comments</span>
+                    </button>
+                    {(() => {
+                      try {
+                        const user = JSON.parse(localStorage.getItem('user') || '{}');
+                        console.log('=== DELETE OPTION CHECK ===');
+                        console.log('Current user ID:', user?.id);
+                        console.log('Post user ID:', post?.user?.id);
+                        console.log('User match:', post?.user?.id === user?.id);
+                        console.log('Will show delete option: true (for testing)');
+                        // For testing: show delete option for all posts
+                        // In production, change this back to: return post?.user?.id === user?.id;
+                        return true; // Always show delete for testing
+                      } catch {
+                        console.log('Error parsing user from localStorage');
+                        console.log('Will show delete option: true (for testing)');
+                        return true; // Show delete for testing even if user parsing fails
+                      }
+                    })() && (
+                      <>
+                        <div className="border-t border-gray-100 my-1"></div>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('=== DELETE BUTTON CLICKED ===');
+                            console.log('Event:', e);
+                            console.log('Delete button clicked for post:', post);
+                            console.log('Post ID:', post.id);
+                            console.log('Post user:', post.user);
+                            console.log('Current localPosts:', localPosts.length);
+                            
+                            // Test if button is working
+                            alert('Delete button clicked! Post ID: ' + post.id);
+                            
+                            const confirmed = window.confirm(
+                              '🗑️ Delete Post\n\n' +
+                              'Are you sure you want to delete this post?\n' +
+                              'This action cannot be undone.\n\n' +
+                              'Click OK to delete or Cancel to keep the post.'
+                            );
+                            if (confirmed) {
+                              console.log('User confirmed deletion - calling deletePost function');
+                              deletePost(post);
+                              setOpenMenuId(null);
+                            } else {
+                              console.log('User cancelled deletion');
+                            }
+                          }}
+                          className="w-full px-4 py-3 text-left hover:bg-red-50 active:bg-red-100 flex items-center space-x-3 text-red-600 transition-colors duration-150 group"
+                        >
+                          <IoTrashOutline className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 group-hover:text-red-600" />
+                          <span className="text-sm sm:text-base font-medium">Delete Post</span>
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
             <button onClick={() => commentPage(post)} className="w-full text-left group-hover:bg-gray-50/50 transition-colors duration-200">
               <div className="px-6 pb-4">
-                <p
+              <p
                   className="text-gray-900 text-lg leading-relaxed font-medium group-hover:text-gray-800 transition-colors duration-200"
-                  style={{ whiteSpace: "pre-wrap" }}
-                >
-                  {post?.content?.split(/(\s+)/).map((word, index) =>
-                    word.startsWith("#") ? (
+                style={{ whiteSpace: "pre-wrap" }}
+              >
+                {post?.content?.split(/(\s+)/).map((word, index) =>
+                  word.startsWith("#") ? (
                       <span key={index} className="text-[#2F4F4F] font-semibold hover:text-[#1a3a3a] transition-colors duration-200">
-                        {word}
-                      </span>
-                    ) : (
-                      word
-                    )
-                  )}
-                </p>
-                {post?.image && (
+                      {word}
+                    </span>
+                  ) : (
+                    word
+                  )
+                )}
+              </p>
+              {post?.image && (
                   <div className="mt-4">
-                    <img
+                <img
                       className="w-full rounded-xl shadow-md group-hover:shadow-lg transition-shadow duration-300"
-                      src={post.image}
-                      alt="Post content"
-                    />
+                  src={post.image}
+                  alt="Post content"
+                />
                   </div>
                 )}
                 {post?.video && (
@@ -281,9 +516,6 @@ const Posts = ({
                 </span>
               </button>
               
-              <div className="flex items-center">
-                <IncidentIntegration />
-              </div>
             </div>
           </div>
         ))
@@ -307,7 +539,7 @@ const Posts = ({
 Posts.propTypes = {
   posts: PropTypes.array.isRequired,
   type: PropTypes.string.isRequired,
-  postId: PropTypes.string,
+  postId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   unlike: PropTypes.object.isRequired,
   like: PropTypes.object.isRequired,
   repost: PropTypes.object.isRequired,

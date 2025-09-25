@@ -36,7 +36,7 @@ const CommentPost = ({ type, postId }) => {
 };
 
 CommentPost.propTypes = {
-  postId: PropTypes.number,
+  postId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   type: PropTypes.string,
 };
 

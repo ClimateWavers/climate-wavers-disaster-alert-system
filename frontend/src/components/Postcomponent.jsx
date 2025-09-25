@@ -55,7 +55,7 @@ const Postcomponent = ({ type, postId, comment }) => {
 Postcomponent.propTypes = {
   type: PropTypes.string,
   comment: PropTypes.string,
-  postId: PropTypes.string,
+  postId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export default Postcomponent;
