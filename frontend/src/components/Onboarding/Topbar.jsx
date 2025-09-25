@@ -4,6 +4,7 @@ import Modal from "../Modal";
 import Report from "../Report";
 import { NavLink } from "react-router-dom";
 import { IoIosNotifications, IoIosNotificationsOutline } from "react-icons/io";
+import { IoNotifications, IoNotificationsOutline } from "react-icons/io5";
 import { MdOutlineAddAlarm } from "react-icons/md";
 
 const Topbar = () => {
@@ -54,13 +55,13 @@ const Topbar = () => {
             {({ isActive }) => (
               <div className="w-[200%] md:px-4  flex relative">
                 {isActive ? (
-                  <IoIosNotifications
+                  <IoNotifications
                     className=" w-12"
                     size={40}
                     color="#2F4F4F"
                   />
                 ) : (
-                  <IoIosNotificationsOutline className="w-12" size={40} />
+                  <IoNotificationsOutline className="w-12" size={40} />
                 )}
               </div>
             )}

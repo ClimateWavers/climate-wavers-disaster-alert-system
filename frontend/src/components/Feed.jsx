@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Posts from "./Posts";
+import ProfileContent from "./ProfileContent";
 import { usePostMutations } from "../hooks/usePostMutations";
 import { stripLastS } from "../utils/factory";
 
-const Feed = ({ feeds, feedData, activeFeed, setActiveFeed, isLoading, error }) => {
+const Feed = ({ feeds, feedData, activeFeed, setActiveFeed, isLoading, error, trendingData, trendingLoading, trendingError }) => {
   const [feed, setFeed] = useState(activeFeed || "Trending");
 
   const {
@@ -69,13 +70,27 @@ const Feed = ({ feeds, feedData, activeFeed, setActiveFeed, isLoading, error }) 
       {/* Content based on feed type */}
       {!isLoading && !error && feedData && (
         <div className="mt-4">
-          {feed === "Trending" ? (
+          {feed === "trending" || feed === "Trending" ? (
             // For trending, show trending hashtags in a clean layout
             <div className="p-3 sm:p-4 bg-white rounded-lg shadow-sm border border-gray-200">
               <div className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 font-medium">Real-time trending topics:</div>
-              {Array.isArray(feedData) && feedData.length > 0 ? (
+              {trendingLoading ? (
                 <div className="space-y-2 sm:space-y-3">
-                  {feedData.slice(0, 5).map((item, index) => (
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-100 rounded w-1/2"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : trendingError ? (
+                <div className="text-center py-6 sm:py-8">
+                  <div className="text-red-500 text-sm sm:text-base">Failed to load trending topics</div>
+                  <div className="text-gray-400 text-xs sm:text-sm mt-1">Please try again later</div>
+                </div>
+              ) : Array.isArray(trendingData) && trendingData.length > 0 ? (
+                <div className="space-y-2 sm:space-y-3">
+                  {trendingData.slice(0, 5).map((item, index) => (
                     <div key={index} className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg border">
                       <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
                         <div className="flex items-center justify-center w-5 h-5 sm:w-6 sm:h-6 bg-[#2F4F4F] text-white text-xs font-bold rounded-full flex-shrink-0">
@@ -98,33 +113,89 @@ const Feed = ({ feeds, feedData, activeFeed, setActiveFeed, isLoading, error }) 
               )}
             </div>
           ) : (
-            // For other feeds, show posts
+            // For profile feeds, show different content types
             <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              {feedData?.latest_posts && feedData.latest_posts.length > 0 ? (
-                <div className="divide-y divide-gray-100">
-                  {feedData.latest_posts.map((post) => (
-                    <div key={post.id} className="p-3 sm:p-4">
-              <Posts
-                        posts={[post]}
-                        type="post"
-                        postId=""
-                unlike={unlikeMutation}
-                like={likeMutation}
-                repost={repostMutation}
-                unrepost={unrepostMutation}
-                save={saveMutation}
-                unsave={unsaveMutation}
-              />
-            </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="p-6 sm:p-8 text-center">
-                  <div className="text-gray-500 text-base sm:text-lg font-medium">No {feed} posts found</div>
-                  <div className="text-gray-400 text-sm mt-2">Posts with #{feed} hashtag will appear here</div>
-                  <div className="text-gray-300 text-xs mt-1">Create posts with the #{feed} hashtag to see them here</div>
-                </div>
-              )}
+              {(() => {
+                // Get the appropriate data based on feed type
+                let contentData = [];
+                let contentType = "post";
+                
+                switch (feed) {
+                  case "post":
+                    contentData = feedData?.post || [];
+                    contentType = "post";
+                    break;
+          case "comments":
+            contentData = feedData?.comments || [];
+            contentType = "comment";
+            console.log("Comments feed data:", { contentData, contentType, feedData });
+            break;
+                  case "reposts":
+                    contentData = feedData?.reposts || [];
+                    contentType = "repost";
+                    break;
+                  case "bookmarks":
+                    contentData = feedData?.bookmarks || [];
+                    contentType = "bookmark";
+                    break;
+                  case "likes":
+                    contentData = feedData?.likes || [];
+                    contentType = "reaction";
+                    break;
+                  case "polls":
+                    contentData = feedData?.polls || [];
+                    contentType = "poll";
+                    break;
+                  default:
+                    contentData = feedData?.post || [];
+                    contentType = "post";
+                }
+                
+                console.log(`Rendering ${feed} feed:`, { contentData, contentType });
+                
+                if (contentData && contentData.length > 0) {
+                  return (
+                    <div className="grid gap-6 md:gap-8">
+                      {contentData.map((item, index) => (
+                        <div key={item.id || index} className="w-full">
+                          <ProfileContent
+                            content={item}
+                            type={contentType}
+                            onLike={likeMutation.mutate}
+                            onUnlike={unlikeMutation.mutate}
+                            onRepost={repostMutation.mutate}
+                            onUnrepost={unrepostMutation.mutate}
+                            onSave={saveMutation.mutate}
+                            onUnsave={unsaveMutation.mutate}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center">
+                      <div className="mb-4">
+                        {feed === "post" && "📝"}
+                        {feed === "comments" && "💬"}
+                        {feed === "reposts" && "🔄"}
+                        {feed === "bookmarks" && "🔖"}
+                        {feed === "likes" && "❤️"}
+                        {feed === "polls" && "📊"}
+                      </div>
+                      <div className="text-gray-500 text-lg font-semibold mb-2">No {feed} found</div>
+                      <div className="text-gray-400 text-sm">
+                        {feed === "post" && "This user hasn't posted anything yet"}
+                        {feed === "comments" && "This user hasn't commented on anything yet"}
+                        {feed === "reposts" && "This user hasn't reposted anything yet"}
+                        {feed === "bookmarks" && "This user hasn't bookmarked anything yet"}
+                        {feed === "likes" && "This user hasn't liked anything yet"}
+                        {feed === "polls" && "This user hasn't created any polls yet"}
+                      </div>
+                    </div>
+                  );
+                }
+              })()}
             </div>
           )}
         </div>

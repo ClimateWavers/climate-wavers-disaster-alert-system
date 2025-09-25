@@ -1,9 +1,10 @@
 import { NavLink } from "react-router-dom";
 import Modal from "./Modal";
 import Createpost from "./Createpost";
-import { getUser } from "../utils/factory";
+import { getUser, logout } from "../utils/factory";
 import { MdOutlineCampaign, MdCampaign } from "react-icons/md";
 import { RiAlarmWarningFill, RiAlarmWarningLine } from "react-icons/ri";
+import { IoLogOutOutline, IoLogOut, IoNotifications, IoNotificationsOutline } from "react-icons/io5";
 import { useState, useEffect } from "react";
 
 const Menu = ({ setIsOpen }) => {
@@ -20,7 +21,7 @@ const Menu = ({ setIsOpen }) => {
     }`;
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full h-full">
       {/* Logo */}
       <div className="mb-6 pb-4 border-b border-gray-200">
         <h1 className="text-xl font-bold text-[#2F4F4F] leading-tight mb-2">Climate Wavers</h1>
@@ -136,11 +137,11 @@ const Menu = ({ setIsOpen }) => {
         >
           {({ isActive }) => (
             <>
-              <img
-                alt=""
-                src={isActive ? "../../img_notification_blue_gray_900.png" : "../../img_notification.svg"}
-                className="mr-3 w-5 h-5"
-              />
+              {isActive ? (
+                <IoNotifications className="mr-3 w-5 h-5" color="#2F4F4F" />
+              ) : (
+                <IoNotificationsOutline className="mr-3 w-5 h-5" color="#434343" />
+              )}
               Notifications
             </>
           )}
@@ -153,16 +154,32 @@ const Menu = ({ setIsOpen }) => {
           WaverX
         </NavLink>
       </div>
+      
       {/* Post btn */}
       <button
         // to={"./createpost"}
-        className="text-xl text-center font-semibold bg-[#2F4F4F] text-white shadow-xl self-center shadow-white-300 w-[80%] max-sm:w-[80%] py-4 rounded-3xl"
+        className="text-xl text-center font-semibold bg-[#2F4F4F] text-white shadow-xl self-center shadow-white-300 w-[80%] max-sm:w-[80%] py-4 rounded-3xl mb-4"
         onClick={() => {
           setIsModalOpen(true);
         }}
       >
         Post
       </button>
+      
+      {/* Logout Section - Moved to bottom for better visibility */}
+      <div className="mt-auto pt-4 border-t border-gray-200">
+        <button
+          onClick={() => {
+            if (window.confirm('Are you sure you want to logout?')) {
+              logout();
+            }
+          }}
+          className="flex items-center py-3 px-4 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-red-50 text-red-600 hover:text-red-700 cursor-pointer w-full border border-red-200 hover:border-red-300"
+        >
+          <IoLogOutOutline className="mr-3" size={20} />
+          <span className="font-semibold">Logout</span>
+        </button>
+      </div>
       {isModalOpen && (
         <Modal closeFn={() => setIsModalOpen(false)}>
           <Createpost

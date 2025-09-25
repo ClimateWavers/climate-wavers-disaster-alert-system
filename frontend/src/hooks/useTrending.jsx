@@ -7,7 +7,7 @@ const useTrending = () => {
     queryKey: ['trending'],
     queryFn: async () => {
       try {
-        const response = await client.run('get', `${endpoints.post}trending/`, {}, true);
+        const response = await client.run('get', '/api/v1/post/trending/', {}, true);
         return response;
       } catch (error) {
         console.error('Error fetching trending data:', error);

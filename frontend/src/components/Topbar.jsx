@@ -1,23 +1,41 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Mobilemenu from "./Mobilemenu";
-import { getUser } from "../utils/factory";
+import { getUser, logout } from "../utils/factory";
 import Modal from "../components/Modal";
 import Report from "./Report";
 import { NavLink } from "react-router-dom";
 import { IoIosNotifications, IoIosNotificationsOutline } from "react-icons/io";
+import { IoNotifications, IoNotificationsOutline } from "react-icons/io5";
 import { MdOutlineAddAlarm } from "react-icons/md";
+import { IoLogOutOutline, IoPersonOutline } from "react-icons/io5";
 import { useNotifications } from "../context/NotificationContext";
 
 const Topbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { hasNewNotification, markAsRead } = useNotifications();
+  const userMenuRef = useRef(null);
 
   const handleNotificationClick = () => {
     markAsRead();
   };
 
   const user = getUser();
+
+  // Handle click outside to close user menu
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="fixed z-50 bg-white flex items-center justify-between border-b border-gray-200 shadow-sm h-16 px-4 w-full">
@@ -66,13 +84,13 @@ const Topbar = () => {
             {({ isActive }) => (
               <div className="w-[200%] md:px-4  flex relative">
                 {isActive ? (
-                  <IoIosNotifications
+                  <IoNotifications
                     className=" w-12"
                     size={40}
                     color="#2F4F4F"
                   />
                 ) : (
-                  <IoIosNotificationsOutline
+                  <IoNotificationsOutline
                     className="w-12"
                     size={40}
                     onClick={handleNotificationClick}
@@ -92,14 +110,53 @@ const Topbar = () => {
           />
         </div>
 
-        <img
-          src={user?.profile_picture || "/avatar.png"}
-          className="ml-2 hidden md:flex self-end rounded-full h-12 w-12"
-          alt="Profile Pic"
-          onError={(e) => {
-            e.target.src = "/avatar.png";
-          }}
-        />
+        <div className="relative" ref={userMenuRef}>
+          <button
+            onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+            className="ml-2 hidden md:flex self-end rounded-full h-12 w-12 overflow-hidden hover:ring-2 hover:ring-[#2F4F4F] transition-all duration-200"
+          >
+            <img
+              src={user?.profile_picture || "/avatar.png"}
+              className="w-full h-full object-cover"
+              alt="Profile Pic"
+              onError={(e) => {
+                e.target.src = "/avatar.png";
+              }}
+            />
+          </button>
+          
+          {/* User Dropdown Menu */}
+          {isUserMenuOpen && (
+            <div className="absolute right-0 top-14 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50 min-w-[200px]">
+              <div className="px-4 py-3 border-b border-gray-100">
+                <p className="text-sm font-medium text-gray-900">{user?.first_name} {user?.last_name}</p>
+                <p className="text-xs text-gray-500">{user?.email}</p>
+              </div>
+              
+              <NavLink
+                to={`/app/${user?.id}/profile`}
+                className="flex items-center px-4 py-3 text-left hover:bg-gray-50 text-gray-700 transition-colors duration-150"
+                onClick={() => setIsUserMenuOpen(false)}
+              >
+                <IoPersonOutline className="w-4 h-4 mr-3 text-gray-500" />
+                <span className="text-sm font-medium">Profile</span>
+              </NavLink>
+              
+              <button
+                onClick={() => {
+                  if (window.confirm('Are you sure you want to logout?')) {
+                    logout();
+                  }
+                  setIsUserMenuOpen(false);
+                }}
+                className="w-full flex items-center px-4 py-3 text-left hover:bg-red-50 text-red-600 transition-colors duration-150"
+              >
+                <IoLogOutOutline className="w-4 h-4 mr-3" />
+                <span className="text-sm font-medium">Logout</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

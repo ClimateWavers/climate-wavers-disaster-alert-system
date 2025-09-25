@@ -126,21 +126,44 @@ const Posts = ({
   };
 
   const commentPage = (post) => {
+    try {
+      console.log('=== COMMENT PAGE CLICKED ===');
+      console.log('Post:', post);
+      console.log('Type:', type);
+      console.log('PostId:', postId);
+      
     if (type === "post") {
-      navigate(`/app/${post.id}/comments`, {
+        const path = `/app/${post.id}/comments`;
+        console.log('Navigating to:', path);
+        navigate(path, {
         state: { post: post },
       });
     } else if (type === "comments") {
-      navigate(`/app/${postId}/${post.id}/comments`, {
-        state: { post: post },
-      });
+        const path = `/app/${postId}/${post.id}/comments`;
+        console.log('Navigating to:', path);
+        navigate(path, {
+          state: { post: post },
+        });
+      }
+    } catch (error) {
+      console.error('Error in commentPage:', error);
+      alert('Error navigating to comments: ' + error.message);
     }
   };
 
   const viewPostDetails = (post) => {
-    navigate(`/app/post/${post.id}`, {
-      state: { post: post },
-    });
+    try {
+      console.log('=== VIEW POST DETAILS CLICKED ===');
+      console.log('Post:', post);
+      const path = `/app/post/${post.id}`;
+      console.log('Navigating to:', path);
+      navigate(path, {
+        state: { post: post },
+      });
+    } catch (error) {
+      console.error('Error in viewPostDetails:', error);
+      alert('Error navigating to post details: ' + error.message);
+    }
   };
 
   const deletePost = async (post) => {
@@ -150,33 +173,6 @@ const Posts = ({
       console.log('Post ID:', post.id);
       console.log('Post ID type:', typeof post.id);
       
-      // TEMPORARY: Just remove from UI for testing
-      console.log('TEMPORARY: Removing post from UI only (no API call)');
-      setLocalPosts(prevPosts => {
-        const filtered = prevPosts.filter(p => p.id !== post.id);
-        console.log('Posts before deletion:', prevPosts.length);
-        console.log('Posts after deletion:', filtered.length);
-        return filtered;
-      });
-      
-      toast.success('🗑️ Post deleted successfully! (UI only - API call disabled for testing)', {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        style: {
-          background: '#10B981',
-          color: 'white',
-          fontWeight: 'bold'
-        }
-      });
-      
-      return; // Exit early for testing
-      
-      // Original API call code (commented out for testing)
-      /*
       const deleteUrl = `${endpoints.post}${post.id}/`;
       console.log('Delete URL:', deleteUrl);
       
@@ -226,7 +222,6 @@ const Posts = ({
         console.error('Error response:', errorData);
         throw new Error(`HTTP ${response.status}: ${errorData}`);
       }
-      */
     } catch (error) {
       console.error('=== DELETE ERROR ===');
       console.error('Error object:', error);
@@ -285,7 +280,11 @@ const Posts = ({
                 {openMenuId === post.id && (
                   <div className="absolute right-0 top-10 sm:top-12 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50 min-w-[180px] sm:min-w-[200px] max-w-[250px]">
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('=== VIEW DETAILS BUTTON CLICKED ===');
+                        console.log('Post:', post);
                         viewPostDetails(post);
                         setOpenMenuId(null);
                       }}
@@ -295,7 +294,11 @@ const Posts = ({
                       <span className="text-sm sm:text-base font-medium">View Details</span>
                     </button>
                     <button
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('=== VIEW COMMENTS BUTTON CLICKED ===');
+                        console.log('Post:', post);
                         commentPage(post);
                         setOpenMenuId(null);
                       }}
@@ -306,17 +309,65 @@ const Posts = ({
                     </button>
                     {(() => {
                       try {
+                        // Check the correct localStorage key: 'user_info'
+                        const userInfo = JSON.parse(localStorage.getItem('user_info') || '{}');
                         const user = JSON.parse(localStorage.getItem('user') || '{}');
+                        const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
+                        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                        
                         console.log('=== DELETE OPTION CHECK ===');
-                        console.log('Current user ID:', user?.id);
+                        console.log('All localStorage keys:', Object.keys(localStorage));
+                        console.log('Raw localStorage user_info:', localStorage.getItem('user_info'));
+                        console.log('Raw localStorage user:', localStorage.getItem('user'));
+                        console.log('Raw localStorage authUser:', localStorage.getItem('authUser'));
+                        console.log('Raw localStorage currentUser:', localStorage.getItem('currentUser'));
+                        console.log('Raw localStorage token:', localStorage.getItem('token'));
+                        console.log('Parsed user_info:', userInfo);
+                        console.log('Parsed user:', user);
+                        console.log('Parsed authUser:', authUser);
+                        console.log('Parsed currentUser:', currentUser);
+                        
+                        // Check if user is logged in
+                        const isLoggedIn = !!(userInfo?.user_id || user?.id || authUser?.id || currentUser?.id);
+                        console.log('Is user logged in:', isLoggedIn);
+                        
+                        // Try to get user ID from the correct location: user_info
+                        const userId = userInfo?.user_id || userInfo?.id || userInfo?.user?.id || user?.id || authUser?.id || currentUser?.id;
+                        console.log('Current user ID (user_id):', userId);
                         console.log('Post user ID:', post?.user?.id);
-                        console.log('User match:', post?.user?.id === user?.id);
+                        console.log('Post user object:', post?.user);
+                        console.log('User match (exact):', post?.user?.id === userId);
+                        console.log('User match (string):', String(post?.user?.id) === String(userId));
+                        console.log('User match (number):', Number(post?.user?.id) === Number(userId));
                         console.log('Will show delete option: true (for testing)');
-                        // For testing: show delete option for all posts
-                        // In production, change this back to: return post?.user?.id === user?.id;
-                        return true; // Always show delete for testing
-                      } catch {
-                        console.log('Error parsing user from localStorage');
+                        
+                        // Check if we can match by email or other fields
+                        const userEmail = userInfo?.email;
+                        const postUserEmail = post?.user?.email;
+                        console.log('User email:', userEmail);
+                        console.log('Post user email:', postUserEmail);
+                        console.log('Email match:', userEmail === postUserEmail);
+                        
+                        // Check if this is the user's own post
+                        // Since we have different user systems, we'll use email matching for now
+                        const isOwnPost = userEmail === postUserEmail;
+                        console.log('Is own post:', isOwnPost);
+                        
+                        // Handle different scenarios
+                        if (!isLoggedIn) {
+                            console.log('User not logged in - hiding delete option');
+                            return false; // Don't show delete if not logged in
+                        }
+                        
+                        if (isOwnPost) {
+                            console.log('User owns this post - showing delete option');
+                            return true; // Show delete for own posts
+                        }
+                        
+                        console.log('User does not own this post - hiding delete option');
+                        return false; // Don't show delete for other users' posts
+                      } catch (error) {
+                        console.log('Error parsing user from localStorage:', error);
                         console.log('Will show delete option: true (for testing)');
                         return true; // Show delete for testing even if user parsing fails
                       }
@@ -333,9 +384,6 @@ const Posts = ({
                             console.log('Post ID:', post.id);
                             console.log('Post user:', post.user);
                             console.log('Current localPosts:', localPosts.length);
-                            
-                            // Test if button is working
-                            alert('Delete button clicked! Post ID: ' + post.id);
                             
                             const confirmed = window.confirm(
                               '🗑️ Delete Post\n\n' +

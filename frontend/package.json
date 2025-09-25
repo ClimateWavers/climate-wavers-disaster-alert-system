@@ -28,6 +28,7 @@
     "buffer": "^6.0.3",
     "cacheable-request": "^10.2.7",
     "chart.js": "^4.5.0",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.3.1",
     "emoji-picker-react": "^4.13.3",
     "firebase": "^10.12.3",

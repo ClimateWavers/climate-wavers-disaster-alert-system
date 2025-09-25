@@ -187,6 +187,7 @@ class CommentSerializer(serializers.ModelSerializer):
     total_reposts = serializers.IntegerField(read_only=True)
     total_bookmarks = serializers.IntegerField(read_only=True)
     user = UserSerializer(read_only=True)
+    post = PostSerializer(read_only=True)
     is_reposted = serializers.SerializerMethodField()
     is_reacted = serializers.SerializerMethodField()
     is_bookmarked = serializers.SerializerMethodField()

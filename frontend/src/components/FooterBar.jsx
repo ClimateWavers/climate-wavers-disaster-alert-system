@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import { getUser } from "../utils/factory";
 import { MdOutlineCampaign, MdCampaign } from "react-icons/md";
 import { RiAlarmWarningFill, RiAlarmWarningLine } from "react-icons/ri";
+import { IoNotifications, IoNotificationsOutline } from "react-icons/io5";
 import { useState, useEffect } from "react";
 
 const Footer = () => {
@@ -129,11 +130,11 @@ const Footer = () => {
           end
         >
           {({ isActive }) => (
-            <img
-              alt=""
-              src={isActive ? "../../img_notification_blue_gray_900.png" : "../../img_notification.svg"}
-              className="w-[30px] h-[30px] object-contain"
-            />
+            isActive ? (
+              <IoNotifications className="w-[30px] h-[30px]" size={30} color="#2F4F4F" />
+            ) : (
+              <IoNotificationsOutline className="w-[30px] h-[30px]" size={30} color="#434343" />
+            )
           )}
         </NavLink>
        

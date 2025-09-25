@@ -7,6 +7,10 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from django.http import Http404
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+import json
 from .models import (
     Notification,
     Post,
@@ -321,6 +325,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 total_reposts=Count('reposts', distinct=True),
                 total_bookmarks=Count('bookmarks', distinct=True)
             )
+            print(f"DEBUG: Found {posts.count()} posts for user {user.id} ({user.username})")
             comments = Comment.objects.filter(user=user).annotate(
                 total_comments=Count('subcomments', distinct=True),
                 total_reactions=Count('reactions', distinct=True),
@@ -346,6 +351,9 @@ class UserViewSet(viewsets.ModelViewSet):
             bookmarks_data = BookmarkSerializer(bookmarks, many=True, context={'request': request}).data
             polls_data = PollSerializer(polls, many=True, context={'request': request}).data
             user_data = UserSerializer(user, context={'request': request}).data
+            
+            print(f"DEBUG: Serialized data counts - Posts: {len(posts_data)}, Comments: {len(comments_data)}, Reactions: {len(reactions_data)}")
+            print(f"DEBUG: Reposts: {len(reposts_data)}, Bookmarks: {len(bookmarks_data)}, Polls: {len(polls_data)}")
             
             response_data = {
                 "posts": posts_data,
@@ -613,3 +621,27 @@ class PollVoteViewSet(viewsets.ModelViewSet):
 
 def status_view(request):
     return JsonResponse({"status": "up"})
+
+# Simple WebSocket endpoint for notifications
+@csrf_exempt
+@require_http_methods(["GET"])
+def websocket_notifications(request):
+    """
+    Simple WebSocket-like endpoint for notifications.
+    This is a fallback for when WebSocket support is not available.
+    """
+    try:
+        # Get user from token
+        token = request.GET.get('token')
+        if not token:
+            return JsonResponse({"error": "Token required"}, status=401)
+        
+        # For now, return a simple response
+        # In a real implementation, you'd validate the JWT token
+        return JsonResponse({
+            "type": "notification",
+            "message": "WebSocket connection established",
+            "status": "connected"
+        })
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

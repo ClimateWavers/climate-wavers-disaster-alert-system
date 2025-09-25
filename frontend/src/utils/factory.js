@@ -61,6 +61,25 @@ export const getAuthToken = () => {
   return token;
 };
 
+export const logout = () => {
+  // Clear all authentication data
+  Cookies.remove("accessToken");
+  Cookies.remove("user");
+  Cookies.remove("email");
+  Cookies.remove("csrftoken");
+  
+  // Clear localStorage data
+  localStorage.removeItem("user_info");
+  localStorage.removeItem("user");
+  localStorage.removeItem("authUser");
+  localStorage.removeItem("currentUser");
+  localStorage.removeItem("token");
+  localStorage.removeItem("posts");
+  
+  // Redirect to login page
+  window.location.href = "/login";
+};
+
 export const authRequest = (fn) => {
   try {
     return fn();

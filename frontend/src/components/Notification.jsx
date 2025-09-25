@@ -39,16 +39,85 @@ const Notification = () => {
   }, []);
 
   useEffect(() => {
-    const djangoSocket = new WebSocket(`${backendSocket}?token=${token}`);
-
-    djangoSocket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data) {
-        receiveNewNotification();
-        setNotifications((prev) => [...prev, data]);
+    // Try WebSocket connection first
+    const tryWebSocketConnection = async () => {
+      try {
+        console.log('Attempting WebSocket connection...');
+        
+        // Use the new WebSocket-like endpoint
+        const wsUrl = `${import.meta.env.VITE_APP_BACKEND_URL || 'http://127.0.0.1:8000'}/api/v1/ws/notifications/?token=${token}`;
+        console.log('WebSocket URL:', wsUrl);
+        
+        const response = await fetch(wsUrl);
+        const data = await response.json();
+        
+        if (response.ok) {
+          console.log('WebSocket connection established:', data);
+          // Connection successful, start polling for notifications
+          return startNotificationPolling();
+        } else {
+          console.log('WebSocket connection failed, using polling fallback');
+          return startNotificationPolling();
+        }
+      } catch (error) {
+        console.log('WebSocket connection error, using polling fallback:', error);
+        return startNotificationPolling();
       }
     };
-  }, [backendSocket, token, receiveNewNotification]);
+    
+    const startNotificationPolling = () => {
+      console.log('Starting notification polling...');
+      
+      // Use polling to check for new notifications
+      const pollInterval = setInterval(async () => {
+        try {
+          console.log('Polling for notifications...');
+          const url = endpoints["notifications"];
+          const res = await client.run("get", url, {}, true);
+          console.log('Notifications response:', res);
+          
+          if (res && res.length > 0) {
+            setNotifications(prev => {
+              const existingIds = new Set(prev.map(n => n.id));
+              const newNotifications = res.filter(n => !existingIds.has(n.id));
+              if (newNotifications.length > 0) {
+                console.log('New notifications found:', newNotifications);
+                receiveNewNotification();
+              }
+              return [...prev, ...newNotifications];
+            });
+          } else {
+            console.log('No notifications found');
+          }
+        } catch (error) {
+          console.log('Polling for notifications failed:', error);
+        }
+      }, 30000); // Poll every 30 seconds
+      
+      return pollInterval;
+    };
+    
+    let pollInterval = null;
+    
+    // Start polling immediately and also try WebSocket
+    const immediatePoll = startNotificationPolling();
+    
+    tryWebSocketConnection().then(interval => {
+      if (interval) {
+        // Clear the immediate poll and use the WebSocket-based poll
+        clearInterval(immediatePoll);
+        pollInterval = interval;
+      } else {
+        pollInterval = immediatePoll;
+      }
+    });
+    
+    return () => {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+      }
+    };
+  }, [receiveNewNotification, token]);
 
   const noticeUrl = (notice) => {
     if (notice?.content?.post) {

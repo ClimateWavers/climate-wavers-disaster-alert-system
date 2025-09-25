@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import Feed from "./Feed";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProfile } from "../hooks/useProfile";
+import { useTrending } from "../hooks/useTrending";
 import { endpoints } from "../utils/endpoints";
 import { client } from "../api";
 import { getUser } from "../utils/factory";
@@ -25,6 +26,19 @@ const Profile = () => {
     user_id: userId,
   });
 
+  const {
+    data: trendingData,
+    isLoading: trendingLoading,
+    error: trendingError,
+  } = useTrending();
+
+  // Debug trending data
+  useEffect(() => {
+    console.log("Trending data:", trendingData);
+    console.log("Trending loading:", trendingLoading);
+    console.log("Trending error:", trendingError);
+  }, [trendingData, trendingLoading, trendingError]);
+
   const profileFeeds = [
     "post",
     "comments",
@@ -32,10 +46,15 @@ const Profile = () => {
     "bookmarks",
     "likes",
     "polls",
+    "trending",
   ];
 
   useEffect(() => {
     if (isFetched) {
+      console.log("Profile data received:", user);
+      console.log("User data:", user.user);
+      console.log("Posts data:", user.posts);
+      console.log("Comments data:", user.comments);
       setProfile(user.user);
       setIsFollow(user.user?.is_following)
       const feeds = {
@@ -46,6 +65,7 @@ const Profile = () => {
         likes: user.reactions,
         polls: user.polls,
       };
+      console.log("Feeds data:", feeds);
       setFeed(feeds);
     }
 
@@ -147,7 +167,13 @@ const Profile = () => {
           </p>
         </div>
       </div>
-      <Feed feeds={profileFeeds} feedData={feed} />
+      <Feed 
+        feeds={profileFeeds} 
+        feedData={feed} 
+        trendingData={trendingData}
+        trendingLoading={trendingLoading}
+        trendingError={trendingError}
+      />
     </div>
   );
 };

@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     PostViewSet, PollViewSet, PollVoteViewSet, CommentViewSet,
     ReactionViewSet, RepostViewSet, ViewViewSet, FollowViewSet,
-    BookmarkViewSet, UserViewSet, NotificationListView, MarkNotificationsAsReadView, status_view
+    BookmarkViewSet, UserViewSet, NotificationListView, MarkNotificationsAsReadView, 
+    status_view, websocket_notifications
 )
 from .ai_views import generate_content, analyze_content, generate_hashtags
 
@@ -42,4 +43,7 @@ urlpatterns = [
     path('ai/generate-content/', generate_content, name='generate_content'),
     path('ai/analyze-content/', analyze_content, name='analyze_content'),
     path('ai/generate-hashtags/', generate_hashtags, name='generate_hashtags'),
+    
+    # WebSocket-like endpoint for notifications
+    path('ws/notifications/', websocket_notifications, name='websocket_notifications'),
 ]
