@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { formatDistanceToNow } from "date-fns";
 import Accountcard from "./Accountcard";
 import { client } from "../api";
 import { endpoints } from "../utils/endpoints";
@@ -251,7 +252,14 @@ const Posts = ({
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
       {Array.isArray(localPosts) && localPosts.length > 0 ? (
-        localPosts.filter(post => post && post.id).map((post) => (
+        localPosts
+          .filter(post => post && post.id)
+          .sort((a, b) => {
+            const dateA = new Date(a.created_at || a.date_created || 0);
+            const dateB = new Date(b.created_at || b.date_created || 0);
+            return dateB - dateA; // Newest first
+          })
+          .map((post) => (
           <div
             key={`${post?.user?.id || 'unknown'}_${post?.id || 'unknown'}`}
             className="bg-white rounded-2xl shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:border-gray-200 hover:-translate-y-1 group"
@@ -410,6 +418,36 @@ const Posts = ({
                 )}
               </div>
             </div>
+            
+            {/* Date/Time and Location Display */}
+            <div className="px-6 pb-2">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2 text-sm text-gray-500">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 001.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                    </svg>
+                    <span>{formatDistanceToNow(new Date(post?.created_at), { addSuffix: true })}</span>
+                  </div>
+                  
+                  {post?.location && (
+                    <div className="flex items-center space-x-2 text-sm text-blue-600">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                      </svg>
+                      <span className="font-medium">{post.location}</span>
+                    </div>
+                  )}
+                </div>
+                
+                {post?.location && (
+                  <div className="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-medium rounded-full border border-blue-200">
+                    📍 Location Shared
+                  </div>
+                )}
+              </div>
+            </div>
+            
             <button onClick={() => commentPage(post)} className="w-full text-left group-hover:bg-gray-50/50 transition-colors duration-200">
               <div className="px-6 pb-4">
               <p
@@ -480,6 +518,7 @@ const Posts = ({
                     </div>
                   </div>
                 )}
+                
               </div>
             </button>
             <div className="flex items-center justify-between px-6 py-4 border-t border-gray-100 bg-gray-50/30">

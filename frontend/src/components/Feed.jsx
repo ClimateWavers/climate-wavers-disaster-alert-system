@@ -154,9 +154,16 @@ const Feed = ({ feeds, feedData, activeFeed, setActiveFeed, isLoading, error, tr
                 console.log(`Rendering ${feed} feed:`, { contentData, contentType });
                 
                 if (contentData && contentData.length > 0) {
+                  // Sort posts by creation date (newest first)
+                  const sortedContent = [...contentData].sort((a, b) => {
+                    const dateA = new Date(a.created_at || a.date_created || 0);
+                    const dateB = new Date(b.created_at || b.date_created || 0);
+                    return dateB - dateA; // Newest first
+                  });
+
                   return (
                     <div className="grid gap-6 md:gap-8">
-                      {contentData.map((item, index) => (
+                      {sortedContent.map((item, index) => (
                         <div key={item.id || index} className="w-full">
                           <ProfileContent
                             content={item}
