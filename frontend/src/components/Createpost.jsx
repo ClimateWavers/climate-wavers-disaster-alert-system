@@ -1,26 +1,382 @@
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { client } from "../api";
 import { endpoints } from "../utils/endpoints";
 import { getUser } from "../utils/factory";
 import { uploadFiles } from "../services/upload.service";
-import { IoSend } from "react-icons/io5";
+import { getAuthToken } from "../utils/factory";
+import { toast } from "react-toastify";
+import EmojiPicker from "emoji-picker-react";
+import { IoSend, IoCloseSharp, IoLocationOutline, IoHappyOutline, IoVideocamOutline, IoImageOutline, IoSparklesOutline } from "react-icons/io5";
+import { MdEmojiEmotions, MdLocationOn, MdVideocam, MdImage, MdAutoAwesome } from "react-icons/md";
 
 export default function Createpost({ type, postId, parentId, closeModal }) {
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset, watch, setValue } = useForm();
   const [imagePreview, setImagePreview] = useState(null);
+  const [videoPreview, setVideoPreview] = useState(null);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
+  const [showAIFeatures, setShowAIFeatures] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [aiSuggestions, setAiSuggestions] = useState([]);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [locationError, setLocationError] = useState(null);
+  const [aiGeneratedContent, setAiGeneratedContent] = useState("");
+  const [isGeneratingContent, setIsGeneratingContent] = useState(false);
+  const fileInputRef = useRef(null);
+  const videoInputRef = useRef(null);
+  const aiPromptRef = useRef(null);
   const user = getUser();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImagePreview(URL.createObjectURL(file));
+      setVideoPreview(null); // Clear video if image is selected
     } else {
       setImagePreview(null);
     }
   };
+
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setVideoPreview(URL.createObjectURL(file));
+      setImagePreview(null); // Clear image if video is selected
+    } else {
+      setVideoPreview(null);
+    }
+  };
+
+  const handleEmojiClick = (emoji) => {
+    const currentContent = watch("content") || "";
+    setValue("content", currentContent + emoji);
+    setShowEmojiPicker(false);
+  };
+
+  const handleLocationSelect = async (location) => {
+    if (location.type === "current") {
+      await getCurrentLocation();
+    } else {
+      setSelectedLocation(location);
+      setValue("location", location.name);
+      setShowLocationPicker(false);
+    }
+  };
+
+  const getCurrentLocation = async () => {
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported by this browser.");
+      return;
+    }
+
+    setIsGettingLocation(true);
+    setLocationError(null);
+
+    try {
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        });
+      });
+
+      const { latitude, longitude } = position.coords;
+      
+      // Reverse geocoding to get address
+      const address = await reverseGeocode(latitude, longitude);
+      
+      const currentLocation = {
+        name: address || `Current Location (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`,
+        type: "current",
+        coordinates: { latitude, longitude },
+        address
+      };
+
+      setSelectedLocation(currentLocation);
+      setValue("location", currentLocation.name);
+      setShowLocationPicker(false);
+    } catch (error) {
+      console.error("Error getting location:", error);
+      setLocationError("Unable to get your current location. Please try again or select a city manually.");
+    } finally {
+      setIsGettingLocation(false);
+    }
+  };
+
+  const reverseGeocode = async (lat, lng) => {
+    try {
+      // Using OpenStreetMap Nominatim API (free, no API key required)
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
+      );
+      const data = await response.json();
+      
+      if (data.display_name) {
+        // Extract city and country from the full address
+        const parts = data.display_name.split(', ');
+        const city = parts[0];
+        const country = parts[parts.length - 1];
+        return `${city}, ${country}`;
+      }
+      return null;
+    } catch (error) {
+      console.error("Reverse geocoding failed:", error);
+      return null;
+    }
+  };
+
+  const analyzeContent = async (content) => {
+    if (!content.trim()) return;
+    
+    // Check if user is authenticated
+    const accessToken = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+    if (!accessToken) {
+      console.log("User not authenticated, skipping AI analysis");
+      return;
+    }
+    
+    setIsAnalyzing(true);
+    try {
+      // Real AI analysis using the backend API with proper authentication
+      const response = await client.run("post", "/api/v1/ai/analyze-content/", { content }, true, false, false);
+      
+      if (response && response.suggestions) {
+        setAiSuggestions(response.suggestions);
+      } else {
+        // Fallback to local analysis
+        const suggestions = generateLocalSuggestions(content);
+        setAiSuggestions(suggestions);
+      }
+    } catch (error) {
+      console.error("AI analysis failed:", error);
+      // Fallback to local analysis
+      const suggestions = generateLocalSuggestions(content);
+      setAiSuggestions(suggestions);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const generateLocalSuggestions = (content) => {
+    const suggestions = [];
+    const lowerContent = content.toLowerCase();
+
+    if (!lowerContent.includes('#')) {
+      suggestions.push("Consider adding relevant hashtags like #ClimateAction or #Sustainability");
+    }
+
+    if (!lowerContent.includes('!') && !lowerContent.includes('?')) {
+      suggestions.push("Add a call-to-action to encourage engagement");
+    }
+
+    if (content.length < 50) {
+      suggestions.push("Consider expanding your post for better engagement");
+    }
+
+    if (!lowerContent.includes('🌱') && !lowerContent.includes('🌍')) {
+      suggestions.push("Add environmental emojis to increase visibility");
+    }
+
+    if (!selectedLocation) {
+      suggestions.push("Share your location to connect with local climate activists");
+    }
+
+    return suggestions;
+  };
+
+  const generateAIContent = async (prompt) => {
+    if (!prompt.trim()) {
+      alert("Please enter a description of what you want to post about!");
+      return;
+    }
+
+    // Check if user is authenticated
+    const accessToken = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+    if (!accessToken) {
+      alert("Please log in to use AI features!");
+      return;
+    }
+
+    console.log("Generating AI content for prompt:", prompt);
+    setIsGeneratingContent(true);
+    
+    try {
+      // Try the AI endpoint first
+      console.log("Calling AI endpoint...");
+      const response = await client.run("post", "/api/v1/ai/generate-content/", { 
+        topic: prompt,
+        type: "social_media_post"
+      }, true, false, false);
+      
+      console.log("AI endpoint response:", response);
+      
+      if (response && (response.content || response.full_content)) {
+        // Use the AI-generated content
+        const fullContent = response.full_content || response.content;
+        console.log("Using AI-generated content:", fullContent);
+        setAiGeneratedContent(fullContent);
+        setValue("content", fullContent);
+        setShowAIFeatures(false);
+        return;
+      }
+    } catch (error) {
+      console.error("AI endpoint failed:", error);
+    }
+    
+    // Fallback to local content generation
+    console.log("Using fallback content generation");
+    try {
+      const fallbackContent = generateSmartContent(prompt);
+      console.log("Generated fallback content:", fallbackContent);
+      setAiGeneratedContent(fallbackContent);
+      setValue("content", fallbackContent);
+      setShowAIFeatures(false);
+    } catch (fallbackError) {
+      console.error("Fallback generation failed:", fallbackError);
+      alert("Content generation failed. Please try again.");
+    } finally {
+      setIsGeneratingContent(false);
+    }
+  };
+
+  const generateAIHashtags = async (content) => {
+    try {
+      const response = await client.run("post", "/api/v1/ai/generate-hashtags/", { content }, true, false, false);
+      
+      if (response && response.hashtags) {
+        return response.hashtags;
+      }
+    } catch (error) {
+      console.error("AI hashtag generation failed:", error);
+    }
+    
+    // Fallback to local hashtag generation
+    return generateLocalHashtags(content);
+  };
+
+  const generateLocalHashtags = (content) => {
+    const hashtags = [];
+    const lowerContent = content.toLowerCase();
+    
+    if (lowerContent.includes('climate')) hashtags.push('#ClimateAction');
+    if (lowerContent.includes('sustainability')) hashtags.push('#Sustainability');
+    if (lowerContent.includes('environment')) hashtags.push('#Environment');
+    if (lowerContent.includes('green')) hashtags.push('#GreenLiving');
+    if (lowerContent.includes('energy')) hashtags.push('#CleanEnergy');
+    if (lowerContent.includes('water')) hashtags.push('#WaterConservation');
+    if (lowerContent.includes('waste')) hashtags.push('#ZeroWaste');
+    if (lowerContent.includes('community')) hashtags.push('#CommunityAction');
+    
+    return hashtags.length > 0 ? hashtags : ['#ClimateAction', '#Sustainability'];
+  };
+
+  const generateSmartContent = (prompt) => {
+    const lowerPrompt = prompt.toLowerCase();
+    
+    // Climate action keywords
+    const climateKeywords = ['climate', 'environment', 'sustainability', 'green', 'eco', 'carbon', 'emission', 'renewable', 'solar', 'wind', 'energy'];
+    const actionKeywords = ['action', 'change', 'movement', 'activism', 'protest', 'campaign', 'initiative', 'project'];
+    const communityKeywords = ['community', 'together', 'united', 'local', 'neighborhood', 'city', 'town'];
+    
+    // Determine content type and generate accordingly
+    let content = "";
+    let hashtags = [];
+    let emoji = "🌱";
+    
+    // Check for climate-related content
+    if (climateKeywords.some(keyword => lowerPrompt.includes(keyword))) {
+      emoji = "🌍";
+      hashtags.push("#ClimateAction", "#Sustainability", "#GreenFuture");
+      
+      if (actionKeywords.some(keyword => lowerPrompt.includes(keyword))) {
+        content = `🌍 ${prompt} - Every action counts in our fight against climate change! Let's work together for a sustainable future. `;
+        hashtags.push("#ClimateJustice", "#EnvironmentalAction");
+      } else {
+        content = `🌱 ${prompt} - Small steps lead to big changes! Join the movement for environmental sustainability. `;
+        hashtags.push("#ClimateHope", "#GreenLiving");
+      }
+    }
+    // Check for community-related content
+    else if (communityKeywords.some(keyword => lowerPrompt.includes(keyword))) {
+      emoji = "🤝";
+      hashtags.push("#CommunityAction", "#LocalImpact", "#TogetherWeCan");
+      content = `🤝 ${prompt} - Community action creates the strongest impact! Let's unite for positive change. `;
+    }
+    // Check for energy-related content
+    else if (lowerPrompt.includes('energy') || lowerPrompt.includes('renewable') || lowerPrompt.includes('solar')) {
+      emoji = "⚡";
+      hashtags.push("#RenewableEnergy", "#CleanEnergy", "#SolarPower");
+      content = `⚡ ${prompt} - Clean energy is the future! Let's accelerate the transition to renewable sources. `;
+    }
+    // Check for water-related content
+    else if (lowerPrompt.includes('water') || lowerPrompt.includes('ocean') || lowerPrompt.includes('sea')) {
+      emoji = "💧";
+      hashtags.push("#WaterConservation", "#OceanProtection", "#BluePlanet");
+      content = `💧 ${prompt} - Water is life! Let's protect our precious water resources for future generations. `;
+    }
+    // Check for waste-related content
+    else if (lowerPrompt.includes('waste') || lowerPrompt.includes('recycle') || lowerPrompt.includes('plastic')) {
+      emoji = "♻️";
+      hashtags.push("#ZeroWaste", "#Recycling", "#PlasticFree");
+      content = `♻️ ${prompt} - Reduce, reuse, recycle! Every small action helps protect our planet. `;
+    }
+    // Check for transportation-related content
+    else if (lowerPrompt.includes('transport') || lowerPrompt.includes('bike') || lowerPrompt.includes('walk') || lowerPrompt.includes('car')) {
+      emoji = "🚴";
+      hashtags.push("#SustainableTransport", "#GreenMobility", "#ActiveTransport");
+      content = `🚴 ${prompt} - Sustainable transportation choices make a difference! Let's reduce our carbon footprint. `;
+    }
+    // Default climate action content
+    else {
+      emoji = "🌱";
+      hashtags.push("#ClimateAction", "#Sustainability", "#GreenFuture");
+      content = `🌱 ${prompt} - Every voice matters in the fight for our planet! Let's create positive change together. `;
+    }
+    
+    // Add location-based hashtags if location is selected
+    if (selectedLocation) {
+      if (selectedLocation.name.includes('Nairobi')) {
+        hashtags.push("#NairobiClimate", "#KenyaClimate");
+      } else if (selectedLocation.name.includes('Mombasa')) {
+        hashtags.push("#MombasaClimate", "#CoastalClimate");
+      } else if (selectedLocation.name.includes('Kisumu')) {
+        hashtags.push("#KisumuClimate", "#LakeRegion");
+      }
+    }
+    
+    // Add call-to-action
+    const callToActions = [
+      "What actions are you taking for climate change? Share your story!",
+      "How are you making a difference in your community? Let's inspire others!",
+      "What sustainable practices do you follow? Let's learn from each other!",
+      "Join the conversation and share your climate action ideas!",
+      "Together we can create a better future for our planet!"
+    ];
+    
+    const randomCTA = callToActions[Math.floor(Math.random() * callToActions.length)];
+    content += randomCTA + " ";
+    
+    // Add hashtags
+    content += hashtags.join(" ");
+    
+    return content;
+  };
+
+  const generateFallbackContent = (prompt) => {
+    const templates = [
+      `🌱 ${prompt} - Let's work together for a sustainable future! #ClimateAction #Sustainability`,
+      `🌍 ${prompt} - Every small action counts in our fight against climate change. #ClimateWavers #GreenFuture`,
+      `⚡ ${prompt} - Join the movement for environmental justice! #ClimateJustice #CommunityAction`,
+      `🚀 ${prompt} - Together we can create positive change for our planet! #ClimateHope #CollectiveAction`
+    ];
+    return templates[Math.floor(Math.random() * templates.length)];
+  };
+
 
   const toastMsg = {
     success: "Post Successful 👌",
@@ -29,126 +385,513 @@ export default function Createpost({ type, postId, parentId, closeModal }) {
 
   const onSubmit = async (data) => {
     setIsDisabled(true);
-    let imageUrl;
-    if (data.image[0]) {
-      imageUrl = await uploadFiles(data.image[0]);
-    }
-    if (imageUrl) {
-      if (imageUrl.length == 1) {
-        data.image = imageUrl[0];
-      } else {
-        data.image = imageUrl;
-      }
-    }
-    if (postId) data.post = postId;
-    if (parentId) data.parent_comment = parentId;
-    const endpoint = endpoints[type];
-
+    
     try {
-      await client.run("post", endpoint, data, true, toastMsg, false, false);
+      const formData = new FormData();
+      
+      // Add text content
+      formData.append('content', data.content || '');
+      formData.append('visibility', data.visibility || 'Everyone');
+      formData.append('location', selectedLocation || '');
+      
+      // Add post/comment relationships
+      if (postId) formData.append('post', postId);
+      if (parentId) formData.append('parent_comment', parentId);
+      
+      // Handle image files - upload to Cloudinary and send URL
+      if (data.image && data.image.length > 0 && data.image[0] instanceof File) {
+        console.log("Uploading image file:", data.image[0].name, data.image[0].type, data.image[0].size);
+        const imageUrl = await uploadFiles(data.image[0]);
+        if (imageUrl && imageUrl.length > 0) {
+          formData.append('image', imageUrl[0]);
+          console.log("Image uploaded successfully:", imageUrl[0]);
+        }
+      }
+      
+      // Handle video files - upload to Cloudinary and send URL
+      if (data.video && data.video.length > 0 && data.video[0] instanceof File) {
+        console.log("Uploading video file:", data.video[0].name, data.video[0].type, data.video[0].size);
+        const videoUrl = await uploadFiles(data.video[0]);
+        if (videoUrl && videoUrl.length > 0) {
+          formData.append('video', videoUrl[0]);
+          console.log("Video uploaded successfully:", videoUrl[0]);
+        }
+      }
+      
+      // Handle audio files - send as File object
+      if (data.audio && data.audio.length > 0 && data.audio[0] instanceof File) {
+        console.log("Adding audio file:", data.audio[0].name, data.audio[0].type, data.audio[0].size);
+        formData.append('audio', data.audio[0]);
+      }
+      
+    const endpoint = endpoints[type];
+      console.log("Using endpoint:", endpoint);
+      
+      // Debug: Log FormData contents
+      console.log("FormData contents:");
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+      
+      const token = getAuthToken();
+      const response = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          // Don't set Content-Type, let browser set it with boundary for FormData
+        },
+        body: formData
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      toast.success("Post created successfully! 🌱");
+      
       reset();
+      setImagePreview(null);
+      setVideoPreview(null);
+      setSelectedLocation(null);
       setIsDisabled(false);
       closeModal();
+      
     } catch (error) {
       setIsDisabled(false);
-      console.log(error);
+      console.error("Post creation error:", error);
+      toast.error("Failed to create post. Please try again.");
     }
   };
 
   const buttonMsg = type === "post" ? type : "Reply";
 
   return (
-    <div
+    <form
       onSubmit={handleSubmit(onSubmit)}
-      className=" md:w-[40vw] md:h-[45vh] md:max-h-fit h-full p-3 md:p-6 bg-white rounded-md flex w-[90vw] flex-col gap-y-2"
+      className="p-6 flex flex-col gap-6"
     >
-      <div className=" flex justify-start gap-4 ">
+      <div className="flex items-center gap-4">
         <img
-          src={user?.profile_picture}
-          alt=""
-          className="w-12 h-12 rounded-full h-10"
+          src={user?.profile_picture || "/avatar.png"}
+          alt="Profile"
+          className="w-12 h-12 rounded-full object-cover"
+          onError={(e) => {
+            e.target.src = "/avatar.png";
+          }}
         />
+        <div className="flex-1">
         <select
-          className=" rounded-full px-2  mb-3 border-2 border-[#2F4F4F] text-xl font-bold text-[#2F4F4F] focus:border-[#2F4F4F] focus:outline-none"
+            className="w-full px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 bg-white hover:border-[#2F4F4F] focus:border-[#2F4F4F] focus:outline-none transition-colors duration-200"
           {...register("visibility", { required: true })}
         >
-          <option value="Everyone">Everyone</option>
-          <option value="Friends">Friends</option>
-          {/* Add more options as needed */}
+            <option value="Everyone">🌍 Everyone</option>
+            <option value="Friends">👥 Friends</option>
         </select>
+        </div>
       </div>
 
+      <div className="relative">
       <textarea
-        type="text"
-        placeholder="What's on your mind"
-        className=" p-8 w-full border-b-2 h-full max-sm:placeholder:text-[20px] text-black text-3xl overflow-y-auto focus:border-b-2 focus:outline-none focus:border-[#2F4F4F]"
+          placeholder="What's on your mind?"
+          className="w-full min-h-[120px] p-4 text-lg text-gray-900 placeholder-gray-500 border border-gray-200 rounded-xl resize-none focus:border-[#2F4F4F] focus:outline-none focus:ring-2 focus:ring-[#2F4F4F]/20 transition-all duration-200"
         {...register("content", { required: true })}
-      />
+          onChange={(e) => {
+            const content = e.target.value;
+            if (content.length > 10) {
+              analyzeContent(content);
+            }
+          }}
+        />
+        
+        {/* AI Analysis Indicator */}
+        {isAnalyzing && (
+          <div className="absolute top-2 right-2 flex items-center gap-2 bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm">
+            <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+            <span>AI Analyzing...</span>
+          </div>
+        )}
+      </div>
+
+      {/* AI Suggestions */}
+      {aiSuggestions.length > 0 && (
+        <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <MdAutoAwesome className="text-purple-600" size={20} />
+            <span className="font-medium text-purple-800">AI Suggestions</span>
+          </div>
+          <div className="space-y-2">
+            {aiSuggestions.map((suggestion, index) => (
+              <div key={index} className="text-sm text-purple-700 bg-white/50 rounded-lg p-2">
+                {suggestion}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {/* Image Preview */}
       {imagePreview && (
-        <div className="mb-3 max-h-[60%] overflow-y-auto">
+        <div className="relative group">
           <img
             src={imagePreview}
             alt="Preview"
-            className="w-full h-auto rounded"
+            className="w-full max-h-64 object-cover rounded-xl shadow-md"
           />
+          <button
+            type="button"
+            onClick={() => setImagePreview(null)}
+            className="absolute top-2 right-2 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors opacity-0 group-hover:opacity-100"
+          >
+            <IoCloseSharp size={16} />
+          </button>
         </div>
       )}
-      <div className="flex justify-between items-center w-[100%]">
-        <div className="flex justify-start gap-8 pt-4 h-14">
-          <label htmlFor="image">
-            <img
-              src="../../img_user_rectangle_5.svg"
-              alt="User"
-              className="h-[28px] ml-2 w-[28px]"
-            />
+
+      {/* Video Preview */}
+      {videoPreview && (
+        <div className="relative group">
+          <video
+            src={videoPreview}
+            controls
+            className="w-full max-h-64 object-cover rounded-xl shadow-md"
+          />
+          <button
+            type="button"
+            onClick={() => setVideoPreview(null)}
+            className="absolute top-2 right-2 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors opacity-0 group-hover:opacity-100"
+          >
+            <IoCloseSharp size={16} />
+          </button>
+        </div>
+      )}
+
+      {/* Selected Location Display */}
+      {selectedLocation && (
+        <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl p-3">
+          <MdLocationOn className="text-green-600" size={20} />
+          <span className="text-green-800 font-medium">{selectedLocation.name}</span>
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedLocation(null);
+              setValue("location", "");
+            }}
+            className="ml-auto p-1 hover:bg-green-100 rounded-full transition-colors"
+          >
+            <IoCloseSharp size={16} className="text-green-600" />
+          </button>
+        </div>
+      )}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-gray-100 gap-4">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+          {/* Image Upload */}
+          <label htmlFor="image" className="cursor-pointer">
+            <div className="flex items-center gap-1 sm:gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+              <MdImage className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+              <span className="text-xs sm:text-sm font-medium text-gray-600 hidden sm:inline">Photo</span>
+            </div>
           </label>
 
-          <img
-            src="../../img_thumbs_up_rectangle_5.svg"
-            alt="Thumbsup"
-            className="h-[28px] w-[28px]"
-          />
-          <img
-            src="../../img_emoji_normal.svg"
-            alt="Emojinormal"
-            className="h-[28px] w-[28px]"
-          />
-          <img
-            src="../../img_linkedin.svg"
-            alt="Linkedin"
-            className="h-[28px] w-[28px]"
-          />
+          {/* Video Upload */}
+          <label htmlFor="video" className="cursor-pointer">
+            <div className="flex items-center gap-1 sm:gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+              <MdVideocam className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+              <span className="text-xs sm:text-sm font-medium text-gray-600 hidden sm:inline">Video</span>
+            </div>
+          </label>
+
+          {/* Emoji Picker */}
+          <div className="relative">
+            <button 
+              type="button" 
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              className="flex items-center gap-1 sm:gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+            >
+              <MdEmojiEmotions className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+              <span className="text-xs sm:text-sm font-medium text-gray-600 hidden sm:inline">Emoji</span>
+            </button>
+            
+            {showEmojiPicker && (
+              <div className="absolute bottom-full left-0 mb-2 z-10">
+                <EmojiPicker
+                  onEmojiClick={(emojiData) => handleEmojiClick(emojiData.emoji)}
+                  width={300}
+                  height={350}
+                  searchDisabled={false}
+                  skinTonesDisabled={false}
+                  previewConfig={{
+                    defaultCaption: "Choose an emoji!",
+                    showPreview: true
+                  }}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Location Picker */}
+          <div className="relative">
+            <button 
+              type="button" 
+              onClick={() => setShowLocationPicker(!showLocationPicker)}
+              className="flex items-center gap-1 sm:gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+            >
+              <MdLocationOn className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+              <span className="text-xs sm:text-sm font-medium text-gray-600 hidden sm:inline">Location</span>
+            </button>
+            
+            {showLocationPicker && (
+              <div className="absolute bottom-full left-0 mb-2 bg-white border border-gray-200 rounded-xl shadow-lg p-3 z-10 w-64 sm:w-72">
+                <div className="space-y-2">
+                  <div className="text-sm font-medium text-gray-700 mb-2">Select Location</div>
+                  
+                  {/* Current Location Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleLocationSelect({ name: "Current Location", type: "current" })}
+                    disabled={isGettingLocation}
+                    className="w-full text-left p-2 hover:bg-gray-100 rounded-lg transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {isGettingLocation ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        <span>Getting location...</span>
+                      </>
+                    ) : (
+                      <>
+                        <MdLocationOn className="text-blue-600" size={16} />
+                        <span>Current Location</span>
+                      </>
+                    )}
+                  </button>
+
+                  {/* Location Error */}
+                  {locationError && (
+                    <div className="text-red-600 text-xs p-2 bg-red-50 rounded-lg">
+                      {locationError}
+                    </div>
+                  )}
+
+                  {/* Manual Location Options */}
+                  <div className="border-t border-gray-100 pt-2">
+                    <div className="text-xs text-gray-500 mb-2">Or select a city:</div>
+                    {[
+                      { name: "Nairobi, Kenya", type: "city" },
+                      { name: "Mombasa, Kenya", type: "city" },
+                      { name: "Kisumu, Kenya", type: "city" },
+                      { name: "Eldoret, Kenya", type: "city" },
+                      { name: "Nakuru, Kenya", type: "city" }
+                    ].map((location, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => handleLocationSelect(location)}
+                        className="w-full text-left p-2 hover:bg-gray-100 rounded-lg transition-colors text-sm flex items-center gap-2"
+                      >
+                        <MdLocationOn className="text-gray-500" size={16} />
+                        {location.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* AI Features */}
+          <button 
+            type="button" 
+            onClick={() => setShowAIFeatures(!showAIFeatures)}
+            className="flex items-center gap-1 sm:gap-2 p-2 rounded-lg hover:bg-purple-100 transition-colors duration-200"
+          >
+            <MdAutoAwesome className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
+            <span className="text-xs sm:text-sm font-medium text-purple-600 hidden sm:inline">AI</span>
+          </button>
+
+          {/* Hidden File Inputs */}
           <input
             id="image"
+            ref={fileInputRef}
             type="file"
             accept="image/*"
-            className="p-0 mb-1 hidden border rounded focus:border-[#2F4F4F] focus:outline-none"
+            className="hidden"
             {...register("image", {
               required: false,
               onChange: handleImageChange,
             })}
           />
+          
+          <input
+            id="video"
+            ref={videoInputRef}
+            type="file"
+            accept="video/*"
+            className="hidden"
+            {...register("video", {
+              required: false,
+              onChange: handleVideoChange,
+            })}
+          />
         </div>
+
+        {/* AI Features Panel */}
+        {showAIFeatures && (
+          <div className="absolute bottom-full left-0 mb-2 bg-white border border-gray-200 rounded-xl shadow-lg p-4 z-10 w-80 sm:w-96">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 mb-3">
+                <MdAutoAwesome className="text-purple-600" size={20} />
+                <span className="font-medium text-gray-800">AI Features</span>
+              </div>
+              
+              {/* AI Content Generation */}
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-gray-700">Generate Content</div>
+                <div className="flex gap-2">
+                  <input
+                    ref={aiPromptRef}
+                    type="text"
+                    placeholder="Describe what you want to post about..."
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:border-purple-500 focus:outline-none"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        generateAIContent(e.target.value);
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      console.log("Generate button clicked");
+                      const prompt = aiPromptRef.current?.value || "";
+                      console.log("Prompt value:", prompt);
+                      if (prompt.trim()) {
+                        console.log("Calling generateAIContent with prompt:", prompt);
+                        generateAIContent(prompt);
+                        aiPromptRef.current.value = ""; // Clear input after generation
+                      } else {
+                        console.log("No prompt provided");
+                        alert("Please enter a description of what you want to post about!");
+                      }
+                    }}
+                    disabled={isGeneratingContent}
+                    className="px-3 py-2 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                  >
+                    {isGeneratingContent ? (
+                      <>
+                        <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Generating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <MdAutoAwesome size={14} />
+                        <span>Generate</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Test AI Button */}
+              <div className="mb-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    console.log("Test AI button clicked");
+                    generateAIContent("climate action");
+                  }}
+                  className="w-full px-3 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 transition-colors"
+                >
+                  🧪 Test AI (Climate Action)
+                </button>
+              </div>
+
+              {/* Quick Actions */}
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-gray-700">Quick Actions</div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const currentContent = watch("content") || "";
+                      if (currentContent.trim()) {
+                        try {
+                          const hashtags = await generateAIHashtags(currentContent);
+                          setValue("content", currentContent + " " + hashtags.join(" "));
+                        } catch (error) {
+                          setValue("content", currentContent + " #ClimateAction #Sustainability #GreenFuture");
+                        }
+                      } else {
+                        setValue("content", currentContent + " #ClimateAction #Sustainability #GreenFuture");
+                      }
+                      setShowAIFeatures(false);
+                    }}
+                    className="text-left p-2 hover:bg-purple-50 rounded-lg transition-colors text-sm"
+                  >
+                    ✨ Add Hashtags
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const currentContent = watch("content") || "";
+                      setValue("content", currentContent + " 🌱 Let's work together for a sustainable future!");
+                      setShowAIFeatures(false);
+                    }}
+                    className="text-left p-2 hover:bg-purple-50 rounded-lg transition-colors text-sm"
+                  >
+                    🚀 Add CTA
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const currentContent = watch("content") || "";
+                      setValue("content", currentContent + " 📍 Share your location for local impact!");
+                      setShowAIFeatures(false);
+                    }}
+                    className="text-left p-2 hover:bg-purple-50 rounded-lg transition-colors text-sm"
+                  >
+                    📍 Location Tip
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const currentContent = watch("content") || "";
+                      setValue("content", currentContent + " 🌍 Every action counts in our fight against climate change!");
+                      setShowAIFeatures(false);
+                    }}
+                    className="text-left p-2 hover:bg-purple-50 rounded-lg transition-colors text-sm"
+                  >
+                    🌍 Inspire
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <button
-          className={
+          type="submit"
+          disabled={isDisabled}
+          className={`flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-medium transition-all duration-200 w-full sm:w-auto justify-center ${
             isDisabled
-              ? "blur-[1px] text-center w-fit px-12 h-[60px] max-sm:hidden capitalize bg-[#2F4F4F] text-white text-lg rounded-full cursor-pointer z-10"
-              : " px-12 h-[60px] max-sm:hidden capitalize bg-[#2F4F4F] text-white text-lg rounded-full cursor-pointer z-10 "
-          }
-          onClick={handleSubmit(onSubmit)}
-          disabled={isDisabled}
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-[#2F4F4F] text-white hover:bg-[#1a3a3a] hover:shadow-lg transform hover:-translate-y-0.5"
+          }`}
         >
-          { buttonMsg}
+          {isDisabled ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-sm sm:text-base">Posting...</span>
+            </>
+          ) : (
+            <>
+              <IoSend size={16} className="sm:w-5 sm:h-5" />
+              <span className="text-sm sm:text-base">{buttonMsg}</span>
+            </>
+          )}
         </button>
-        <IoSend
-          size={34}
-          className="md:hidden absolute right-4 pt-1 cursor-pointer "
-          color="#2F4F4F"
-          onClick={handleSubmit(onSubmit)}
-          disabled={isDisabled}
-        />
       </div>
-    </div>
+    </form>
   );
 }
 

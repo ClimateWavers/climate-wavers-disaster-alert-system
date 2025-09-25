@@ -4,23 +4,28 @@ import ReactDOM from "react-dom";
 
 const Modal = ({ children, closeFn }) => {
   return ReactDOM.createPortal(
-    <button
-      className="h-[100vh] overflow-auto min-w-[100vw] bg-white bg-opacity-20 backdrop-blur-xl fixed inset-0 z-50 flex justify-center items-center"
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={closeFn}
     >
-      <button
-        className="bg-white border-2 rounded-lg px-2 pt-8 text-black md:max-w-[90vw] max-w-[100vw] relative  "
+      <div
+        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
-        <span
-          className="absolute top-1 p-4 right-1 hover:cursor-pointer"
-          onClick={closeFn}
-        >
-          <IoCloseSharp size={25} />
-        </span>
-        <div>{children}</div>
-      </button>
-    </button>,
+        <div className="flex items-center justify-between p-6 border-b border-gray-100">
+          <h2 className="text-xl font-semibold text-gray-900">Create Post</h2>
+          <button
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
+            onClick={closeFn}
+          >
+            <IoCloseSharp size={24} className="text-gray-500" />
+          </button>
+        </div>
+        <div className="overflow-y-auto max-h-[calc(90vh-80px)]">
+          {children}
+        </div>
+      </div>
+    </div>,
     document.body
   );
 };

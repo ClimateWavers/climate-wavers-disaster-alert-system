@@ -14,29 +14,24 @@ const Menu = ({ setIsOpen }) => {
     setUser(getUser());
   }, []);
 
-  const activeStyle = {
-    borderLeft: "5px solid #2F4F4F",
-    borderRadius: "20px",
-    paddingLeft: "4px",
-    backgroundColor: "#2F4F4F14",
-    width: "100%",
-    height: "60px",
-    fontWeight: "500",
-  };
+  const getNavLinkClassName = (isActive) => 
+    `flex items-center py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-100 cursor-pointer ${
+      isActive ? 'bg-[#2F4F4F] text-white' : 'text-gray-700 hover:text-[#2F4F4F]'
+    }`;
 
   return (
-    <div className="flex flex-col px-2 w-[100%] md:pl-1 pl-4">
+    <div className="flex flex-col w-full">
+      {/* Logo */}
+      <div className="mb-6 pb-4 border-b border-gray-200">
+        <h1 className="text-xl font-bold text-[#2F4F4F] leading-tight mb-2">Climate Wavers</h1>
+        <p className="text-sm text-gray-600 font-medium">Climate Action Platform</p>
+      </div>
+      
       {/* Menu */}
-      <div
-        className="list-none text-base lg:text-2xl  md:text-lg
-        flex flex-col lg:gap-y-4 pt-10 w-auto mb-10"
-      >
+      <div className="flex flex-col space-y-1">
         <NavLink
-          to={"/"}
-          className="flex items-center py-2 lg:px-8  text-xl md:text-2xl"
-          style={({ isActive }) => {
-            return isActive ? activeStyle : null;
-          }}
+          to={"/app"}
+          className={({ isActive }) => getNavLinkClassName(isActive)}
           end
         >
           {({ isActive }) => (
@@ -44,25 +39,22 @@ const Menu = ({ setIsOpen }) => {
               <img
                 alt="home"
                 src={isActive ? "../../home.png" : "../../home.svg"}
-                className="mr-4 w-auto"
+                className="mr-3 w-5 h-5"
               />
               Home
             </>
           )}
         </NavLink>
         <NavLink
-          className="flex items-center py-2 lg:px-8  text-xl md:text-2xl"
-          to={"/community"}
-          style={({ isActive }) => {
-            return isActive ? activeStyle : null;
-          }}
+          to={"/app/community"}
+          className={({ isActive }) => getNavLinkClassName(isActive)}
           end
         >
           {({ isActive }) => (
             <>
               <img
                 src={isActive ? "../../people1.png" : "../../people.png"}
-                className="mr-4 w-auto"
+                className="mr-3 w-5 h-5"
               />
               Community
             </>
@@ -70,82 +62,66 @@ const Menu = ({ setIsOpen }) => {
         </NavLink>
 
         <NavLink
-          className="flex items-center py-2 lg:px-8  text-xl md:text-2xl"
-          to={`/${user.id}/profile`}
-          style={({ isActive }) => {
-            return isActive ? activeStyle : null;
-          }}
+          to={`/app/${user.id}/profile`}
+          className={({ isActive }) => getNavLinkClassName(isActive)}
           end
         >
           {({ isActive }) => (
             <>
               <img
                 src={isActive ? "../../profile1.png" : "../../profile.png"}
-                className="mr-4 w-auto"
+                className="mr-3 w-5 h-5"
               />
               Profile
             </>
           )}
         </NavLink>
         <NavLink
-          className="flex items-center py-2  lg:px-8  text-xl md:text-2xl"
-          to={`/bot`}
-          style={({ isActive }) => (isActive ? activeStyle : null)}
-        >
-          <img src="../../waverbot.png" className="mr-4 w-auto" />
-          WaverX
-        </NavLink>
-        <NavLink
-          className="flex items-center py-2  lg:px-8  text-xl md:text-2xl"
-          to={`/wallet`}
-          style={({ isActive }) => {
-            return isActive ? activeStyle : null;
-          }}
+          to={`/app/donations`}
+          className={({ isActive }) => getNavLinkClassName(isActive)}
           end
         >
           {({ isActive }) => (
             <>
               <img
                 src={isActive ? "../../wallet1.png" : "../../wallet.png"}
-                className="mr-4 w-auto"
+                className="mr-3 w-5 h-5"
               />
-              Wallet
+              Donate
             </>
           )}
         </NavLink>
         <NavLink
-          className="flex items-center py-2  lg:px-8  text-xl md:text-2xl"
           to={"/campaigns"}
-          style={({ isActive }) => (isActive ? activeStyle : null)}
+          className={({ isActive }) => getNavLinkClassName(isActive)}
         >
           {({ isActive }) => (
             <div className="w-[200%] flex">
               {isActive ? (
-                <MdCampaign className="mr-2" size={40} color="#2F4F4F" />
+                <MdCampaign className="mr-3" size={20} color="#2F4F4F" />
               ) : (
-                <MdOutlineCampaign className="mr-2" size={40} color="#434343" />
+                <MdOutlineCampaign className="mr-3" size={20} color="#434343" />
               )}
               <p className="ml-1">Campaigns</p>
             </div>
           )}
         </NavLink>
         <NavLink
-          className="flex items-center py-2 lg:px-8  text-xl md:text-2xl"
           to={`/disasters`}
-          style={({ isActive }) => (isActive ? activeStyle : null)}
+          className={({ isActive }) => getNavLinkClassName(isActive)}
         >
           {({ isActive }) => (
             <div className="w-[200%] flex">
               {isActive ? (
                 <RiAlarmWarningFill
-                  className="mr-2"
-                  size={35}
+                  className="mr-3"
+                  size={20}
                   color="#EA4335"
                 />
               ) : (
                 <RiAlarmWarningLine
-                  className="mr-2"
-                  size={35}
+                  className="mr-3"
+                  size={20}
                   color="#434343"
                 />
               )}
@@ -153,30 +129,29 @@ const Menu = ({ setIsOpen }) => {
             </div>
           )}
         </NavLink>
-        {/* <NavLink
-          to={`/notifications`}
-          className="flex items-center py-2 lg:px-8  text-xl md:text-2xl"
-          style={({ isActive }) => {
-            return isActive ? activeStyle : null;
-          }}
-          onClick={() => setIsOpen(false)}
+        <NavLink
+          to={"/app/notifications"}
+          className={({ isActive }) => getNavLinkClassName(isActive)}
           end
         >
           {({ isActive }) => (
-            <div className="w-[200%] flex max-sm:">
-              {isActive ? (
-                <IoIosNotifications
-                  className="mr-2"
-                  size={40}
-                  color="#2F4F4F"
-                />
-              ) : (
-                <IoIosNotificationsOutline className="mr-2" size={40} />
-              )}
-              <p className="self-center"> Notifications</p>
-            </div>
+            <>
+              <img
+                alt=""
+                src={isActive ? "../../img_notification_blue_gray_900.png" : "../../img_notification.svg"}
+                className="mr-3 w-5 h-5"
+              />
+              Notifications
+            </>
           )}
-        </NavLink> */}
+        </NavLink>
+        <NavLink
+          to={`/app/waverx`}
+          className={({ isActive }) => getNavLinkClassName(isActive)}
+        >
+          <img src="../../waverbot.png" className="mr-4 w-auto" />
+          WaverX
+        </NavLink>
       </div>
       {/* Post btn */}
       <button

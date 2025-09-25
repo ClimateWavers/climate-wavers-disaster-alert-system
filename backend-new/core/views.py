@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
+from django.http import Http404
 from .models import (
     Notification,
     Post,
@@ -78,7 +79,7 @@ class MarkNotificationsAsReadView(generics.UpdateAPIView):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().order_by("-created_at")
     serializer_class = PostSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = []  # Allow public access for trending and posts
 
     def perform_create(self, serializer):
         """
@@ -259,20 +260,33 @@ class PostViewSet(viewsets.ModelViewSet):
 
 # ViewSet for User model
 class UserViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    serializer_class = UserActivitySerializer
+    queryset = User.objects.all()
+    permission_classes = []  # Allow public access for popular users
+    serializer_class = UserSerializer
 
     def get_object(self):
         return User.objects.get(pk=self.kwargs["pk"])
 
-    @action(detail=False, methods=["post"])
+    @action(detail=False, methods=["post"], permission_classes=[IsAuthenticated])
     def activity(self, request):
         """
         Custom action to get user activity statistics.
         """
         try:
-            user_id = request.data["user_id"]
-            user = User.objects.get(id=user_id)
+            user_id = request.data.get("user_id")
+            if not user_id:
+                return Response(
+                    {"detail": "user_id is required"}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            try:
+                user = User.objects.get(id=user_id)
+            except User.DoesNotExist:
+                return Response(
+                    {"detail": f"User with ID {user_id} does not exist"}, 
+                    status=status.HTTP_404_NOT_FOUND
+                )
             posts = Post.objects.filter(user=user).annotate(
                 total_comments=Count('comments', distinct=True),
                 total_reactions=Count('reactions', distinct=True),
@@ -293,23 +307,38 @@ class UserViewSet(viewsets.ModelViewSet):
             bookmarks = Bookmark.objects.filter(user=user)
             polls = Poll.objects.filter(user=user)
 
-            data = {
-                "posts": posts,
-                "comments": comments,
-                "reactions": reactions,
-                "repost": reposts,
-                "followers": followers,
-                "followings": followings,
-                "bookmarks": bookmarks,
-                "polls": polls,
-                "user_id": user_id,
-                "user": user
+            # Serialize the data manually to avoid serializer issues
+            from .serializers import PostSerializer, CommentSerializer, ReactionSerializer, RepostSerializer, FollowSerializer, BookmarkSerializer, PollSerializer, UserSerializer
+            
+            posts_data = PostSerializer(posts, many=True, context={'request': request}).data
+            comments_data = CommentSerializer(comments, many=True, context={'request': request}).data
+            reactions_data = ReactionSerializer(reactions, many=True, context={'request': request}).data
+            reposts_data = RepostSerializer(reposts, many=True, context={'request': request}).data
+            followers_data = FollowSerializer(followers, many=True, context={'request': request}).data
+            followings_data = FollowSerializer(followings, many=True, context={'request': request}).data
+            bookmarks_data = BookmarkSerializer(bookmarks, many=True, context={'request': request}).data
+            polls_data = PollSerializer(polls, many=True, context={'request': request}).data
+            user_data = UserSerializer(user, context={'request': request}).data
+            
+            response_data = {
+                "posts": posts_data,
+                "comments": comments_data,
+                "reactions": reactions_data,
+                "repost": reposts_data,
+                "followers": followers_data,
+                "followings": followings_data,
+                "bookmarks": bookmarks_data,
+                "polls": polls_data,
+                "user_id": str(user_id),
+                "user": user_data
             }
-            serializer = self.get_serializer(
-                data, context={'request': request})
-            return Response(serializer.data)
-        except Exception:
-            raise Http404("User Activities not found")
+            
+            return Response(response_data)
+        except Exception as e:
+            return Response(
+                {"detail": f"Error retrieving user activities: {str(e)}"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
     @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
     def follow(self, request, pk=None):

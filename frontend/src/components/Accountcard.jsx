@@ -25,19 +25,25 @@ const Accountcard = ({ user }) => {
   };
 
   return (
-    <div className="flex flex-row items-center px-3 py-1 justify-between ">
-      <Link to={`/${user?.id}/profile`}>
-        <div className="flex flex-row items-center self-center text-black ">
-          <img
-            src={user?.profile_picture}
-            className="mr-2 rounded-full h-12"
-            alt="Profile Pic"
-          />{" "}
-          <div className="text-lg font-bold flex flex-col">
-            <h3>
+    <div className="flex items-center justify-between">
+      <Link to={`/app/${user?.id}/profile`} className="flex-1 min-w-0 group">
+        <div className="flex items-center space-x-3 min-w-0">
+          <div className="relative">
+            <img
+              src={user?.profile_picture || "/avatar.png"}
+              className="h-12 w-12 rounded-full object-cover ring-2 ring-gray-100 group-hover:ring-teal-200 transition-all duration-200 flex-shrink-0"
+              alt="Profile Pic"
+              onError={(e) => {
+                e.target.src = "/avatar.png";
+              }}
+            />
+            <div className="absolute -bottom-1 -right-1 h-4 w-4 bg-green-400 border-2 border-white rounded-full"></div>
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="font-semibold text-gray-900 truncate group-hover:text-teal-600 transition-colors duration-200">
               {user?.first_name} {user?.last_name}
             </h3>
-            <p className="text-md text-left text-gray-500">@{user?.username}</p>
+            <p className="text-sm text-gray-500 truncate">@{user?.username}</p>
           </div>
         </div>
       </Link>
@@ -47,11 +53,11 @@ const Accountcard = ({ user }) => {
             setIsFollow(!isFollow);
             handleFollow(user?.id);
           }}
-          // style={followStyle}
-          className={`bg-black text-sm  text-white font-semibold py-2 px-3 ml-2  rounded-2xl ${
-            isFollow &&
-            "bg-stone-100 outline outline-2 outline-stone-500 !text-slate-700 before:hover:content-['']  hover:bg-[#E0F0F0] hover:outline hover:outline-3 hover:outline-black-500 hover:text-black-500 "
-          } `}
+          className={`px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 flex-shrink-0 ${
+            isFollow
+              ? "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
+              : "bg-teal-500 text-white hover:bg-teal-600 shadow-sm hover:shadow-md"
+          }`}
         >
           {isFollow ? "Following" : "Follow"}
         </button>

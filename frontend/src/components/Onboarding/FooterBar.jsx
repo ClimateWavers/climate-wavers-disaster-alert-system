@@ -73,7 +73,7 @@ const Footer = ({ setIsOpen }) => {
         </NavLink> */}
         <NavLink
           className="flex items-center py-2  lg:px-8  max-sm:text-xl"
-          to={`/wallet`}
+          to={`/app/donations`}
           style={({ isActive }) => {
             return isActive ? activeStyle : null;
           }}

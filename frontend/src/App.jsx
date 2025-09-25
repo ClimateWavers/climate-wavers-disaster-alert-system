@@ -31,6 +31,8 @@ import {
   Chatbot as OnboardingChatbot,
   BotLeg,
   GrabLeg,
+  Donate as OnboardingDonate,
+  WaverX as OnboardingWaverX,
 } from "./components/Onboarding";
 
 
@@ -56,7 +58,12 @@ function App() {
   return (
     <div>
       <ToastContainer />
-      <BrowserRouter>
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <Routes>
           <Route path="/bot" element={<AuthWaverX />} />
           <Route path="/campaigns" element={<AuthCampaigns />} />
@@ -99,6 +106,8 @@ function App() {
             <Route path="/onboarding/disasters" element={< OnboardingDisasters/>} />
             {/* <Route path="/happeningnow" element={<Happeningnow />} /> */}
             <Route path="/onboarding/profile" element={<OnboardingProfile />} />
+            <Route path="/onboarding/donate" element={<OnboardingDonate />} />
+            <Route path="/onboarding/waverx" element={<OnboardingWaverX />} />
             <Route path="/onboarding/grableg" element={<GrabLeg />} />
             <Route path="/onboarding/botleg" element={<BotLeg/>} />
           </Route>

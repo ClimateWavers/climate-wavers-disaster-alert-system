@@ -18,10 +18,10 @@ const Footer = () => {
       {/* Menu */}
       <div
         className="list-none w-[100%] px-2 fixed z-30 bg-white bottom-0 text-base
-        flex justify-between"
+        flex justify-between items-center"
       >
         <NavLink
-          to={"/"}
+          to={"/app"}
           className="flex items-center py-2 lg:px-8  max-sm:text-xl"
           style={({ isActive }) => {
             return isActive ? activeStyle : null;
@@ -32,13 +32,13 @@ const Footer = () => {
             <img
               alt=""
               src={isActive ? "../../home.png" : "../../home.svg"}
-              className=" w-[30px]"
+              className="w-[30px] h-[30px] object-contain"
             />
           )}
         </NavLink>
         <NavLink
           className="flex items-center py-2 lg:px-8  max-sm:text-xl"
-          to={"/community"}
+          to={"/app/community"}
           style={({ isActive }) => {
             return isActive ? activeStyle : null;
           }}
@@ -48,14 +48,14 @@ const Footer = () => {
             <img
               alt=""
               src={isActive ? "../../people1.png" : "../../people.png"}
-              className="  w-[30px]"
+              className="w-[30px] h-[30px] object-contain"
             />
           )}
         </NavLink>
 
         <NavLink
           className="flex items-center py-2 lg:px-8  max-sm:text-xl"
-          to={`/${user.id}/profile`}
+          to={`/app/${user.id}/profile`}
           style={({ isActive }) => {
             return isActive ? activeStyle : null;
           }}
@@ -65,14 +65,14 @@ const Footer = () => {
             <img
               alt=""
               src={isActive ? "../../profile1.png" : "../../profile.png"}
-              className="  w-[30px]"
+              className="w-[30px] h-[30px] object-contain"
             />
           )}
         </NavLink>
        
         <NavLink
           className="flex items-center py-2  lg:px-8  max-sm:text-xl"
-          to={`/wallet`}
+          to={`/app/donations`}
           style={({ isActive }) => {
             return isActive ? activeStyle : null;
           }}
@@ -82,7 +82,7 @@ const Footer = () => {
             <img
               alt=""
               src={isActive ? "../../wallet1.png" : "../../wallet.png"}
-              className=" w-[30px]"
+              className="w-[30px] h-[30px] object-contain"
             />
           )}
         </NavLink>
@@ -119,6 +119,22 @@ const Footer = () => {
                 />
               )
             }
+        </NavLink>
+        <NavLink
+          className="flex items-center py-2 lg:px-8  max-sm:text-xl"
+          to={"/app/notifications"}
+          style={({ isActive }) => {
+            return isActive ? activeStyle : null;
+          }}
+          end
+        >
+          {({ isActive }) => (
+            <img
+              alt=""
+              src={isActive ? "../../img_notification_blue_gray_900.png" : "../../img_notification.svg"}
+              className="w-[30px] h-[30px] object-contain"
+            />
+          )}
         </NavLink>
        
       </div>

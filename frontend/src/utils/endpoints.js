@@ -10,5 +10,9 @@ export const endpoints = {
     "comments": "/api/v1/comments/",
     "follow": "/api/v1/follows/",
     "profile": "/api/v1/users/activity/",
-    "notifications": "/api/v1/notifications/"
+    "users": "/api/v1/users/",
+    "notifications": "/api/v1/notifications/",
+    "ai_generate_content": "/api/v1/ai/generate-content/",
+    "ai_analyze_content": "/api/v1/ai/analyze-content/",
+    "ai_generate_hashtags": "/api/v1/ai/generate-hashtags/"
 }

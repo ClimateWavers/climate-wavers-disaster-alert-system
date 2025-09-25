@@ -151,7 +151,7 @@ const Menu = ({ setIsOpen }) => {
                 src={isActive ? "../../wallet1.png" : "../../wallet.png"}
                 className="mr-4 w-auto"
               />
-              Wallet{""}
+              Donate{""}
             </>
           )}
         </NavLink>

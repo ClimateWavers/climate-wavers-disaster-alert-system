@@ -12,6 +12,46 @@ from .models import (
     Notification,
 )
 from api.models import User
+import requests
+import json
+
+
+def reverse_geocode(latitude, longitude):
+    """
+    Convert latitude and longitude to a human-readable address using OpenStreetMap Nominatim API
+    """
+    try:
+        url = f"https://nominatim.openstreetmap.org/reverse?format=json&lat={latitude}&lon={longitude}&zoom=18&addressdetails=1"
+        headers = {
+            'User-Agent': 'ClimateWavers/1.0'
+        }
+        
+        response = requests.get(url, headers=headers, timeout=5)
+        if response.status_code == 200:
+            data = response.json()
+            if 'display_name' in data:
+                return data['display_name']
+            elif 'address' in data:
+                address = data['address']
+                parts = []
+                if 'city' in address:
+                    parts.append(address['city'])
+                elif 'town' in address:
+                    parts.append(address['town'])
+                elif 'village' in address:
+                    parts.append(address['village'])
+                
+                if 'state' in address:
+                    parts.append(address['state'])
+                if 'country' in address:
+                    parts.append(address['country'])
+                
+                return ', '.join(parts) if parts else f"{latitude}, {longitude}"
+        
+        return f"{latitude}, {longitude}"
+    except Exception as e:
+        print(f"Reverse geocoding error: {e}")
+        return f"{latitude}, {longitude}"
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -20,13 +60,13 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_is_following(self, obj):
         user = self.get_user_from_context()
-        if user:
+        if user and user.is_authenticated:
             return obj.followers.filter(follower=user).exists()
         return False
     
     def get_user_from_context(self):
         request = self.context.get("request", None)
-        if request and hasattr(request, "user"):
+        if request and hasattr(request, "user") and request.user.is_authenticated:
             return request.user
         return None
 
@@ -45,28 +85,34 @@ class PostSerializer(serializers.ModelSerializer):
     is_reacted = serializers.SerializerMethodField()
     is_bookmarked = serializers.SerializerMethodField()
     is_reposted = serializers.SerializerMethodField()
+    
+    # Custom field handling for image, video and audio
+    image = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    video = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    audio = serializers.FileField(required=False, allow_null=True)
+    location = serializers.CharField(required=False, allow_blank=True, allow_null=True)
 
     def get_is_reacted(self, obj):
         user = self.get_user_from_context()
-        if user:
+        if user and user.is_authenticated:
             return obj.reactions.filter(user=user).exists()
         return False
 
     def get_is_bookmarked(self, obj):
         user = self.get_user_from_context()
-        if user:
+        if user and user.is_authenticated:
             return obj.bookmarks.filter(user=user).exists()
         return False
 
     def get_is_reposted(self, obj):
         user = self.get_user_from_context()
-        if user:
+        if user and user.is_authenticated:
             return obj.reposts.filter(user=user).exists()
         return False
 
     def get_user_from_context(self):
         request = self.context.get("request", None)
-        if request and hasattr(request, "user"):
+        if request and hasattr(request, "user") and request.user.is_authenticated:
             return request.user
         return None
 
@@ -74,10 +120,63 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = "__all__"
 
+    def validate_image(self, value):
+        """Validate image field - should be a string (URL) or None"""
+        if value is None or value == '':
+            return None
+        if isinstance(value, str):
+            return value
+        # If it's a file object, we'll handle it in the create method
+        return value
+    
+    def validate_video(self, value):
+        """Validate video field - should be a string (URL) or None"""
+        if value is None or value == '':
+            return None
+        if isinstance(value, str):
+            return value
+        # If it's a file object, we'll handle it in the create method
+        return value
+    
+    def validate_audio(self, value):
+        """Validate audio field - should be a file or None"""
+        if value is None or value == '':
+            return None
+        return value
+    
+    def validate_location(self, value):
+        """Validate location field - convert coordinates to address if needed"""
+        if value is None or value == '':
+            return None
+        
+        # Check if it's coordinates (lat, lon format)
+        if ',' in value and len(value.split(',')) == 2:
+            try:
+                lat, lon = value.split(',')
+                lat = float(lat.strip())
+                lon = float(lon.strip())
+                
+                # Convert coordinates to address
+                address = reverse_geocode(lat, lon)
+                return address
+            except (ValueError, IndexError):
+                # If parsing fails, return original value
+                return value
+        
+        return value
+
     def create(self, validated_data):
         user = self.get_user_from_context()
-        if user:
+        if user and user.is_authenticated:
             validated_data["user"] = user
+        
+        # Handle image field - if it's a file, we need to process it
+        image_data = validated_data.get('image')
+        if image_data and hasattr(image_data, 'read'):
+            # If it's a file object, we need to handle it differently
+            # For now, we'll skip it or handle it as needed
+            validated_data['image'] = None
+        
         return super().create(validated_data)
 
 
@@ -94,25 +193,25 @@ class CommentSerializer(serializers.ModelSerializer):
 
     def get_is_reacted(self, obj):
         user = self.get_user_from_context()
-        if user:
+        if user and user.is_authenticated:
             return obj.reactions.filter(user=user).exists()
         return False
 
     def get_is_reposted(self, obj):
         user = self.get_user_from_context()
-        if user:
+        if user and user.is_authenticated:
             return obj.reposts.filter(user=user).exists()
         return False
 
     def get_is_bookmarked(self, obj):
         user = self.get_user_from_context()
-        if user:
+        if user and user.is_authenticated:
             return obj.bookmarks.filter(user=user).exists()
         return False
 
     def get_user_from_context(self):
         request = self.context.get("request", None)
-        if request and hasattr(request, "user"):
+        if request and hasattr(request, "user") and request.user.is_authenticated:
             return request.user
         return None
 
@@ -122,7 +221,7 @@ class CommentSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         user = self.get_user_from_context()
-        if user:
+        if user and user.is_authenticated:
             validated_data["user"] = user
         return super().create(validated_data)
 

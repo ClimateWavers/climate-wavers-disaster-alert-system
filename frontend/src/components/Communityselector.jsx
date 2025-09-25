@@ -13,23 +13,23 @@ const Communityselector = () => {
               ? "hover:bg-graydark p-2 bg-gray-400 bg-opacity-25 "
               : "hover:bg-graydark p-2"
           }
-          to={"/waverx"}
+          to={"/app/waverx"}
         >
           WaverX
         </NavLink>
 
-        <div className={"hover:bg-graydark p-2"} to={"/community"}>
+        <NavLink className={"hover:bg-graydark p-2"} to={"/app/community"}>
           Nature
-        </div>
-        <div className={"hover:bg-graydark p-2"} to={"/community"}>
+        </NavLink>
+        <NavLink className={"hover:bg-graydark p-2"} to={"/app/community"}>
           Climate Action
-        </div>
-        <div className={"hover:bg-graydark p-2"} to={"/communtiy"}>
+        </NavLink>
+        <NavLink className={"hover:bg-graydark p-2"} to={"/app/community"}>
           Wildlife
-        </div>
-        <div className={"hover:bg-graydark p-2"} to={"/community"}>
+        </NavLink>
+        <NavLink className={"hover:bg-graydark p-2"} to={"/app/community"}>
           Reforestation
-        </div>
+        </NavLink>
       </div>
     </div>
   );

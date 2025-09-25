@@ -5,10 +5,15 @@ import { client } from "../api";
 import { endpoints } from "./endpoints";
 import axios from 'axios';
 
-TimeAgo.addDefaultLocale(en);
+// Global flag to track if locale has been added
+if (!window.timeAgoLocaleAdded) {
+  TimeAgo.addDefaultLocale(en);
+  window.timeAgoLocaleAdded = true;
+}
 import { dummyUser, dummyCampaigns } from "./dummies";
 import { ipinfoKey, ipinfoUrl } from "../config/ipinfo.config";
 
+// Create TimeAgo instance after locale is registered
 const timeAgo = new TimeAgo("en-US");
 
 export const getCampaigns = () => {

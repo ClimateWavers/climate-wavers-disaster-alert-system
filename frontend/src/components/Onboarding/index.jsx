@@ -9,6 +9,8 @@ import Profile from "./Profile";
 import Community from "./Community";
 import BotLeg from "./BotLeg";
 import GrabLeg from "./GrabLeg";
+import Donate from "./Donate";
+import WaverX from "./WaverX";
 
 export {
   OnboardingLayout,
@@ -21,5 +23,7 @@ export {
   Chatbot,
   Community,
   BotLeg,
-  GrabLeg
+  GrabLeg,
+  Donate,
+  WaverX
 };

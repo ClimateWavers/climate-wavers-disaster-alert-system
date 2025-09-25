@@ -32,7 +32,7 @@ const Profile = () => {
       <Onboarding
         content={content}
         current={current}
-        next={"/onboarding/grableg"}
+        next={"/onboarding/donate"}
         prev={"/onboarding/community"}
         bot={"waverbot1"}
       />

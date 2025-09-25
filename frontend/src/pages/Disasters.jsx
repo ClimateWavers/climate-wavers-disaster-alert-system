@@ -10,22 +10,31 @@ const apiUrl = import.meta.env.VITE_APP_CHATBOT_URL + "/api/v1/disasters";
 
 const DisasterPage = () => {
   const [disasters, setDisasters] = useState([]);
-  const [total, setTotal] = useState([]);
+  const [total, setTotal] = useState(0);
   const [pageSize, setPageSize] = useState(15);
-  const [page, setPage] = useState(null);
+  const [page, setPage] = useState(1);
   const [current, setCurrent] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(apiUrl).then((res) => {
-      const { data } = res;
-      setDisasters(data?.data);
-      setTotal(data?.total);
-      setPage(data?.page);
-      setPageSize(data?.pageSize);
-      if (page > 1) {
-        setCurrent(current + pageSize);
-      }
-    });
+    setLoading(true);
+    axios.get(apiUrl)
+      .then((res) => {
+        const { data } = res;
+        setDisasters(data?.data || []);
+        setTotal(data?.total || 0);
+        setPage(data?.page || 1);
+        setPageSize(data?.pageSize || 15);
+        setCurrent(1);
+      })
+      .catch((error) => {
+        console.error('Error fetching disasters:', error);
+        setDisasters([]);
+        setTotal(0);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
   return (
     <div className="w-full overflow-hidden">
@@ -54,7 +63,13 @@ const DisasterPage = () => {
           </div>
           <div>
             <h2 className="font-bold md:mt-8 mt-2 py-4 border-b-2 self-end text-2xl  text-[#434343] leading-4 border-gray-300">
-              Showing {current} - {pageSize * page} of {total} results{" "}
+              {loading ? (
+                "Loading disasters..."
+              ) : disasters.length > 0 ? (
+                `Showing ${disasters.length} of ${total} results`
+              ) : (
+                "No disasters found"
+              )}
             </h2>
           </div>
           <Disasters disasters={disasters} />

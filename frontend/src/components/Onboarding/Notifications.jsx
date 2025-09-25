@@ -20,13 +20,14 @@ const Notifications = () => {
       view: "mobile",
     },
   ];
-  const current = 8;
+  const current = 7;
 
   return (
     <div>
       <Onboarding
         content={content}
         current={current}
+        next={"/onboarding/waverx"}
         prev={"/onboarding/disasters"}
         bot={"Waverbotfull"}
       />

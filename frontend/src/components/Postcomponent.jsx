@@ -38,7 +38,7 @@ const Postcomponent = ({ type, postId, comment }) => {
   return (
     <div>
       <Posts
-        posts={posts}
+        posts={posts || []}
         type={type}
         postId={postId}
         unlike={unlikeMutation}

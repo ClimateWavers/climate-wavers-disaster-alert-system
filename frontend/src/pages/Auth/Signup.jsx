@@ -15,6 +15,7 @@ import { client } from "../../api";
 import { endpoints } from "../../utils/endpoints";
 import { validateSignupForm, showSuccessMessage } from "../../utils/validation";
 import "../styles/signup-page.css";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -85,7 +86,12 @@ const Signup = () => {
       </div>
       <div className="w-[100%] lg:w-[50%] md:w-[50%] flex justify-center  ">
         <div className="lg:w-[75%] self-center mb-12 md:w-[100%] w-full  px-12 ">
-         
+          <div className="flex items-center mb-4">
+            <NavLink to="/" className="flex items-center text-[#2F4F4F] hover:text-[#1a3a3a] transition-colors">
+              <ArrowBackIcon className="mr-2" />
+              <span className="text-sm font-medium">Back to Home</span>
+            </NavLink>
+          </div>
           <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-primary font-bold font-serif text-[#2F4F4F] text-center mb-8">
             Sign Up
           </h1>

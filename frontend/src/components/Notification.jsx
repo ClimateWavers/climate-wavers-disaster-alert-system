@@ -52,11 +52,11 @@ const Notification = () => {
 
   const noticeUrl = (notice) => {
     if (notice?.content?.post) {
-      return `/${notice.content.post}/${notice.content.id}/comments`;
+      return `/app/${notice.content.post}/${notice.content.id}/comments`;
     } else if (notice?.notification_type === "follow") {
-      return `/${notice?.content?.follower?.id}/profile`;
+      return `/app/${notice?.content?.follower?.id}/profile`;
     } else if (notice?.content?.id) {
-      return `/${notice.content.id}/comments`;
+      return `/app/${notice.content.id}/comments`;
     }
   };
 
@@ -80,9 +80,12 @@ const Notification = () => {
                 src={
                   notices.user.profile_picture
                     ? notices.user.profile_picture
-                    : notices.user.profile_image
+                    : notices.user.profile_image || "/avatar.png"
                 }
                 className="w-12 h-12"
+                onError={(e) => {
+                  e.target.src = "/avatar.png";
+                }}
               />
               <div className="flex flex-col h-full">
                 <p className="text-xl text-start">{notices.message}</p>

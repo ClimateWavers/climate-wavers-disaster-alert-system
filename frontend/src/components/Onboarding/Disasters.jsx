@@ -28,7 +28,7 @@ const Disasters = () => {
       view: "mobile",
     },
   ];
-  const current = 7;
+  const current = 6;
 
   return (
     <div>

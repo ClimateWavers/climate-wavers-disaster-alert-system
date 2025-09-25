@@ -89,7 +89,6 @@ class Client {
   ) {
     const client = axios.create({
       baseURL: this.baseUrl,
-      method: method,
     });
 
     const token = getAuthToken();
@@ -101,7 +100,7 @@ class Client {
 
     if (authheaders) {
       config.headers = {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
         "X-CSRFToken": `${Cookies.get("csrftoken")}`,
       };
@@ -127,17 +126,15 @@ class Client {
         (endpoint.endsWith("post/") || endpoint.endsWith("comments/"))
       ) {
         response = { data: dummyPost };
-      } else response = await client(endpoint, config);
+      } else response = await client({...config, method, url: endpoint});
       if (authCookies) {
-        const cookiesConfig = {
-          domain: this.domain,
-        };
-        Cookies.set("accessToken", response.data.access_token, cookiesConfig);
+        // Set cookies without domain restriction for development
+        Cookies.set("accessToken", response.data.access_token);
         if (response?.data?.user){
-          Cookies.set("user", JSON.stringify(response.data.user), cookiesConfig);
+          Cookies.set("user", JSON.stringify(response.data.user));
         }
         else {
-          Cookies.set("user", JSON.stringify(response.data), cookiesConfig);
+          Cookies.set("user", JSON.stringify(response.data));
         }
       }
 
@@ -170,8 +167,12 @@ class Client {
   }
 }
 
+// Use relative URLs in development to leverage Vite proxy
+const isDevelopment = import.meta.env.DEV;
+const baseURL = isDevelopment ? "" : (import.meta.env.VITE_APP_BACKEND_URL || "http://127.0.0.1:8000");
+
 const client = new Client(
-  import.meta.env.VITE_APP_BACKEND_URL || "http://localhost:8000",
+  baseURL,
   import.meta.env.VITE_DOMAIN || "localhost"
 );
 

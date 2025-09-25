@@ -8,6 +8,17 @@ const status = {
 };
 
 const Disasters = ({ disasters }) => {
+  // Handle undefined or null disasters array
+  if (!disasters || !Array.isArray(disasters)) {
+    return (
+      <div className="flex flex-col w-full">
+        <div className="py-4">
+          <p className="text-gray-500">No disaster data available</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col w-full">
       {disasters.map((disaster) => {

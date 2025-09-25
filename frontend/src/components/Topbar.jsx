@@ -20,32 +20,35 @@ const Topbar = () => {
   const user = getUser();
 
   return (
-    <div className=" fixed z-50 bg-white flex  items-center justify-between md:border-b-1 border-[#000000] md:shadow-xl md:h-[80px] px-2 py-2  w-[100%]  ">
+    <div className="fixed z-50 bg-white flex items-center justify-between border-b border-gray-200 shadow-sm h-16 px-4 w-full">
       <button onClick={() => setIsOpen(true)}>
         <img
-          src={user?.profile_picture}
+          src={user?.profile_picture || "/avatar.png"}
           className="md:hidden self-end rounded-full h-12 w-12"
           alt="Profile Pic"
+          onError={(e) => {
+            e.target.src = "/avatar.png";
+          }}
         />
       </button>
 
       {isOpen === true ? <Mobilemenu setIsOpen={setIsOpen} /> : null}
-      <div className=" hidden md:flex justify-self-center md:justify-self-start px-4">
-        <img alt="logo" src="/logo.jpg" />
+      <div className="hidden md:flex items-center px-4">
+        <img alt="logo" src="/logo.jpg" className="h-10 w-auto" />
       </div>
-      <div className="px-8 w-[80%] justify-center  flex hidden md:flex">
+      <div className="flex-1 max-w-2xl mx-4 hidden md:flex">
         <input
-          className="bg-graylight-300 h-[60px] relative left-[6%] p-1 md:p-2 w-[83%] outline-[2px]  border border-[#dadada] focus:border-2 focus:outline-2 focus:outline-gray-300 border-gray-200 rounded-2xl text-graydark "
+          className="w-full h-10 px-4 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F4F4F] focus:border-transparent"
           type="text"
           placeholder="🔍 Search"
         />
       </div>
       <div className="flex  justify-end self-center">
         <button
-          className="text-center hidden md:grid items-center  mx-4 font-semibold bg-linear  text-white shadow-xl self-center shadow-white-300 lg:w-[12vw] w-[15vw]  px-4 md:h-[50px] lg:text-xl  rounded-full"
+          className="hidden md:flex items-center px-4 py-2 bg-[#2F4F4F] text-white rounded-lg hover:bg-[#1a3a3a] transition-colors font-medium"
           onClick={() => setIsModalOpen(true)}
         >
-          <p className="leading-5 self-center"> Report Disaster</p>
+          Report Disaster
         </button>
 
         {isModalOpen && (
@@ -55,7 +58,7 @@ const Topbar = () => {
         )}
         <div className="flex gap-x-4">
           <NavLink
-            to={`/notifications`}
+            to={`/app/notifications`}
             className="flex"
             onClick={() => setIsOpen(false)}
             end
@@ -90,9 +93,12 @@ const Topbar = () => {
         </div>
 
         <img
-          src={user?.profile_picture}
+          src={user?.profile_picture || "/avatar.png"}
           className="ml-2 hidden md:flex self-end rounded-full h-12 w-12"
           alt="Profile Pic"
+          onError={(e) => {
+            e.target.src = "/avatar.png";
+          }}
         />
       </div>
     </div>

@@ -1,21 +1,58 @@
-import Postcomponent from "./Postcomponent";
 import Feed from "./Feed";
+import Trending from "./Trending";
+import { useFeedData } from "../hooks/useFeedData";
+import { useState } from "react";
+
 const Community = () => {
+  const [activeFeed, setActiveFeed] = useState("Trending");
 
   const feeds = [
     "Trending",
-    "Climate Action",
+    "Climate Action", 
     "Alerts",
     "Disasters"
   ];
 
+  // Fetch data for the active feed
+  const { data: feedData, isLoading, error } = useFeedData(activeFeed);
+
   return (
-    <div className="text-2xl  pt-1 md:pt-5 ">
-      <div className=" text-lg md:text-xl hidden md:grid border-gray-200  hidden md:flex rounded-md h-[50px] pb-2 border-2 font-bold  ">
-      <Feed feeds={feeds} feedData={{}}/>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
+          {/* Main Content */}
+          <div className="lg:col-span-2">
+            {/* Feed Navigation */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-4">
+              <div className="text-lg md:text-xl border-gray-200 rounded-md h-[50px] border-2 font-bold">
+                <Feed 
+                  feeds={feeds} 
+                  feedData={feedData} 
+                  activeFeed={activeFeed}
+                  setActiveFeed={setActiveFeed}
+                  isLoading={isLoading}
+                  error={error}
+                />
+              </div>
+            </div>
+            
+            {/* All content is now handled by the Feed component */}
+          </div>
+          
+          {/* Trending Sidebar - Desktop */}
+          <div className="hidden lg:block lg:col-span-1">
+            <div className="space-y-4">
+              <Trending />
+              {/* Add more sidebar content here if needed */}
+            </div>
+          </div>
+          
+          {/* Trending for Mobile - Below posts */}
+          <div className="lg:hidden mt-4 sm:mt-6">
+            <Trending />
+          </div>
         </div>
-      {/* <div className='pb-1 md:pb-3 text-lg md:text-xl border-b-2 font-semibold'/> */}
-      <Postcomponent type={"post"}  />
+      </div>
     </div>
   );
 };

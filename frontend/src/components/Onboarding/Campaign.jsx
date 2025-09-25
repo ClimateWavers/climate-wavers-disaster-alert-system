@@ -28,7 +28,7 @@ const Campaign = () => {
       view: "mobile",
     },
   ];
-  const current = 6;
+  const current = 5;
 
   return (
     <div>
@@ -36,7 +36,7 @@ const Campaign = () => {
         content={content}
         current={current}
         next={"/onboarding/disasters"}
-        prev={"/onboarding/wallet"}
+        prev={"/onboarding/donate"}
         bot={"waverbotlegs"}
       />
     </div>

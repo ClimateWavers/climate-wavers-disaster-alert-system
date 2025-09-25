@@ -5,6 +5,7 @@ from .views import (
     ReactionViewSet, RepostViewSet, ViewViewSet, FollowViewSet,
     BookmarkViewSet, UserViewSet, NotificationListView, MarkNotificationsAsReadView, status_view
 )
+from .ai_views import generate_content, analyze_content, generate_hashtags
 
 
 # Initialize the default router
@@ -36,4 +37,9 @@ urlpatterns = [
     path('search-by-hashtag/',
          PostViewSet.as_view({'get': 'search_by_hashtag'})),
     path('trending/', PostViewSet.as_view({'get': 'trending'})),
+    
+    # AI endpoints
+    path('ai/generate-content/', generate_content, name='generate_content'),
+    path('ai/analyze-content/', analyze_content, name='analyze_content'),
+    path('ai/generate-hashtags/', generate_hashtags, name='generate_hashtags'),
 ]

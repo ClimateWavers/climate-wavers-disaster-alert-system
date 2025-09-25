@@ -2,6 +2,17 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
 const DisasterImages = ({ disasters }) => {
+  // Handle undefined or null disasters array
+  if (!disasters || !Array.isArray(disasters)) {
+    return (
+      <div className="flex md:py-8 py-4 max-w-screen overflow-x-auto">
+        <div className="px-4">
+          <p className="text-gray-500">No disaster data available</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex md:py-8 py-4 max-w-screen overflow-x-auto">
       {disasters.map((disaster) => (

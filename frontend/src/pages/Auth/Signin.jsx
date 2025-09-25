@@ -13,6 +13,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { client } from "../../api";
 import { useForm } from "react-hook-form";
 import { endpoints } from "../../utils/endpoints";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Cookies from "js-cookie";
 
 const Signin = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -45,10 +47,10 @@ const Signin = () => {
       );
       reset();
       setIsDisabled(false);
-      navigate("/");
+      navigate("/app");
     } catch (error) {
       setIsDisabled(false);
-      console.log("Login failed");
+      console.log("Login failed:", error);
     }
   };
   return (
@@ -60,6 +62,12 @@ const Signin = () => {
       <div className="w-[100%] lg:w-[30%] md:w-[40%] p-8 m-auto md:pt-1 pt-[200px]">
         <div className="md:hidden absolute top-0 py-8">
           <img alt="logo" src="/Vector.png"></img>
+        </div>
+        <div className="flex items-center mb-4">
+          <NavLink to="/" className="flex items-center text-[#2F4F4F] hover:text-[#1a3a3a] transition-colors">
+            <ArrowBackIcon className="mr-2" />
+            <span className="text-sm font-medium">Back to Home</span>
+          </NavLink>
         </div>
         <h1 className="lg:text-[40px] md:text-[40px] text-[24px] text-[#2F4F4F] font-bold font-serif text-center mb-8">
           Sign In

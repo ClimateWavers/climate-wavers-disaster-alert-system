@@ -97,10 +97,13 @@ const Profile = () => {
           onClick={(e) => handleCoverPhotoClick(e)} // Click handler for cover photo
         >
           <img
-            src={profile?.profile_picture}
+            src={profile?.profile_picture || "/avatar.png"}
             className="absolute bottom-0 left-0 w-28 ml-2 mb-2 z-10  rounded-full transform translate-y-1/2 cursor-pointer"
             alt="Profile"
             onClick={handleProfilePictureClick} // Click handler for profile picture
+            onError={(e) => {
+              e.target.src = "/avatar.png";
+            }}
           />
         </div>
       </div>
