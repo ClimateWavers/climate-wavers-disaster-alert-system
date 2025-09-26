@@ -104,7 +104,7 @@ const Menu = ({ setIsOpen }) => {
                 src={isActive ? "../../tree1.svg" : "../../tree.svg"}
                 className="mr-3 w-5 h-5"
               />
-              Plant Tree
+              Plant Trees
             </>
           )}
         </NavLink>
@@ -120,7 +120,7 @@ const Menu = ({ setIsOpen }) => {
                   src={isActive ? "../../admin1.svg" : "../../admin.svg"}
                   className="mr-3 w-5 h-5"
                 />
-                Admin
+                Tree Admin
               </>
             )}
           </NavLink>
@@ -184,7 +184,7 @@ const Menu = ({ setIsOpen }) => {
           className={({ isActive }) => getNavLinkClassName(isActive)}
         >
           <img src="../../waverbot.png" className="mr-4 w-auto" />
-          WaverX
+          WaverX AI
         </NavLink>
       </div>
       
