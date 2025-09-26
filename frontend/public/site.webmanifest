@@ -10,8 +10,13 @@
     "icons": [
       {
         "src": "/Vector.png",
-        "sizes": "any",
-        "type": "image/svg+xml"
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "/Vector.png",
+        "sizes": "512x512",
+        "type": "image/png"
       }
     ],
   "categories": ["environment", "weather", "social", "productivity"],

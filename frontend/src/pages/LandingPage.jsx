@@ -9,9 +9,724 @@ import fb from "../assets/Icons/fb.webp";
 import exx from "../assets/Icons/x.png";
 import linkedIn from "../assets/Icons/lin.webp";
 import yt from "../assets/Icons/yt.svg";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { LandingPageSEO } from "../components/SEOComponents";
+import { Wrapper, Status } from '@googlemaps/react-wrapper';
+
+// Google Maps API key (you'll need to replace this with your actual API key)
+const GOOGLE_MAPS_API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+// Mock Google Maps component with detailed world map
+const MockGoogleMap = ({ disasters, onDisasterClick }) => {
+  const [selectedDisaster, setSelectedDisaster] = useState(null);
+
+  return (
+    <div className="relative w-full h-full min-h-[300px] sm:min-h-[400px] md:min-h-[500px] lg:min-h-[600px] xl:min-h-[700px] bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 overflow-hidden rounded-2xl shadow-2xl border border-blue-700">
+      {/* Global Real-Time Satellite Map Background */}
+      <div className="absolute inset-0" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='1200' height='800' viewBox='0 0 1200 800' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='global-satellite' patternUnits='userSpaceOnUse' width='1200' height='800'%3E%3Crect width='1200' height='800' fill='%23002244'/%3E%3Cpath d='M0 50h1200M0 100h1200M0 150h1200M0 200h1200M0 250h1200M0 300h1200M0 350h1200M0 400h1200M0 450h1200M0 500h1200M0 550h1200M0 600h1200M0 650h1200M0 700h1200M0 750h1200M50 0v800M100 0v800M150 0v800M200 0v800M250 0v800M300 0v800M350 0v800M400 0v800M450 0v800M500 0v800M550 0v800M600 0v800M650 0v800M700 0v800M750 0v800M800 0v800M850 0v800M900 0v800M950 0v800M1000 0v800M1050 0v800M1100 0v800M1150 0v800' stroke='%23ffffff' stroke-width='0.3' opacity='0.08'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='1200' height='800' fill='url(%23global-satellite)'/%3E%3C/svg%3E")`,
+        backgroundSize: 'cover'
+      }}>
+        {/* Ocean Background - Matching Reference Image */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-800 via-blue-700 to-blue-900"></div>
+        
+        {/* NORTH AMERICA - Enhanced Satellite View */}
+        <div className="absolute top-[15%] left-[10%] w-[30%] h-[45%] opacity-95 rounded-lg shadow-lg" style={{
+          background: `
+            radial-gradient(ellipse at 25% 15%, rgba(34, 139, 34, 0.95) 0%, rgba(0, 100, 0, 0.85) 25%, rgba(0, 80, 0, 0.7) 50%, rgba(0, 60, 0, 0.5) 75%, transparent 100%),
+            radial-gradient(ellipse at 70% 60%, rgba(139, 69, 19, 0.9) 0%, rgba(160, 82, 45, 0.7) 35%, rgba(205, 133, 63, 0.5) 65%, transparent 100%),
+            radial-gradient(ellipse at 15% 80%, rgba(255, 140, 0, 0.8) 0%, rgba(255, 215, 0, 0.6) 45%, rgba(255, 255, 0, 0.4) 75%, transparent 100%),
+            radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.3) 0%, rgba(240, 240, 240, 0.2) 50%, transparent 100%)
+          `,
+          filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))'
+        }}></div>
+        
+        {/* USA States - Clear Boundaries */}
+        <div className="absolute top-[20%] left-[15%] w-[25%] h-[35%] opacity-90" style={{
+          background: `
+            linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+            linear-gradient(0deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+            radial-gradient(ellipse at 30% 20%, rgba(34, 139, 34, 0.8) 0%, rgba(0, 100, 0, 0.6) 50%, transparent 100%)
+          `,
+          backgroundSize: '20px 20px'
+        }}></div>
+        
+        {/* SOUTH AMERICA - Clear Continent Shape */}
+        <div className="absolute top-[45%] left-[15%] w-[18%] h-[40%] opacity-98" style={{
+          background: `
+            radial-gradient(ellipse at center, rgba(0, 128, 0, 0.95) 0%, rgba(34, 139, 34, 0.9) 20%, rgba(0, 100, 0, 0.7) 50%, rgba(0, 80, 0, 0.5) 80%, transparent 100%),
+            radial-gradient(ellipse at 60% 20%, rgba(128, 128, 128, 0.9) 0%, rgba(105, 105, 105, 0.7) 40%, rgba(80, 80, 80, 0.5) 70%, transparent 100%)
+          `
+        }}></div>
+        
+        {/* Brazil - Clear Country Shape */}
+        <div className="absolute top-[50%] left-[18%] w-[12%] h-[30%] opacity-95" style={{
+          background: `
+            linear-gradient(90deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+            linear-gradient(0deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+            radial-gradient(ellipse at center, rgba(0, 128, 0, 0.9) 0%, rgba(34, 139, 34, 0.7) 60%, transparent 100%)
+          `,
+          backgroundSize: '15px 15px'
+        }}></div>
+        
+        {/* EUROPE - Enhanced Satellite View */}
+        <div className="absolute top-[20%] left-[40%] w-[25%] h-[30%] opacity-95 rounded-lg shadow-lg" style={{
+          background: `
+            radial-gradient(ellipse at center, rgba(34, 139, 34, 0.95) 0%, rgba(0, 100, 0, 0.8) 35%, rgba(0, 80, 0, 0.6) 65%, transparent 100%),
+            radial-gradient(ellipse at 30% 70%, rgba(128, 128, 128, 0.9) 0%, rgba(105, 105, 105, 0.7) 45%, rgba(80, 80, 80, 0.5) 75%, transparent 100%),
+            radial-gradient(ellipse at 60% 20%, rgba(255, 255, 255, 0.4) 0%, rgba(240, 240, 240, 0.3) 50%, transparent 100%)
+          `,
+          filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))'
+        }}></div>
+        
+        {/* European Countries - Clear Boundaries */}
+        <div className="absolute top-[25%] left-[42%] w-[20%] h-[25%] opacity-90" style={{
+          background: `
+            linear-gradient(90deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+            linear-gradient(0deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+            radial-gradient(ellipse at center, rgba(34, 139, 34, 0.8) 0%, rgba(0, 100, 0, 0.6) 60%, transparent 100%)
+          `,
+          backgroundSize: '12px 12px'
+        }}></div>
+        
+        {/* AFRICA - Enhanced Satellite View */}
+        <div className="absolute top-[35%] left-[45%] w-[30%] h-[45%] opacity-95 rounded-lg shadow-lg" style={{
+          background: `
+            radial-gradient(ellipse at 30% 20%, rgba(255, 140, 0, 0.95) 0%, rgba(255, 215, 0, 0.8) 30%, rgba(255, 255, 0, 0.6) 60%, transparent 100%),
+            radial-gradient(ellipse at 70% 60%, rgba(34, 139, 34, 0.95) 0%, rgba(0, 100, 0, 0.8) 35%, rgba(0, 80, 0, 0.6) 65%, transparent 100%),
+            radial-gradient(ellipse at 50% 80%, rgba(139, 69, 19, 0.9) 0%, rgba(160, 82, 45, 0.7) 45%, rgba(205, 133, 63, 0.5) 75%, transparent 100%),
+            radial-gradient(ellipse at 20% 50%, rgba(255, 255, 255, 0.3) 0%, rgba(240, 240, 240, 0.2) 50%, transparent 100%)
+          `,
+          filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))'
+        }}></div>
+        
+        {/* African Countries - Clear Boundaries */}
+        <div className="absolute top-[40%] left-[48%] w-[25%] h-[35%] opacity-90" style={{
+          background: `
+            linear-gradient(90deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+            linear-gradient(0deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+            radial-gradient(ellipse at 30% 20%, rgba(255, 140, 0, 0.8) 0%, rgba(255, 215, 0, 0.6) 50%, transparent 100%)
+          `,
+          backgroundSize: '18px 18px'
+        }}></div>
+        
+        {/* ASIA - Enhanced Satellite View */}
+        <div className="absolute top-[20%] left-[60%] w-[35%] h-[50%] opacity-95 rounded-lg shadow-lg" style={{
+          background: `
+            radial-gradient(ellipse at 40% 15%, rgba(255, 255, 255, 0.98) 0%, rgba(240, 240, 240, 0.9) 25%, rgba(220, 220, 220, 0.7) 50%, transparent 100%),
+            radial-gradient(ellipse at 60% 50%, rgba(34, 139, 34, 0.95) 0%, rgba(0, 100, 0, 0.8) 35%, rgba(0, 80, 0, 0.6) 65%, transparent 100%),
+            radial-gradient(ellipse at 20% 70%, rgba(255, 140, 0, 0.9) 0%, rgba(255, 215, 0, 0.7) 40%, rgba(255, 255, 0, 0.5) 70%, transparent 100%),
+            radial-gradient(ellipse at 80% 30%, rgba(139, 69, 19, 0.6) 0%, rgba(160, 82, 45, 0.4) 50%, transparent 100%)
+          `,
+          filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))'
+        }}></div>
+        
+        {/* Asian Countries - Clear Boundaries */}
+        <div className="absolute top-[25%] left-[65%] w-[25%] h-[40%] opacity-90" style={{
+          background: `
+            linear-gradient(90deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+            linear-gradient(0deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+            radial-gradient(ellipse at 40% 15%, rgba(255, 255, 255, 0.9) 0%, rgba(240, 240, 240, 0.7) 50%, transparent 100%)
+          `,
+          backgroundSize: '16px 16px'
+        }}></div>
+        
+        {/* AUSTRALIA - Enhanced Satellite View */}
+        <div className="absolute top-[65%] left-[65%] w-[25%] h-[30%] opacity-95 rounded-lg shadow-lg" style={{
+          background: `
+            radial-gradient(ellipse at center, rgba(255, 140, 0, 0.95) 0%, rgba(255, 215, 0, 0.8) 30%, rgba(255, 255, 0, 0.6) 60%, transparent 100%),
+            radial-gradient(ellipse at 30% 30%, rgba(34, 139, 34, 0.9) 0%, rgba(0, 100, 0, 0.7) 45%, rgba(0, 80, 0, 0.5) 75%, transparent 100%),
+            radial-gradient(ellipse at 70% 70%, rgba(139, 69, 19, 0.7) 0%, rgba(160, 82, 45, 0.5) 50%, transparent 100%),
+            radial-gradient(ellipse at 50% 20%, rgba(255, 255, 255, 0.4) 0%, rgba(240, 240, 240, 0.3) 50%, transparent 100%)
+          `,
+          filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))'
+        }}></div>
+        
+        {/* Australian States - Clear Boundaries */}
+        <div className="absolute top-[70%] left-[68%] w-[18%] h-[20%] opacity-90" style={{
+          background: `
+            linear-gradient(90deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+            linear-gradient(0deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
+            radial-gradient(ellipse at center, rgba(255, 140, 0, 0.8) 0%, rgba(255, 215, 0, 0.6) 60%, transparent 100%)
+          `,
+          backgroundSize: '14px 14px'
+        }}></div>
+        
+        {/* ANTARCTICA - Enhanced Ice Cap */}
+        <div className="absolute top-[5%] left-[35%] w-[35%] h-[20%] opacity-95 rounded-lg shadow-lg" style={{
+          background: `
+            radial-gradient(ellipse at center, rgba(255, 255, 255, 0.99) 0%, rgba(240, 240, 240, 0.95) 20%, rgba(220, 220, 220, 0.8) 45%, rgba(200, 200, 200, 0.6) 70%, transparent 100%),
+            radial-gradient(ellipse at 30% 30%, rgba(230, 230, 230, 0.8) 0%, rgba(210, 210, 210, 0.6) 50%, transparent 100%),
+            radial-gradient(ellipse at 70% 70%, rgba(250, 250, 250, 0.6) 0%, rgba(240, 240, 240, 0.4) 50%, transparent 100%)
+          `,
+          filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))'
+        }}></div>
+        
+        {/* Enhanced Global Geographic Coordinate Grid - Latitude Lines */}
+        <div className="absolute top-[10%] left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-white to-transparent opacity-70" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.8'/%3E%3C/svg%3E")`,
+          backgroundSize: '20px 1px',
+          filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))'
+        }}></div>
+        <div className="absolute top-[20%] left-0 w-full h-0.5 bg-white opacity-60" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '20px 1px'
+        }}></div>
+        <div className="absolute top-[30%] left-0 w-full h-0.5 bg-white opacity-60" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '20px 1px'
+        }}></div>
+        <div className="absolute top-[40%] left-0 w-full h-0.5 bg-white opacity-60" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '20px 1px'
+        }}></div>
+        <div className="absolute top-[50%] left-0 w-full h-0.5 bg-white opacity-60" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '20px 1px'
+        }}></div>
+        <div className="absolute top-[60%] left-0 w-full h-0.5 bg-white opacity-60" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '20px 1px'
+        }}></div>
+        <div className="absolute top-[70%] left-0 w-full h-0.5 bg-white opacity-60" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '20px 1px'
+        }}></div>
+        <div className="absolute top-[80%] left-0 w-full h-0.5 bg-white opacity-60" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '20px 1px'
+        }}></div>
+        <div className="absolute top-[90%] left-0 w-full h-0.5 bg-white opacity-60" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '20px 1px'
+        }}></div>
+        
+        {/* Global Longitude Grid Lines */}
+        <div className="absolute top-0 left-[10%] w-0.5 h-full bg-white opacity-60" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '1px 20px'
+        }}></div>
+        <div className="absolute top-0 left-[20%] w-0.5 h-full bg-white opacity-60" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '1px 20px'
+        }}></div>
+        <div className="absolute top-0 left-[30%] w-0.5 h-full bg-white opacity-60" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '1px 20px'
+        }}></div>
+        <div className="absolute top-0 left-[40%] w-0.5 h-full bg-white opacity-60" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '1px 20px'
+        }}></div>
+        <div className="absolute top-0 left-[50%] w-0.5 h-full bg-white opacity-60" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '1px 20px'
+        }}></div>
+        <div className="absolute top-0 left-[60%] w-0.5 h-full bg-white opacity-60" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '1px 20px'
+        }}></div>
+        <div className="absolute top-0 left-[70%] w-0.5 h-full bg-white opacity-60" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '1px 20px'
+        }}></div>
+        <div className="absolute top-0 left-[80%] w-0.5 h-full bg-white opacity-60" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '1px 20px'
+        }}></div>
+        <div className="absolute top-0 left-[90%] w-0.5 h-full bg-white opacity-60" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
+          backgroundSize: '1px 20px'
+        }}></div>
+        
+        {/* Enhanced Global Coordinate Labels */}
+        <div className="absolute top-[10%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">80N</div>
+        <div className="absolute top-[20%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">60N</div>
+        <div className="absolute top-[30%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">40N</div>
+        <div className="absolute top-[40%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">20N</div>
+        <div className="absolute top-[50%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">0°</div>
+        <div className="absolute top-[60%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">20S</div>
+        <div className="absolute top-[70%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">40S</div>
+        <div className="absolute top-[80%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">60S</div>
+        <div className="absolute top-[90%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">80S</div>
+        
+        {/* Enhanced Longitude Labels */}
+        <div className="absolute top-2 left-[10%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">180W</div>
+        <div className="absolute top-2 left-[20%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">140W</div>
+        <div className="absolute top-2 left-[30%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">100W</div>
+        <div className="absolute top-2 left-[40%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">60W</div>
+        <div className="absolute top-2 left-[50%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">20W</div>
+        <div className="absolute top-2 left-[60%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">20E</div>
+        <div className="absolute top-2 left-[70%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">60E</div>
+        <div className="absolute top-2 left-[80%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">100E</div>
+        <div className="absolute top-2 left-[90%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">140E</div>
+        
+        {/* Realistic Satellite Terrain Patterns */}
+        {/* Himalayan Mountain Range */}
+        <div className="absolute top-[15%] left-[45%] w-[40%] h-[20%] opacity-90" style={{
+          background: `radial-gradient(ellipse at center, rgba(128, 128, 128, 0.8) 0%, rgba(105, 105, 105, 0.6) 50%, transparent 100%)`
+        }}></div>
+        
+        {/* Indian Subcontinent - Mixed Terrain */}
+        <div className="absolute top-[25%] left-[40%] w-[35%] h-[45%] opacity-85" style={{
+          background: `
+            radial-gradient(ellipse at 30% 20%, rgba(34, 139, 34, 0.7) 0%, transparent 60%),
+            radial-gradient(ellipse at 70% 60%, rgba(255, 215, 0, 0.6) 0%, transparent 70%),
+            radial-gradient(ellipse at 20% 80%, rgba(160, 82, 45, 0.5) 0%, transparent 50%)
+          `
+        }}></div>
+        
+        {/* Ganges Delta - Bangladesh */}
+        <div className="absolute top-[35%] left-[50%] w-[20%] h-[25%] opacity-90" style={{
+          background: `radial-gradient(ellipse at center, rgba(0, 100, 0, 0.8) 0%, rgba(34, 139, 34, 0.6) 50%, transparent 100%)`
+        }}></div>
+        
+        {/* Tibetan Plateau */}
+        <div className="absolute top-[10%] left-[65%] w-[25%] h-[30%] opacity-80" style={{
+          background: `radial-gradient(ellipse at center, rgba(255, 215, 0, 0.7) 0%, rgba(218, 165, 32, 0.5) 50%, transparent 100%)`
+        }}></div>
+        
+        {/* Thar Desert */}
+        <div className="absolute top-[60%] left-[35%] w-[25%] h-[20%] opacity-75" style={{
+          background: `radial-gradient(ellipse at center, rgba(255, 140, 0, 0.6) 0%, rgba(255, 215, 0, 0.4) 50%, transparent 100%)`
+        }}></div>
+        
+        {/* Southeast Asian Forests */}
+        <div className="absolute top-[40%] left-[60%] w-[20%] h-[30%] opacity-85" style={{
+          background: `radial-gradient(ellipse at center, rgba(0, 128, 0, 0.8) 0%, rgba(34, 139, 34, 0.6) 50%, transparent 100%)`
+        }}></div>
+        
+        {/* Yellow Rectangular Frames - Exactly Like Your Image */}
+        {/* Outer Frame - Large Rectangle */}
+        <div className="absolute top-[5%] left-[10%] w-[80%] h-[90%] border-2 border-yellow-400">
+          {/* Corner Markers - Small Yellow Squares */}
+          <div className="absolute -top-1 -left-1 w-2 h-2 bg-yellow-400"></div>
+          <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400"></div>
+          <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-yellow-400"></div>
+          <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-yellow-400"></div>
+          {/* Midpoint Markers - Small Yellow Squares */}
+          <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-yellow-400"></div>
+          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-yellow-400"></div>
+          <div className="absolute top-1/2 -left-1 transform -translate-y-1/2 w-2 h-2 bg-yellow-400"></div>
+          <div className="absolute top-1/2 -right-1 transform -translate-y-1/2 w-2 h-2 bg-yellow-400"></div>
+        </div>
+        
+        {/* Inner Frame - Smaller Rectangle Over Bay of Bengal */}
+        <div className="absolute top-[30%] left-[50%] w-[30%] h-[45%] border-2 border-yellow-400">
+          {/* Corner Markers - Small Yellow Squares */}
+          <div className="absolute -top-1 -left-1 w-2 h-2 bg-yellow-400"></div>
+          <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400"></div>
+          <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-yellow-400"></div>
+          <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-yellow-400"></div>
+          {/* Midpoint Markers - Small Yellow Squares */}
+          <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-yellow-400"></div>
+          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-yellow-400"></div>
+          <div className="absolute top-1/2 -left-1 transform -translate-y-1/2 w-2 h-2 bg-yellow-400"></div>
+          <div className="absolute top-1/2 -right-1 transform -translate-y-1/2 w-2 h-2 bg-yellow-400"></div>
+        </div>
+        
+        {/* Numbered Markers - Exactly Like Your Image */}
+        <div className="absolute top-[38%] left-[58%] w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-black font-bold text-sm shadow-lg border-2 border-yellow-300">
+          1
+        </div>
+        <div className="absolute top-[48%] left-[60%] w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-black font-bold text-sm shadow-lg border-2 border-yellow-300">
+          2
+        </div>
+        
+        {/* CONTINENT LABELS - Matching Reference Image */}
+        <div className="absolute top-[20%] left-[15%] text-sm font-bold text-green-400 bg-black/50 px-2 py-1 rounded">NORTH AMERICA</div>
+        <div className="absolute top-[25%] left-[45%] text-sm font-bold text-green-400 bg-black/50 px-2 py-1 rounded">EUROPE</div>
+        <div className="absolute top-[40%] left-[50%] text-sm font-bold text-green-400 bg-black/50 px-2 py-1 rounded">AFRICA</div>
+        <div className="absolute top-[25%] left-[70%] text-sm font-bold text-green-400 bg-black/50 px-2 py-1 rounded">ASIA</div>
+        <div className="absolute top-[70%] left-[75%] text-sm font-bold text-green-400 bg-black/50 px-2 py-1 rounded">AUSTRALIA</div>
+        <div className="absolute top-[60%] left-[20%] text-sm font-bold text-green-400 bg-black/50 px-2 py-1 rounded">SOUTH AMERICA</div>
+        
+        {/* COUNTRY LABELS - Matching Reference Image */}
+        <div className="absolute top-[25%] left-[20%] text-xs font-bold text-yellow-300">USA</div>
+        <div className="absolute top-[20%] left-[15%] text-xs font-bold text-yellow-300">CANADA</div>
+        <div className="absolute top-[28%] left-[47%] text-xs font-bold text-yellow-300">SPAIN</div>
+        <div className="absolute top-[25%] left-[45%] text-xs font-bold text-yellow-300">UK</div>
+        <div className="absolute top-[35%] left-[50%] text-xs font-bold text-yellow-300">EGYPT</div>
+        <div className="absolute top-[45%] left-[48%] text-xs font-bold text-yellow-300">NIGERIA</div>
+        <div className="absolute top-[55%] left-[50%] text-xs font-bold text-yellow-300">SOUTH AFRICA</div>
+        <div className="absolute top-[32%] left-[70%] text-xs font-bold text-yellow-300">CHINA</div>
+        <div className="absolute top-[40%] left-[65%] text-xs font-bold text-yellow-300">INDIA</div>
+        <div className="absolute top-[65%] left-[20%] text-xs font-bold text-yellow-300">BRAZIL</div>
+        <div className="absolute top-[70%] left-[18%] text-xs font-bold text-yellow-300">ARGENTINA</div>
+        <div className="absolute top-[75%] left-[15%] text-xs font-bold text-yellow-300">CHILE</div>
+        
+        {/* CITY MARKERS - Matching Reference Image */}
+        <div className="absolute top-[25%] left-[20%] w-1.5 h-1.5 bg-yellow-400 rounded-full shadow-lg"></div>
+        <div className="absolute top-[25%] left-[20%] text-yellow-300 text-xs font-bold ml-2 mt-1">Los Angeles</div>
+        
+        <div className="absolute top-[25%] left-[45%] w-1.5 h-1.5 bg-yellow-400 rounded-full shadow-lg"></div>
+        <div className="absolute top-[25%] left-[45%] text-yellow-300 text-xs font-bold ml-2 mt-1">London</div>
+        
+        <div className="absolute top-[28%] left-[47%] w-1.5 h-1.5 bg-yellow-400 rounded-full shadow-lg"></div>
+        <div className="absolute top-[28%] left-[47%] text-yellow-300 text-xs font-bold ml-2 mt-1">Paris</div>
+        
+        <div className="absolute top-[35%] left-[50%] w-1.5 h-1.5 bg-yellow-400 rounded-full shadow-lg"></div>
+        <div className="absolute top-[35%] left-[50%] text-yellow-300 text-xs font-bold ml-2 mt-1">Cairo</div>
+        
+        <div className="absolute top-[30%] left-[75%] w-1.5 h-1.5 bg-yellow-400 rounded-full shadow-lg"></div>
+        <div className="absolute top-[30%] left-[75%] text-yellow-300 text-xs font-bold ml-2 mt-1">Tokyo</div>
+        
+        <div className="absolute top-[32%] left-[70%] w-1.5 h-1.5 bg-yellow-400 rounded-full shadow-lg"></div>
+        <div className="absolute top-[32%] left-[70%] text-yellow-300 text-xs font-bold ml-2 mt-1">Beijing</div>
+        
+        <div className="absolute top-[40%] left-[65%] w-1.5 h-1.5 bg-yellow-400 rounded-full shadow-lg"></div>
+        <div className="absolute top-[40%] left-[65%] text-yellow-300 text-xs font-bold ml-2 mt-1">Mumbai</div>
+        
+        {/* South America Countries */}
+        <div className="absolute top-[55%] left-[20%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">BRAZIL</div>
+        <div className="absolute top-[50%] left-[25%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">ARGENTINA</div>
+        <div className="absolute top-[60%] left-[22%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">CHILE</div>
+        
+        {/* European Countries */}
+        <div className="absolute top-[30%] left-[45%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">UK</div>
+        <div className="absolute top-[35%] left-[48%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">FRANCE</div>
+        <div className="absolute top-[32%] left-[50%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">GERMANY</div>
+        <div className="absolute top-[40%] left-[47%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">SPAIN</div>
+        
+        {/* African Countries */}
+        <div className="absolute top-[50%] left-[55%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">EGYPT</div>
+        <div className="absolute top-[55%] left-[52%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">NIGERIA</div>
+        <div className="absolute top-[60%] left-[50%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">SOUTH AFRICA</div>
+        <div className="absolute top-[45%] left-[48%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">LIBYA</div>
+        
+        {/* Asian Countries */}
+        <div className="absolute top-[40%] left-[70%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">CHINA</div>
+        <div className="absolute top-[35%] left-[75%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">JAPAN</div>
+        <div className="absolute top-[45%] left-[68%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">INDIA</div>
+        <div className="absolute top-[50%] left-[72%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">THAILAND</div>
+        <div className="absolute top-[55%] left-[70%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">INDONESIA</div>
+        
+        {/* Australian States */}
+        <div className="absolute top-[75%] left-[70%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">NSW</div>
+        <div className="absolute top-[72%] left-[75%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">VIC</div>
+        <div className="absolute top-[78%] left-[68%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">QLD</div>
+        
+        {/* MAJOR GLOBAL CITIES - Responsive */}
+        {/* North America */}
+        <div className="absolute top-[30%] left-[20%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
+        <div className="absolute top-[35%] left-[23%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">New York</div>
+        
+        <div className="absolute top-[35%] left-[15%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
+        <div className="absolute top-[40%] left-[18%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">Los Angeles</div>
+        
+        {/* Europe */}
+        <div className="absolute top-[30%] left-[48%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
+        <div className="absolute top-[35%] left-[51%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">London</div>
+        
+        <div className="absolute top-[35%] left-[50%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
+        <div className="absolute top-[40%] left-[53%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">Paris</div>
+        
+        {/* Asia */}
+        <div className="absolute top-[40%] left-[75%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
+        <div className="absolute top-[45%] left-[78%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">Tokyo</div>
+        
+        <div className="absolute top-[45%] left-[70%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
+        <div className="absolute top-[50%] left-[73%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">Beijing</div>
+        
+        <div className="absolute top-[50%] left-[68%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
+        <div className="absolute top-[55%] left-[71%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">Mumbai</div>
+        
+        {/* Africa */}
+        <div className="absolute top-[55%] left-[55%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
+        <div className="absolute top-[60%] left-[58%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">Cairo</div>
+        
+        {/* Australia */}
+        <div className="absolute top-[75%] left-[75%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
+        <div className="absolute top-[80%] left-[78%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">Sydney</div>
+        
+        {/* GLOBAL OCEANS - Real Satellite Water */}
+        {/* Pacific Ocean - West Coast */}
+        <div className="absolute top-[20%] left-[5%] w-[15%] h-[60%] opacity-98" style={{
+          background: `
+            radial-gradient(ellipse at center, rgba(0, 50, 150, 0.95) 0%, rgba(0, 25, 100, 0.9) 30%, rgba(0, 10, 80, 0.8) 60%, rgba(0, 5, 60, 0.7) 80%, transparent 100%)
+          `
+        }}></div>
+        
+        {/* Atlantic Ocean */}
+        <div className="absolute top-[25%] left-[35%] w-[15%] h-[50%] opacity-98" style={{
+          background: `
+            radial-gradient(ellipse at center, rgba(0, 50, 150, 0.95) 0%, rgba(0, 25, 100, 0.9) 30%, rgba(0, 10, 80, 0.8) 60%, rgba(0, 5, 60, 0.7) 80%, transparent 100%)
+          `
+        }}></div>
+        
+        {/* Indian Ocean */}
+        <div className="absolute top-[40%] left-[75%] w-[25%] h-[40%] opacity-98" style={{
+          background: `
+            radial-gradient(ellipse at center, rgba(0, 50, 150, 0.95) 0%, rgba(0, 25, 100, 0.9) 30%, rgba(0, 10, 80, 0.8) 60%, rgba(0, 5, 60, 0.7) 80%, transparent 100%)
+          `
+        }}></div>
+        
+        {/* Arctic Ocean */}
+        <div className="absolute top-[5%] left-[20%] w-[60%] h-[15%] opacity-98" style={{
+          background: `
+            radial-gradient(ellipse at center, rgba(0, 50, 150, 0.95) 0%, rgba(0, 25, 100, 0.9) 30%, rgba(0, 10, 80, 0.8) 60%, rgba(0, 5, 60, 0.7) 80%, transparent 100%)
+          `
+        }}></div>
+        
+        {/* Southern Ocean */}
+        <div className="absolute top-[85%] left-0 w-full h-[15%] opacity-98" style={{
+          background: `
+            radial-gradient(ellipse at center, rgba(0, 50, 150, 0.95) 0%, rgba(0, 25, 100, 0.9) 30%, rgba(0, 10, 80, 0.8) 60%, rgba(0, 5, 60, 0.7) 80%, transparent 100%)
+          `
+        }}></div>
+        
+        {/* GLOBAL SATELLITE CLOUD COVER */}
+        <div className="absolute top-[15%] left-[20%] w-[25%] h-[12%] opacity-60" style={{
+          background: `
+            radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.8) 0%, rgba(240, 240, 240, 0.6) 30%, rgba(220, 220, 220, 0.4) 60%, transparent 100%),
+            radial-gradient(ellipse at 70% 70%, rgba(255, 255, 255, 0.6) 0%, rgba(240, 240, 240, 0.4) 40%, transparent 80%)
+          `
+        }}></div>
+        <div className="absolute top-[35%] left-[45%] w-[20%] h-[10%] opacity-55" style={{
+          background: `
+            radial-gradient(ellipse at center, rgba(255, 255, 255, 0.7) 0%, rgba(240, 240, 240, 0.5) 40%, rgba(220, 220, 220, 0.3) 70%, transparent 100%)
+          `
+        }}></div>
+        <div className="absolute top-[55%] left-[65%] w-[18%] h-[8%] opacity-50" style={{
+          background: `
+            radial-gradient(ellipse at center, rgba(255, 255, 255, 0.6) 0%, rgba(240, 240, 240, 0.4) 50%, transparent 100%)
+          `
+        }}></div>
+        <div className="absolute top-[25%] left-[70%] w-[15%] h-[6%] opacity-45" style={{
+          background: `
+            radial-gradient(ellipse at center, rgba(255, 255, 255, 0.5) 0%, rgba(240, 240, 240, 0.3) 60%, transparent 100%)
+          `
+        }}></div>
+        <div className="absolute top-[45%] left-[15%] w-[12%] h-[7%] opacity-40" style={{
+          background: `
+            radial-gradient(ellipse at center, rgba(255, 255, 255, 0.4) 0%, rgba(240, 240, 240, 0.2) 70%, transparent 100%)
+          `
+        }}></div>
+        
+        {/* Satellite Image Texture and Noise */}
+        <div className="absolute inset-0 opacity-15" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='8' height='8' viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='1' height='1' fill='%23ffffff' opacity='0.05'/%3E%3Crect x='3' y='3' width='1' height='1' fill='%23ffffff' opacity='0.05'/%3E%3Crect x='6' y='6' width='1' height='1' fill='%23ffffff' opacity='0.05'/%3E%3C/svg%3E")`,
+          backgroundSize: '8px 8px'
+        }}></div>
+        
+        {/* Satellite Image Grain */}
+        <div className="absolute inset-0 opacity-8" style={{
+          background: `
+            radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+            radial-gradient(circle at 40% 60%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
+            radial-gradient(circle at 60% 40%, rgba(255, 255, 255, 0.02) 0%, transparent 50%)
+          `
+        }}></div>
+      </div>
+
+      {/* Professional Emergency Alert Markers */}
+      {disasters.map((disaster, index) => (
+        <div
+          key={disaster.id}
+          className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
+          style={{
+            left: `${(disaster.coordinates.lng + 180) / 360 * 100}%`,
+            top: `${(90 - disaster.coordinates.lat) / 180 * 100}%`
+          }}
+          onClick={() => {
+            setSelectedDisaster(disaster);
+            onDisasterClick(disaster);
+          }}
+        >
+                {/* Enhanced Professional Alert Marker */}
+                <div className="relative group">
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full border-3 sm:border-4 border-white shadow-2xl flex items-center justify-center text-white font-bold text-sm sm:text-base md:text-lg hover:scale-110 transition-all duration-300 ${
+                    disaster.severity === 'CRITICAL' ? 'bg-gradient-to-br from-red-500 via-red-600 to-red-700' :
+                    disaster.severity === 'HIGH' ? 'bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700' :
+                    disaster.severity === 'MEDIUM' ? 'bg-gradient-to-br from-yellow-500 via-yellow-600 to-yellow-700' : 'bg-gradient-to-br from-green-500 via-green-600 to-green-700'
+                  }`} style={{
+                    filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4))'
+                  }}>
+                    {String.fromCharCode(65 + index)} {/* A, B, C, D, etc. */}
+                  </div>
+            
+            {/* Enhanced Central Alert Dot */}
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full shadow-lg border border-gray-300"></div>
+            
+            {/* Enhanced Professional Ripple Effects */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className={`absolute w-20 h-20 border-3 rounded-full animate-ping ${
+                disaster.severity === 'CRITICAL' ? 'border-red-500' :
+                disaster.severity === 'HIGH' ? 'border-orange-500' :
+                disaster.severity === 'MEDIUM' ? 'border-yellow-500' : 'border-green-500'
+              } opacity-80`} style={{
+                filter: 'drop-shadow(0 0 8px rgba(255, 0, 0, 0.3))'
+              }}></div>
+              <div className={`absolute w-28 h-28 border-3 rounded-full animate-ping ${
+                disaster.severity === 'CRITICAL' ? 'border-red-400' :
+                disaster.severity === 'HIGH' ? 'border-orange-400' :
+                disaster.severity === 'MEDIUM' ? 'border-yellow-400' : 'border-green-400'
+              } opacity-60`} style={{animationDelay: '0.3s', filter: 'drop-shadow(0 0 6px rgba(255, 0, 0, 0.2))'}}></div>
+              <div className={`absolute w-36 h-36 border-3 rounded-full animate-ping ${
+                disaster.severity === 'CRITICAL' ? 'border-red-300' :
+                disaster.severity === 'HIGH' ? 'border-orange-300' :
+                disaster.severity === 'MEDIUM' ? 'border-yellow-300' : 'border-green-300'
+              } opacity-40`} style={{animationDelay: '0.6s', filter: 'drop-shadow(0 0 4px rgba(255, 0, 0, 0.1))'}}></div>
+            </div>
+          </div>
+
+          {/* Enhanced Hover Tooltip */}
+          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+            <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white text-xs px-3 py-2 rounded-lg shadow-2xl whitespace-nowrap border border-gray-700 backdrop-blur-sm">
+              <div className="font-bold">{disaster.type.toUpperCase()}</div>
+              <div className="text-gray-300">{disaster.location}</div>
+              <div className={`text-xs font-semibold ${
+                disaster.severity === 'CRITICAL' ? 'text-red-400' :
+                disaster.severity === 'HIGH' ? 'text-orange-400' :
+                disaster.severity === 'MEDIUM' ? 'text-yellow-400' : 'text-green-400'
+              }`}>
+                {disaster.severity}
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+
+      {/* Emergency Alert System Header - Mobile Responsive */}
+      <div className="absolute top-2 left-2 right-2 sm:top-4 sm:left-4 sm:right-4 bg-gradient-to-r from-red-50 to-pink-50 backdrop-blur-sm rounded-xl shadow-2xl p-3 sm:p-4 border-2 border-red-200 hover:shadow-3xl transition-all duration-300">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-red-500 rounded-lg flex items-center justify-center">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+    </svg>
+            </div>
+            <div>
+              <h2 className="text-sm sm:text-xl font-bold text-red-800">Emergency Alert System</h2>
+              <p className="text-xs sm:text-sm text-red-700 hidden sm:block">Live disaster monitoring and emergency response coordination</p>
+            </div>
+          </div>
+          <div className="text-left sm:text-right">
+            <div className="text-xs sm:text-sm font-semibold text-red-800">Status: <span className="text-red-600">ACTIVE ALERTS</span></div>
+            <div className="text-xs text-red-700">Last Updated: {new Date().toLocaleTimeString()}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Emergency Controls Panel - Mobile Responsive */}
+      <div className="absolute top-16 sm:top-20 left-2 sm:left-4 bg-white backdrop-blur-sm rounded-xl shadow-2xl p-3 sm:p-4 border-2 border-red-200 hover:shadow-3xl transition-all duration-300">
+        <div className="text-xs sm:text-sm font-bold text-red-800 mb-2 sm:mb-3">EMERGENCY CONTROLS</div>
+        <div className="space-y-1 sm:space-y-2">
+          <button className="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 bg-pink-100 hover:bg-pink-200 rounded-lg transition-colors duration-200">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+            </svg>
+            <span className="text-xs sm:text-sm font-semibold text-red-800">MEASURE DISTANCE</span>
+          </button>
+          <button className="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 bg-pink-100 hover:bg-pink-200 rounded-lg transition-colors duration-200">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+            </svg>
+            <span className="text-xs sm:text-sm font-semibold text-red-800">REFRESH ALERTS</span>
+          </button>
+            </div>
+          </div>
+
+      {/* Alert Severity Levels Legend - Mobile Responsive */}
+      <div className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-auto bg-white backdrop-blur-sm rounded-xl shadow-2xl p-3 sm:p-4 border-2 border-red-200 hover:shadow-3xl transition-all duration-300">
+        <div className="text-xs sm:text-sm font-bold text-red-800 mb-2 sm:mb-3">ALERT SEVERITY LEVELS</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full shadow-sm border-2 border-red-600"></div>
+            <span className="text-xs sm:text-sm font-semibold text-red-800">CRITICAL - IMMEDIATE EVACUATION</span>
+            </div>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-orange-500 rounded-full shadow-sm border-2 border-orange-600"></div>
+            <span className="text-xs sm:text-sm font-semibold text-red-800">HIGH - URGENT ATTENTION</span>
+          </div>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-yellow-500 rounded-full shadow-sm border-2 border-yellow-600"></div>
+            <span className="text-xs sm:text-sm font-semibold text-red-800">MEDIUM - MONITOR CLOSELY</span>
+          </div>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full shadow-sm border-2 border-green-600"></div>
+            <span className="text-xs sm:text-sm font-semibold text-red-800">LOW - ROUTINE MONITORING</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Professional Emergency Alert Info Panel - Mobile Responsive */}
+      {selectedDisaster && (
+        <div className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-4 bg-white backdrop-blur-sm rounded-xl shadow-2xl p-3 sm:p-4 border-2 border-red-200 hover:shadow-3xl transition-all duration-300">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm ${
+                  selectedDisaster.severity === 'CRITICAL' ? 'bg-gradient-to-br from-red-500 to-red-600' :
+                  selectedDisaster.severity === 'HIGH' ? 'bg-gradient-to-br from-orange-500 to-orange-600' :
+                  selectedDisaster.severity === 'MEDIUM' ? 'bg-gradient-to-br from-yellow-500 to-yellow-600' : 'bg-gradient-to-br from-green-500 to-green-600'
+                }`}>
+                  {selectedDisaster.type.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <h3 className="font-bold text-red-800 text-sm sm:text-lg">{selectedDisaster.type.toUpperCase()}</h3>
+                  <p className="text-red-700 text-xs sm:text-sm font-semibold">{selectedDisaster.location}</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+                <div className="bg-red-50 rounded-lg p-2 sm:p-3 border border-red-200">
+                  <div className="text-xs text-red-600 mb-1 font-semibold">Severity Level</div>
+                  <div className={`font-bold text-xs sm:text-sm ${
+                    selectedDisaster.severity === 'CRITICAL' ? 'text-red-600' :
+                    selectedDisaster.severity === 'HIGH' ? 'text-orange-600' :
+                    selectedDisaster.severity === 'MEDIUM' ? 'text-yellow-600' : 'text-green-600'
+                  }`}>
+                    {selectedDisaster.severity}
+                  </div>
+                </div>
+                <div className="bg-red-50 rounded-lg p-2 sm:p-3 border border-red-200">
+                  <div className="text-xs text-red-600 mb-1 font-semibold">Status</div>
+                  <div className="font-bold text-xs sm:text-sm text-blue-600">{selectedDisaster.status}</div>
+                </div>
+                <div className="bg-red-50 rounded-lg p-2 sm:p-3 border border-red-200">
+                  <div className="text-xs text-red-600 mb-1 font-semibold">Timestamp</div>
+                  <div className="font-semibold text-xs sm:text-sm text-red-800">{new Date(selectedDisaster.timestamp).toLocaleString()}</div>
+                </div>
+                <div className="bg-red-50 rounded-lg p-2 sm:p-3 border border-red-200">
+                  <div className="text-xs text-red-600 mb-1 font-semibold">Country</div>
+                  <div className="font-semibold text-xs sm:text-sm text-red-800">{selectedDisaster.country}</div>
+                </div>
+              </div>
+            </div>
+            
+            <button
+              onClick={() => setSelectedDisaster(null)}
+              className="text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg p-1 sm:p-2 transition-all duration-200 hover:scale-110"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+          </div>
+        );
+};
+
+// Alert system marker colors
+const getAlertColor = (severity) => {
+  const colors = {
+    'CRITICAL': 'bg-red-500',
+    'HIGH': 'bg-orange-500', 
+    'MEDIUM': 'bg-yellow-500',
+    'LOW': 'bg-green-500'
+  };
+  return colors[severity] || 'bg-red-500';
+};
+
+// Mock Google Maps wrapper component
+const MapWrapper = ({ disasters, onDisasterClick }) => {
+  return <MockGoogleMap disasters={disasters} onDisasterClick={onDisasterClick} />;
+};
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -40,31 +755,77 @@ ChartJS.register(
   Filler
 );
 
+// Error Boundary Component
+class MapErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Map Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex items-center justify-center h-full bg-gradient-to-br from-red-50 to-red-100">
+          <div className="text-center">
+            <div className="text-6xl mb-4">⚠️</div>
+            <h3 className="text-xl font-bold text-red-800 mb-2">Map Loading Error</h3>
+            <p className="text-red-600 mb-4">Unable to load the interactive map</p>
+            <button 
+              onClick={() => this.setState({ hasError: false })}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 const LandingPage = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [showDisasterMap, setShowDisasterMap] = useState(false);
+  const [selectedDisaster, setSelectedDisaster] = useState(null);
+  const [measurementMode, setMeasurementMode] = useState(false);
+  const [measurementPoints, setMeasurementPoints] = useState([]);
+  const [distance, setDistance] = useState(0);
+  const [mapError, setMapError] = useState(false);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Hero slides data with high-quality disaster response images
   const heroSlides = [
     {
       id: 1,
-      image: background,
-      title: "Protect Your",
-      subtitle: "Community",
-      description: "Advanced early warning systems that save lives through real-time monitoring, AI-powered predictions, and coordinated emergency response protocols.",
+      image: "/ai-disaster.jpg",
+      title: "AI-Powered",
+      subtitle: "Disaster Detection",
+      description: "Revolutionary artificial intelligence systems that predict and detect disasters with unprecedented accuracy, saving lives through early warning technology.",
       overlay: "from-black/70 via-black/50 to-black/30"
     },
     {
       id: 2,
-      image: imageOne,
-      title: "AI-Powered",
-      subtitle: "Disaster Alerts",
-      description: "Revolutionary machine learning algorithms provide real-time disaster predictions with 99.9% accuracy and instant community notifications.",
+      image: "/environment.jpg",
+      title: "Environmental",
+      subtitle: "Monitoring",
+      description: "Advanced environmental monitoring systems that track climate conditions and provide real-time alerts for natural disasters and environmental hazards.",
       overlay: "from-black/70 via-black/50 to-black/30"
     },
     {
       id: 3,
-      image: imageTwo,
+      image: background,
       title: "Emergency",
       subtitle: "Response",
       description: "Coordinate with emergency services and community networks for rapid disaster response and efficient resource allocation.",
@@ -72,10 +833,10 @@ const LandingPage = () => {
     },
     {
       id: 4,
-      image: masked,
-      title: "Environmental",
+      image: imageOne,
+      title: "Community",
       subtitle: "Protection",
-      description: "Monitor environmental conditions and provide early warnings for climate-related disasters and natural hazards with precision.",
+      description: "Protect your community with advanced early warning systems that provide real-time monitoring, AI-powered predictions, and coordinated emergency response protocols.",
       overlay: "from-black/70 via-black/50 to-black/30"
     }
   ];
@@ -284,6 +1045,17 @@ const LandingPage = () => {
     return () => clearInterval(interval);
   }, [heroSlides.length]);
 
+  // Handle map errors
+  useEffect(() => {
+    const handleMapError = (error) => {
+      console.error('Map Error:', error);
+      setMapError(true);
+    };
+
+    window.addEventListener('error', handleMapError);
+    return () => window.removeEventListener('error', handleMapError);
+  }, []);
+
   // Live data streaming state
   const [liveData, setLiveData] = useState({
     livesSaved: 847500,
@@ -292,6 +1064,118 @@ const LandingPage = () => {
     accuracy: 98.3,
     lastUpdate: new Date()
   });
+
+  // Military-style disaster data with tactical coordinates
+  const disasterData = [
+    { 
+      id: 1, 
+      type: 'earthquake', 
+      severity: 'CRITICAL', 
+      location: 'Los Angeles, California', 
+      coordinates: { lat: 34.0522, lng: -118.2437 }, 
+      timestamp: '2024-01-15T14:30:00Z', 
+      magnitude: '7.8', 
+      casualties: '12 injured', 
+      status: 'ACTIVE',
+      country: 'United States',
+      gridReference: '34N 118W',
+      elevation: '100m',
+      threatLevel: 'RED',
+      responseStatus: 'ACTIVE',
+      militaryGrid: '11SMT 123456',
+      priority: 'PRIORITY-1'
+    },
+    { 
+      id: 2, 
+      type: 'hurricane', 
+      severity: 'CRITICAL', 
+      location: 'Miami, Florida', 
+      coordinates: { lat: 25.7617, lng: -80.1918 }, 
+      timestamp: '2024-02-20T08:15:00Z', 
+      category: 'Category 5', 
+      windSpeed: '185 mph', 
+      status: 'APPROACHING',
+      country: 'United States',
+      gridReference: '25N 080W',
+      elevation: 'Sea Level',
+      threatLevel: 'RED',
+      responseStatus: 'ACTIVE',
+      militaryGrid: '17RMT 234567',
+      priority: 'PRIORITY-1'
+    },
+    { 
+      id: 3, 
+      type: 'flood', 
+      severity: 'HIGH', 
+      location: 'Dhaka, Bangladesh', 
+      coordinates: { lat: 23.8103, lng: 90.4125 }, 
+      timestamp: '2024-04-05T12:20:00Z', 
+      affected: '2.3M people', 
+      waterLevel: '12 feet', 
+      status: 'ONGOING',
+      country: 'Bangladesh',
+      gridReference: '23N 090E',
+      elevation: '10m',
+      threatLevel: 'ORANGE',
+      responseStatus: 'ACTIVE',
+      militaryGrid: '46QMT 345678',
+      priority: 'PRIORITY-2'
+    },
+    { 
+      id: 4, 
+      type: 'wildfire', 
+      severity: 'CRITICAL', 
+      location: 'Sydney, Australia', 
+      coordinates: { lat: -33.8688, lng: 151.2093 }, 
+      timestamp: '2024-03-10T16:45:00Z', 
+      area: '25,000 acres', 
+      temperature: '45°C', 
+      status: 'SPREADING',
+      country: 'Australia',
+      gridReference: '33S 151E',
+      elevation: '50m',
+      threatLevel: 'RED',
+      responseStatus: 'ACTIVE',
+      militaryGrid: '56HMT 456789',
+      priority: 'PRIORITY-1'
+    },
+    { 
+      id: 5, 
+      type: 'tornado', 
+      severity: 'HIGH', 
+      location: 'Oklahoma City, USA', 
+      coordinates: { lat: 35.4676, lng: -97.5164 }, 
+      timestamp: '2024-05-12T09:30:00Z', 
+      windSpeed: '200 mph', 
+      path: '15 miles', 
+      status: 'ACTIVE',
+      country: 'United States',
+      gridReference: '35N 097W',
+      elevation: '400m',
+      threatLevel: 'ORANGE',
+      responseStatus: 'ACTIVE',
+      militaryGrid: '14SMT 567890',
+      priority: 'PRIORITY-2'
+    },
+    { 
+      id: 6, 
+      type: 'tsunami', 
+      severity: 'CRITICAL', 
+      location: 'Tokyo, Japan', 
+      coordinates: { lat: 35.6762, lng: 139.6503 }, 
+      timestamp: '2024-06-15T11:45:00Z', 
+      waveHeight: '20m', 
+      speed: '500 km/h', 
+      status: 'WARNING',
+      country: 'Japan',
+      gridReference: '35N 139E',
+      elevation: '40m',
+      threatLevel: 'RED',
+      responseStatus: 'ALERT',
+      militaryGrid: '54SMT 678901',
+      priority: 'PRIORITY-1'
+    }
+  ];
 
   // Counting animation for statistics
   useEffect(() => {
@@ -385,6 +1269,62 @@ const LandingPage = () => {
   return (
     <>
       <LandingPageSEO />
+      <style jsx>{`
+        @keyframes ambulance-flash {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+        .ambulance-flash {
+          animation: ambulance-flash 1.5s ease-in-out infinite;
+        }
+        
+        /* Firefighter-style siren blinking */
+        @keyframes siren-blink {
+          0%, 50% { opacity: 1; }
+          25%, 75% { opacity: 0.3; }
+        }
+        
+        @keyframes siren-light-blink {
+          0%, 50% { opacity: 1; }
+          25%, 75% { opacity: 0.1; }
+        }
+        
+        .siren-blink {
+          animation: siren-blink 0.8s ease-in-out infinite;
+        }
+        
+        .siren-light-blink {
+          animation: siren-light-blink 0.8s ease-in-out infinite;
+        }
+        
+        /* Wave effects */
+        @keyframes siren-wave-1 {
+          0% { transform: scale(0.8); opacity: 0.8; }
+          100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        @keyframes siren-wave-2 {
+          0% { transform: scale(0.8); opacity: 0.6; }
+          100% { transform: scale(1.8); opacity: 0; }
+        }
+        
+        @keyframes siren-wave-3 {
+          0% { transform: scale(0.8); opacity: 0.4; }
+          100% { transform: scale(2.2); opacity: 0; }
+        }
+        
+        .siren-wave-1 {
+          animation: siren-wave-1 1.2s ease-out infinite;
+        }
+        
+        .siren-wave-2 {
+          animation: siren-wave-2 1.2s ease-out infinite 0.2s;
+        }
+        
+        .siren-wave-3 {
+          animation: siren-wave-3 1.2s ease-out infinite 0.4s;
+        }
+      `}</style>
       <main className="min-h-screen bg-gradient-to-br from-slate-50 to-white overflow-x-hidden">
       {/* Modern Navigation */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
@@ -409,19 +1349,128 @@ const LandingPage = () => {
             </div>
 
             <div className="flex items-center space-x-4">
+              {/* Emergency Alert Button */}
+              <button 
+                onClick={() => setShowDisasterMap(true)}
+                className="relative group hidden md:flex items-center p-3 hover:bg-red-50 rounded-md transition-all duration-300 transform hover:scale-110"
+                title="Emergency Disaster Alert"
+              >
+                <div className="relative">
+                  {/* Alert Icon */}
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-red-500">
+                    <path d="M16 2L2 8v8c0 6 6 12 14 12s14-6 14-12V8L16 2z" fill="currentColor"/>
+                    <path d="M16 6L6 10v6c0 4 4 8 10 8s10-4 10-8v-6L16 6z" fill="white"/>
+                    <circle cx="16" cy="13" r="2" fill="currentColor"/>
+                    <path d="M14 9h4v2h-4V9z" fill="currentColor"/>
+                  </svg>
+                  
+                  {/* Alert Ripple Effect */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="absolute w-12 h-12 border-2 border-red-400 rounded-full animate-ping opacity-60"></div>
+                    <div className="absolute w-16 h-16 border-2 border-red-300 rounded-full animate-ping opacity-40" style={{animationDelay: '0.5s'}}></div>
+                  </div>
+                </div>
+              </button>
+
               <a href="/login" className={`hidden md:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md transition-colors ${isScrolled ? 'text-[#2F4F4F] hover:text-[#1F3F3F]' : 'text-white hover:text-[#4F6F6F]'}`}>
                 Sign In
               </a>
               <a href="/signup" className="hidden md:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#2F4F4F] hover:bg-[#1F3F3F] transition-colors">
                 Get Started
               </a>
-              <button className="md:hidden">
+              <button 
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              >
                 <img src={menu} alt="menu" className={`w-6 h-6 ${isScrolled ? 'filter brightness-0 saturate-100' : 'filter brightness-0 invert'}`} />
               </button>
             </div>
           </div>
         </div>
       </nav>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setIsMobileMenuOpen(false)}
+          ></div>
+          
+          {/* Menu Panel */}
+          <div className="absolute top-0 right-0 w-80 h-full bg-white shadow-2xl">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-[#2F4F4F]">Menu</h2>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            {/* Navigation Links */}
+            <div className="p-4 space-y-2">
+              <Link 
+                to="/" 
+                className="block px-4 py-3 text-[#2F4F4F] hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Home
+              </Link>
+              <Link 
+                to="/about" 
+                className="block px-4 py-3 text-[#2F4F4F] hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                About
+              </Link>
+              <Link 
+                to="/impact" 
+                className="block px-4 py-3 text-[#2F4F4F] hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Impact
+              </Link>
+              
+              {/* Emergency Alert Button for Mobile */}
+              <button 
+                onClick={() => {
+                  setShowDisasterMap(true);
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center justify-center px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 mt-4"
+              >
+                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                Emergency Alert
+              </button>
+              
+              {/* Auth Links */}
+              <div className="pt-4 border-t border-gray-200 space-y-2">
+                <a 
+                  href="/login" 
+                  className="block px-4 py-3 text-[#2F4F4F] hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Sign In
+                </a>
+                <a 
+                  href="/signup" 
+                  className="block px-4 py-3 bg-[#2F4F4F] text-white rounded-lg hover:bg-[#1F3F3F] transition-colors duration-200 text-center"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Get Started
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Hero Section with Sliding Carousel */}
       <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -1198,9 +2247,109 @@ const LandingPage = () => {
           </div>
         </div>
       </footer>
+
+      {/* Emergency Alert Map Modal */}
+      {showDisasterMap && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm">
+          <div className="relative w-full max-w-7xl mx-4 bg-white rounded-lg shadow-2xl overflow-hidden">
+            {/* Emergency Alert Header */}
+            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-red-50 to-orange-50 border-b border-red-200">
+              <div className="flex items-center gap-4">
+                <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
+                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-red-800">Emergency Alert System</h2>
+                  <p className="text-red-600 text-sm">Live disaster monitoring and emergency response coordination</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="text-right text-sm">
+                  <div className="text-red-600">Status: <span className="text-red-600 font-bold animate-pulse">ACTIVE ALERTS</span></div>
+                  <div className="text-red-600">Last Updated: {new Date().toLocaleTimeString()}</div>
+                </div>
+                <button
+                  onClick={() => setShowDisasterMap(false)}
+                  className="text-red-400 hover:text-red-600 transition-colors p-2 hover:bg-red-100 rounded-lg"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Mock Google Maps Container */}
+            <div className="relative h-[75vh] bg-gradient-to-br from-blue-50 to-green-50">
+              <MapWrapper 
+                disasters={disasterData} 
+                onDisasterClick={setSelectedDisaster}
+              />
+              
+              {/* Emergency Controls Panel */}
+              <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-3 space-y-2 border border-red-200">
+                <div className="text-red-800 text-sm font-bold mb-2">EMERGENCY CONTROLS</div>
+                <button
+                  onClick={() => setMeasurementMode(!measurementMode)}
+                  className={`w-full px-3 py-2 text-xs font-medium rounded-md transition-colors ${
+                    measurementMode 
+                      ? 'bg-red-500 text-white' 
+                      : 'bg-red-100 text-red-700 hover:bg-red-200'
+                  }`}
+                >
+                  📏 MEASURE DISTANCE
+                </button>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="w-full px-3 py-2 text-xs font-medium rounded-md bg-red-100 text-red-700 hover:bg-red-200 transition-colors"
+                >
+                  🔄 REFRESH ALERTS
+                </button>
+              </div>
+
+              {/* Emergency Alert Legend */}
+              <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-lg p-4 max-w-sm border border-red-200">
+                <h4 className="font-bold text-red-800 mb-3 text-sm">ALERT SEVERITY LEVELS</h4>
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
+                    <span className="text-red-700 font-semibold">CRITICAL - IMMEDIATE EVACUATION</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-orange-500 animate-pulse"></div>
+                    <span className="text-orange-700 font-semibold">HIGH - URGENT ATTENTION</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-yellow-500 animate-pulse"></div>
+                    <span className="text-yellow-700 font-semibold">MEDIUM - MONITOR CLOSELY</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span className="text-green-700 font-semibold">LOW - ROUTINE MONITORING</span>
+                  </div>
+                </div>
+                
+                {measurementMode && (
+                  <div className="mt-4 pt-3 border-t border-red-200">
+                    <p className="text-xs text-red-500 mb-2">Click on map to measure emergency distance</p>
+                    {distance > 0 && (
+                      <p className="text-xs font-medium text-red-600">
+                        EMERGENCY RANGE: {distance.toFixed(2)} km
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
     </>
   );
 };
 
 export default LandingPage;
+
