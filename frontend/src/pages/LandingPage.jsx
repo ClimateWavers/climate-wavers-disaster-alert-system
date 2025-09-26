@@ -12,10 +12,6 @@ import yt from "../assets/Icons/yt.svg";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { LandingPageSEO } from "../components/SEOComponents";
-import { Wrapper, Status } from '@googlemaps/react-wrapper';
-
-// Google Maps API key (you'll need to replace this with your actual API key)
-const GOOGLE_MAPS_API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY';
 
 // Mock Google Maps component with detailed world map
 const MockGoogleMap = ({ disasters, onDisasterClick }) => {
@@ -723,10 +719,6 @@ const getAlertColor = (severity) => {
   return colors[severity] || 'bg-red-500';
 };
 
-// Mock Google Maps wrapper component
-const MapWrapper = ({ disasters, onDisasterClick }) => {
-  return <MockGoogleMap disasters={disasters} onDisasterClick={onDisasterClick} />;
-};
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -2281,12 +2273,12 @@ const LandingPage = () => {
               </div>
             </div>
 
-            {/* Mock Google Maps Container */}
-            <div className="relative h-[75vh] bg-gradient-to-br from-blue-50 to-green-50">
-              <MapWrapper 
-                disasters={disasterData} 
-                onDisasterClick={setSelectedDisaster}
-              />
+             {/* Mock Google Maps Container */}
+             <div className="relative h-[75vh] bg-gradient-to-br from-blue-50 to-green-50">
+               <MockGoogleMap 
+                 disasters={disasterData} 
+                 onDisasterClick={setSelectedDisaster}
+               />
               
               {/* Emergency Controls Panel */}
               <div className="absolute top-4 right-4 bg-white rounded-lg shadow-lg p-3 space-y-2 border border-red-200">

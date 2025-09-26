@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import TreePayment from './TreePayment';
 import TreeCertificate from './TreeCertificate';
-import { FaTree, FaLeaf, FaSeedling, FaGlobe, FaHeart, FaMapMarkerAlt, FaUsers, FaFilter } from 'react-icons/fa';
+import SocialShare from './SocialShare';
+import ProjectSEO from './ProjectSEO';
+import { FaTree, FaLeaf, FaSeedling, FaGlobe, FaHeart, FaMapMarkerAlt, FaUsers, FaFilter, FaShare } from 'react-icons/fa';
 import { endpoints } from '../utils/endpoints';
 import { getAuthToken } from '../utils/factory';
 
@@ -22,6 +24,7 @@ const PlantTree = () => {
   const [loadingProjects, setLoadingProjects] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
   const [showProjectDetails, setShowProjectDetails] = useState(false);
+  const [showSocialShare, setShowSocialShare] = useState(false);
   const [filters, setFilters] = useState({
     country: '',
     project_type: '',
@@ -47,6 +50,25 @@ const PlantTree = () => {
         co2Offset: totalCo2,
         impactScore: impactScore
       });
+    }
+    
+    // Handle URL parameters for shared project links
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get('project');
+    
+    if (projectId && africanProjects.length > 0) {
+      const project = africanProjects.find(p => p.id === parseInt(projectId));
+      if (project) {
+        setSelectedProject(project);
+        setShowProjectDetails(true);
+        // Scroll to project details
+        setTimeout(() => {
+          const modal = document.querySelector('[data-project-modal]');
+          if (modal) {
+            modal.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+      }
     }
     
     // Fetch African projects
@@ -128,6 +150,9 @@ const PlantTree = () => {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-8">
+      {/* SEO for shared project pages */}
+      {selectedProject && <ProjectSEO project={selectedProject} />}
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-6 md:mb-8">
@@ -315,16 +340,28 @@ const PlantTree = () => {
                           </div>
                         </div>
                         
-                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-2">
-                          <button
-                            onClick={() => {
-                              setSelectedProject(project);
-                              setShowProjectDetails(true);
-                            }}
-                            className="flex-1 bg-blue-600 text-white py-2 px-3 sm:px-4 rounded-md hover:bg-blue-700 transition-colors font-semibold text-sm sm:text-base"
-                          >
-                            View Details
-                          </button>
+                        <div className="flex flex-col gap-2">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => {
+                                setSelectedProject(project);
+                                setShowProjectDetails(true);
+                              }}
+                              className="flex-1 bg-blue-600 text-white py-2 px-3 sm:px-4 rounded-md hover:bg-blue-700 transition-colors font-semibold text-sm sm:text-base"
+                            >
+                              View Details
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedProject(project);
+                                setShowSocialShare(true);
+                              }}
+                              className="px-3 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+                              title="Share Project"
+                            >
+                              <FaShare className="w-4 h-4" />
+                            </button>
+                          </div>
                           <button
                             onClick={() => handleTreePurchase({
                               ...project,
@@ -335,7 +372,7 @@ const PlantTree = () => {
                               benefits: ['Environmental impact', 'Community benefit', 'Verified project'],
                               plantingLocation: `${project.city}, ${project.country}`
                             })}
-                            className="flex-1 bg-green-600 text-white py-2 px-3 sm:px-4 rounded-md hover:bg-green-700 transition-colors font-semibold text-sm sm:text-base"
+                            className="w-full bg-green-600 text-white py-2 px-3 sm:px-4 rounded-md hover:bg-green-700 transition-colors font-semibold text-sm sm:text-base"
                           >
                             Plant Tree
                           </button>
@@ -382,22 +419,32 @@ const PlantTree = () => {
 
         {/* Project Details Modal */}
         {showProjectDetails && selectedProject && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4" data-project-modal>
             <div className="bg-white rounded-lg max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
               <div className="p-4 sm:p-6">
                 <div className="flex items-center justify-between mb-4 sm:mb-6">
                   <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 pr-4">
                     {selectedProject.name}
                   </h2>
-                  <button
-                    onClick={() => {
-                      setShowProjectDetails(false);
-                      setSelectedProject(null);
-                    }}
-                    className="text-gray-400 hover:text-gray-600 text-xl sm:text-2xl flex-shrink-0"
-                  >
-                    ✕
-                  </button>
+                  <div className="flex items-center space-x-2">
+                    {/* Share Button */}
+                    <button
+                      onClick={() => setShowSocialShare(true)}
+                      className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                    >
+                      <FaShare className="w-4 h-4" />
+                      <span className="hidden sm:inline">Share Project</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowProjectDetails(false);
+                        setSelectedProject(null);
+                      }}
+                      className="text-gray-400 hover:text-gray-600 text-xl sm:text-2xl flex-shrink-0"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 </div>
 
                 {/* Gallery Media Section */}
@@ -615,6 +662,14 @@ const PlantTree = () => {
               </div>
             </div>
           </div>
+        )}
+
+        {/* Social Share Modal */}
+        {showSocialShare && selectedProject && (
+          <SocialShare 
+            project={selectedProject} 
+            onClose={() => setShowSocialShare(false)} 
+          />
         )}
       </div>
     </main>

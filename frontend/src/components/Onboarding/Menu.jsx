@@ -1,6 +1,7 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { MdOutlineCampaign, MdCampaign } from "react-icons/md";
 import { RiAlarmWarningFill, RiAlarmWarningLine } from "react-icons/ri";
+import { FaTree, FaTree as FaTreeSolid } from "react-icons/fa";
 
 import { useState, useEffect } from "react";
 
@@ -27,6 +28,8 @@ const Menu = ({ setIsOpen }) => {
       "/onboarding/notifications",
       "/onboarding/campaigns",
       "/onboarding/community",
+      "/onboarding/plant-tree",
+      "/onboarding/tree-admin",
     ].includes(location.pathname);
     setActive(isActive);
     console.log(active);
@@ -136,7 +139,51 @@ const Menu = ({ setIsOpen }) => {
               ? "flex items-center py-2 lg:px-8  max-sm:text-xl"
               : "blur-md flex items-center py-2 lg:px-8  max-sm:text-xl";
           }}
-          to={`/onboarding/wallet`}
+          to={`/onboarding/plant-tree`}
+          style={({ isActive }) => {
+            setActive(true);
+            return isActive ? activeStyle : null;
+          }}
+          onClick={() => setIsOpen(false)}
+        >
+          {({ isActive }) => (
+            <>
+              <FaTree className={`mr-4 w-5 h-5 ${isActive ? 'text-green-600' : 'text-gray-600'}`} />
+              Plant Trees{""}
+            </>
+          )}
+        </NavLink>
+        <NavLink
+          className={({ isActive }) => {
+            return isActive || !active
+              ? "flex items-center py-2 lg:px-8  max-sm:text-xl"
+              : "blur-md flex items-center py-2 lg:px-8  max-sm:text-xl";
+          }}
+          to={`/onboarding/tree-admin`}
+          style={({ isActive }) => {
+            setActive(true);
+            return isActive ? activeStyle : null;
+          }}
+          onClick={() => setIsOpen(false)}
+        >
+          {({ isActive }) => (
+            <>
+              <img
+                alt=""
+                src={isActive ? "../../admin1.svg" : "../../admin.svg"}
+                className="mr-4 w-5 h-5"
+              />
+              Tree Admin{""}
+            </>
+          )}
+        </NavLink>
+        <NavLink
+          className={({ isActive }) => {
+            return isActive || !active
+              ? "flex items-center py-2 lg:px-8  max-sm:text-xl"
+              : "blur-md flex items-center py-2 lg:px-8  max-sm:text-xl";
+          }}
+          to={`/onboarding/notifications`}
           style={({ isActive }) => {
             setActive(true);
             return isActive ? activeStyle : null;
@@ -148,10 +195,10 @@ const Menu = ({ setIsOpen }) => {
             <>
               <img
                 alt=""
-                src={isActive ? "../../wallet1.png" : "../../wallet.png"}
+                src={isActive ? "../../notifications1.png" : "../../notifications.png"}
                 className="mr-4 w-auto"
               />
-              Donate{""}
+              Notifications{""}
             </>
           )}
         </NavLink>
