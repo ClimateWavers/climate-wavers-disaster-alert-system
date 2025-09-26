@@ -14,14 +14,11 @@ const Menu = ({ setIsOpen }) => {
   useEffect(() => {
     setUser(getUser());
     
-    // Listen for localStorage changes
-    const handleStorageChange = () => {
-      console.log("Menu - userUpdated event received");
-      const updatedUser = getUser();
-      console.log("Menu - updated user data:", updatedUser);
-      console.log("Menu - profile_picture:", updatedUser?.profile_picture);
-      setUser(updatedUser);
-    };
+        // Listen for localStorage changes
+        const handleStorageChange = () => {
+          const updatedUser = getUser();
+          setUser(updatedUser);
+        };
     
     window.addEventListener('storage', handleStorageChange);
     
@@ -97,17 +94,17 @@ const Menu = ({ setIsOpen }) => {
           )}
         </NavLink>
         <NavLink
-          to={`/app/donations`}
+          to={`/app/plant-tree`}
           className={({ isActive }) => getNavLinkClassName(isActive)}
           end
         >
           {({ isActive }) => (
             <>
               <img
-                src={isActive ? "../../wallet1.png" : "../../wallet.png"}
+                src={isActive ? "../../tree1.svg" : "../../tree.svg"}
                 className="mr-3 w-5 h-5"
               />
-              Donate
+              Plant Tree
             </>
           )}
         </NavLink>

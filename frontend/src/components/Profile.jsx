@@ -138,7 +138,7 @@ const Profile = () => {
   const follow = async (userId) => {
     console.log("Profile - Attempting to follow user:", userId, "Current isFollow state:", isFollow);
     try {
-    await client.run("post", endpoints?.follow, { following: userId }, true);
+    await client.run("post", endpoints?.follow, { following_id: userId }, true);
       console.log("Profile - Follow successful, updating state to true");
       setIsFollow(true);
     } catch (error) {
