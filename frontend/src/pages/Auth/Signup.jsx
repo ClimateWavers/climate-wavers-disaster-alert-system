@@ -22,6 +22,10 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const navigate = useNavigate();
+  
+  // Get redirect URL from query params
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirectTo = urlParams.get('redirect') || '/app';
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { usePaystackPayment } from 'react-paystack';
 import { FaTree, FaLeaf, FaGlobe, FaArrowLeft } from 'react-icons/fa';
 
 const TreePayment = ({ treeData, onSuccess, onBack }) => {
@@ -9,15 +8,13 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
   const [donorName, setDonorName] = useState('');
   const [dedicationMessage, setDedicationMessage] = useState('');
 
-  // Paystack configuration
+  // Payment configuration
   const config = {
     reference: (new Date()).getTime().toString(),
     email: email,
-    amount: treeData.price * 100, // Convert to kobo
+    amount: treeData.price * 100, // Convert to cents
     publicKey: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_your_public_key_here',
   };
-
-  const initializePayment = usePaystackPayment(config);
 
   const onPaymentSuccess = (reference) => {
     console.log('Payment successful:', reference);
@@ -33,10 +30,6 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
     onSuccess(treeWithPayment, reference);
   };
 
-  const onPaymentClose = () => {
-    console.log('Payment closed');
-    toast.info('Payment cancelled');
-  };
 
   const handlePayment = () => {
     if (!email) {
@@ -50,7 +43,12 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
     }
 
     setLoading(true);
-    initializePayment(onPaymentSuccess, onPaymentClose);
+    
+    // Simulate payment processing for now
+    setTimeout(() => {
+      setLoading(false);
+      onPaymentSuccess('simulated_reference_123');
+    }, 2000);
   };
 
   return (
@@ -152,7 +150,7 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
               <div className="flex justify-between items-center">
                 <span className="text-lg font-medium text-gray-700">Total Amount:</span>
                 <span className="text-2xl font-bold text-green-600">
-                  ₦{treeData.price.toLocaleString()}
+                  ${treeData.price.toLocaleString()}
                 </span>
               </div>
               <p className="text-sm text-gray-600 mt-1">
@@ -165,7 +163,7 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
               disabled={loading}
               className="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-lg"
             >
-              {loading ? 'Processing...' : `🌱 Plant Tree for ₦${treeData.price.toLocaleString()}`}
+              {loading ? 'Processing...' : `🌱 Plant Tree for $${treeData.price.toLocaleString()}`}
             </button>
           </div>
           

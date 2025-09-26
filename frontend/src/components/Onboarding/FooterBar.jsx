@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { MdOutlineCampaign, MdCampaign } from "react-icons/md";
 import { RiAlarmWarningFill, RiAlarmWarningLine } from "react-icons/ri";
+import { FaTree } from "react-icons/fa";
 
 const Footer = ({ setIsOpen }) => {
   const activeStyle = {};
@@ -64,16 +65,16 @@ const Footer = ({ setIsOpen }) => {
             />
           )}
         </NavLink>
-        {/* <NavLink
+        <NavLink
           className="flex items-center py-2  lg:px-8  max-sm:text-xl"
           to={`/onboarding/bot`}
           style={({ isActive }) => (isActive ? activeStyle : null)}
         >
           <img src="../../waverbot.png" className=" w-auto w-[2rem]" />
-        </NavLink> */}
+        </NavLink>
         <NavLink
           className="flex items-center py-2  lg:px-8  max-sm:text-xl"
-          to={`/app/donations`}
+          to={`/onboarding/notifications`}
           style={({ isActive }) => {
             return isActive ? activeStyle : null;
           }}
@@ -82,27 +83,23 @@ const Footer = ({ setIsOpen }) => {
           {({ isActive }) => (
             <img
               alt=""
-              src={isActive ? "../../wallet1.png" : "../../wallet.png"}
+              src={isActive ? "../../notifications1.png" : "../../notifications.png"}
               className=" w-auto w-[30px]"
             />
           )}
         </NavLink>
         <NavLink
           className="flex items-center py-2  lg:px-8  max-sm:text-xl"
-          to={"/onboarding/campaigns"}
+          to={"/onboarding/plant-tree"}
           style={({ isActive }) => (isActive ? activeStyle : null)}
         >
-          {({ isActive }) =>
-            isActive ? (
-              <MdCampaign className="w-[38px]" size={35} color="#2F4F4F" />
-            ) : (
-              <MdOutlineCampaign
-                className="w-[38px]"
-                size={35}
-                color="#434343"
-              />
-            )
-          }
+          {({ isActive }) => (
+            <FaTree 
+              className="w-[30px]" 
+              size={30} 
+              color={isActive ? "#10B981" : "#434343"} 
+            />
+          )}
         </NavLink>
         <NavLink
           className="flex items-center py-2 lg:px-8  max-sm:text-xl"

@@ -11,6 +11,8 @@ import BotLeg from "./BotLeg";
 import GrabLeg from "./GrabLeg";
 import Donate from "./Donate";
 import WaverX from "./WaverX";
+import PlantTree from "./PlantTree";
+import TreeAdmin from "./TreeAdmin";
 
 export {
   OnboardingLayout,
@@ -25,5 +27,7 @@ export {
   BotLeg,
   GrabLeg,
   Donate,
-  WaverX
+  WaverX,
+  PlantTree,
+  TreeAdmin
 };

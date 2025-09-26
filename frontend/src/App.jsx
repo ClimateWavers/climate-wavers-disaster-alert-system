@@ -34,6 +34,8 @@ import {
   GrabLeg,
   Donate as OnboardingDonate,
   WaverX as OnboardingWaverX,
+  PlantTree as OnboardingPlantTree,
+  TreeAdmin as OnboardingTreeAdmin,
 } from "./components/Onboarding";
 
 
@@ -54,6 +56,9 @@ import {
 } from "./pages/AuthenticatedPages";
 import Donations from "./components/Donations";
 import PlantTree from "./components/PlantTree";
+import TreeProjectAdmin from "./components/TreeProjectAdmin";
+import PublicProjectView from "./components/PublicProjectView";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 
 function App() {
@@ -77,6 +82,9 @@ function App() {
           <Route path="/landing" element={<LandingPage/>} />
           <Route path="/about" element={<AboutPage/>} />
           <Route path="/impact" element={<ImpactPage/>} />
+          
+          {/* Public project view for shared links */}
+          <Route path="/project" element={<PublicProjectView />} />
 
           {/* Authenticated routes */}
           <Route path="/app" element={<AuthSharedLayout />}>
@@ -86,7 +94,8 @@ function App() {
             <Route path="/app/waverx" element={<AuthWaverXPosts />} />
             {/* <Route path="/happeningnow" element={<Happeningnow />} /> */}
             <Route path="/app/donations" element={<Donations />} />
-            <Route path="/app/plant-tree" element={<PlantTree />} />
+            <Route path="/app/plant-tree" element={<ProtectedRoute><PlantTree /></ProtectedRoute>} />
+            <Route path="/app/admin/tree-projects" element={<TreeProjectAdmin />} />
             <Route path="/app/:userId/profile" element={<AuthProfile />} />
             <Route
               path="/app/:postId/comments"
@@ -116,6 +125,8 @@ function App() {
             <Route path="/onboarding/profile" element={<OnboardingProfile />} />
             <Route path="/onboarding/donate" element={<OnboardingDonate />} />
             <Route path="/onboarding/waverx" element={<OnboardingWaverX />} />
+            <Route path="/onboarding/plant-tree" element={<OnboardingPlantTree />} />
+            <Route path="/onboarding/tree-admin" element={<OnboardingTreeAdmin />} />
             <Route path="/onboarding/grableg" element={<GrabLeg />} />
             <Route path="/onboarding/botleg" element={<BotLeg/>} />
           </Route>

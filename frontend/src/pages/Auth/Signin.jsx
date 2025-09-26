@@ -28,6 +28,10 @@ const Signin = () => {
   };
   const { register, handleSubmit, reset } = useForm();
   const navigate = useNavigate();
+  
+  // Get redirect URL from query params
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirectTo = urlParams.get('redirect') || '/app';
 
   const toastMsg = {
     info: "Signing In",
@@ -48,7 +52,7 @@ const Signin = () => {
       );
       reset();
       setIsDisabled(false);
-      navigate("/app");
+      navigate(redirectTo);
     } catch (error) {
       setIsDisabled(false);
       console.log("Login failed:", error);

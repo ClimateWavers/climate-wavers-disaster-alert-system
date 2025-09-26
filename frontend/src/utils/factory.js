@@ -150,3 +150,9 @@ export function formatRecommendation(text) {
   return htmlString;
 }
 
+// Check if user is admin or staff
+export const isAdmin = () => {
+  const user = getUser();
+  return user && (user.is_staff || user.is_superuser || user.is_admin);
+};
+

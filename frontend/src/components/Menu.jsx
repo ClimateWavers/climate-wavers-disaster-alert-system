@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import Modal from "./Modal";
 import Createpost from "./Createpost";
-import { getUser, logout } from "../utils/factory";
+import { getUser, logout, isAdmin } from "../utils/factory";
 import { MdOutlineCampaign, MdCampaign } from "react-icons/md";
 import { RiAlarmWarningFill, RiAlarmWarningLine } from "react-icons/ri";
 import { IoLogOutOutline, IoLogOut, IoNotifications, IoNotificationsOutline } from "react-icons/io5";
@@ -104,10 +104,27 @@ const Menu = ({ setIsOpen }) => {
                 src={isActive ? "../../tree1.svg" : "../../tree.svg"}
                 className="mr-3 w-5 h-5"
               />
-              Plant Tree
+              Plant Trees
             </>
           )}
         </NavLink>
+        {isAdmin() && (
+          <NavLink
+            to={`/app/admin/tree-projects`}
+            className={({ isActive }) => getNavLinkClassName(isActive)}
+            end
+          >
+            {({ isActive }) => (
+              <>
+                <img
+                  src={isActive ? "../../admin1.svg" : "../../admin.svg"}
+                  className="mr-3 w-5 h-5"
+                />
+                Tree Admin
+              </>
+            )}
+          </NavLink>
+        )}
         <NavLink
           to={"/campaigns"}
           className={({ isActive }) => getNavLinkClassName(isActive)}
@@ -167,7 +184,7 @@ const Menu = ({ setIsOpen }) => {
           className={({ isActive }) => getNavLinkClassName(isActive)}
         >
           <img src="../../waverbot.png" className="mr-4 w-auto" />
-          WaverX
+          WaverX AI
         </NavLink>
       </div>
       

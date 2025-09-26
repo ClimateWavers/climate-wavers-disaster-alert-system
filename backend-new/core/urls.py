@@ -5,7 +5,9 @@ from .views import (
     ReactionViewSet, RepostViewSet, ViewViewSet, FollowViewSet,
     BookmarkViewSet, UserViewSet, NotificationListView, MarkNotificationsAsReadView, 
     status_view, websocket_notifications, search_posts, search_users, 
-    search_hashtags, search_trending, global_search
+    search_hashtags, search_trending, global_search,
+    TreeProjectViewSet, TreeProjectUpdateViewSet, TreeProjectDonationViewSet,
+    FileUploadViewSet
 )
 from .ai_views import generate_content, analyze_content, generate_hashtags
 
@@ -24,6 +26,10 @@ router.register(r'reposts', RepostViewSet)
 router.register(r'views', ViewViewSet)
 router.register(r'follows', FollowViewSet)
 router.register(r'bookmark', BookmarkViewSet)
+router.register(r'tree-projects', TreeProjectViewSet)
+router.register(r'tree-project-updates', TreeProjectUpdateViewSet)
+router.register(r'tree-project-donations', TreeProjectDonationViewSet)
+router.register(r'upload', FileUploadViewSet, basename='upload')
 
 # Define urlpatterns with included router URLs and additional custom paths
 urlpatterns = [
