@@ -14,14 +14,11 @@ const Menu = ({ setIsOpen }) => {
   useEffect(() => {
     setUser(getUser());
     
-    // Listen for localStorage changes
-    const handleStorageChange = () => {
-      console.log("Menu - userUpdated event received");
-      const updatedUser = getUser();
-      console.log("Menu - updated user data:", updatedUser);
-      console.log("Menu - profile_picture:", updatedUser?.profile_picture);
-      setUser(updatedUser);
-    };
+        // Listen for localStorage changes
+        const handleStorageChange = () => {
+          const updatedUser = getUser();
+          setUser(updatedUser);
+        };
     
     window.addEventListener('storage', handleStorageChange);
     

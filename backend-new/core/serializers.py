@@ -271,6 +271,8 @@ class ViewSerializer(serializers.ModelSerializer):
 
 class FollowSerializer(serializers.ModelSerializer):
     follower = UserSerializer(read_only=True)
+    following = UserSerializer(read_only=True)
+    following_id = serializers.IntegerField(write_only=True, required=False)
 
     class Meta:
         model = Follow
@@ -279,6 +281,17 @@ class FollowSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # Add the user from the request context to the validated data
         follower = self.context["request"].user
+        
+        # Handle following_id if provided
+        following_id = validated_data.pop('following_id', None)
+        if following_id:
+            try:
+                from api.models import User
+                following = User.objects.get(id=following_id)
+                validated_data['following'] = following
+            except User.DoesNotExist:
+                raise serializers.ValidationError("User to follow not found.")
+        
         following = validated_data.get("following")
         
         # Check if the follow relationship already exists

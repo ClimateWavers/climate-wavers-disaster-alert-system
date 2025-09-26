@@ -4,6 +4,7 @@ import { formatDistanceToNow } from "date-fns";
 import Accountcard from "./Accountcard";
 import { client } from "../api";
 import { endpoints } from "../utils/endpoints";
+import { getAuthToken } from "../utils/factory";
 import { toast } from "react-toastify";
 import { AiOutlineHeart, AiFillHeart, AiOutlineRetweet } from "react-icons/ai";
 import { IoChatboxEllipsesOutline, IoEllipsisHorizontal, IoTrashOutline, IoEyeOutline } from "react-icons/io5";
@@ -23,6 +24,7 @@ const Posts = ({
   save,
   unsave,
 }) => {
+  const navigate = useNavigate();
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [commentId, setCommentId] = useState("");
   const [openMenuId, setOpenMenuId] = useState(null);
@@ -41,7 +43,6 @@ const Posts = ({
       return [];
     }
   });
-  const navigate = useNavigate();
 
   // Update localPosts whenever posts prop changes
   useEffect(() => {
@@ -169,17 +170,13 @@ const Posts = ({
 
   const deletePost = async (post) => {
     try {
-      console.log('=== DELETE POST DEBUG ===');
-      console.log('Post object:', post);
-      console.log('Post ID:', post.id);
-      console.log('Post ID type:', typeof post.id);
-      
       const deleteUrl = `${endpoints.post}${post.id}/`;
-      console.log('Delete URL:', deleteUrl);
+      const token = getAuthToken();
       
-      const token = localStorage.getItem('token');
-      console.log('Token exists:', !!token);
-      console.log('Token preview:', token ? token.substring(0, 20) + '...' : 'No token');
+      if (!token) {
+        toast.error('Authentication required to delete posts');
+        return;
+      }
       
       const response = await fetch(deleteUrl, {
         method: 'DELETE',
@@ -189,19 +186,10 @@ const Posts = ({
         },
       });
       
-      console.log('Response status:', response.status);
-      console.log('Response status text:', response.statusText);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-      
       if (response.ok) {
-        const responseData = await response.text();
-        console.log('Response data:', responseData);
-        
         // Remove post from local state immediately for better UX
         setLocalPosts(prevPosts => {
           const filtered = prevPosts.filter(p => p.id !== post.id);
-          console.log('Posts before deletion:', prevPosts.length);
-          console.log('Posts after deletion:', filtered.length);
           return filtered;
         });
         
@@ -218,16 +206,19 @@ const Posts = ({
             fontWeight: 'bold'
           }
         });
+
+        // If we're on a post detail page, redirect to home after deletion
+        if (window.location.pathname.includes('/post/')) {
+          setTimeout(() => {
+            navigate('/app');
+          }, 1000); // Small delay to show the success message
+        }
       } else {
         const errorData = await response.text();
-        console.error('Error response:', errorData);
         throw new Error(`HTTP ${response.status}: ${errorData}`);
       }
     } catch (error) {
-      console.error('=== DELETE ERROR ===');
-      console.error('Error object:', error);
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
+      console.error('Delete post error:', error);
       
       toast.error(`❌ Failed to delete post: ${error.message}`, {
         position: "top-center",
@@ -323,61 +314,33 @@ const Posts = ({
                         const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
                         const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
                         
-                        console.log('=== DELETE OPTION CHECK ===');
-                        console.log('All localStorage keys:', Object.keys(localStorage));
-                        console.log('Raw localStorage user_info:', localStorage.getItem('user_info'));
-                        console.log('Raw localStorage user:', localStorage.getItem('user'));
-                        console.log('Raw localStorage authUser:', localStorage.getItem('authUser'));
-                        console.log('Raw localStorage currentUser:', localStorage.getItem('currentUser'));
-                        console.log('Raw localStorage token:', localStorage.getItem('token'));
-                        console.log('Parsed user_info:', userInfo);
-                        console.log('Parsed user:', user);
-                        console.log('Parsed authUser:', authUser);
-                        console.log('Parsed currentUser:', currentUser);
-                        
                         // Check if user is logged in
-                        const isLoggedIn = !!(userInfo?.user_id || user?.id || authUser?.id || currentUser?.id);
-                        console.log('Is user logged in:', isLoggedIn);
+                        const isLoggedIn = !!(userInfo?.id || user?.id || authUser?.id || currentUser?.id);
                         
                         // Try to get user ID from the correct location: user_info
-                        const userId = userInfo?.user_id || userInfo?.id || userInfo?.user?.id || user?.id || authUser?.id || currentUser?.id;
-                        console.log('Current user ID (user_id):', userId);
-                        console.log('Post user ID:', post?.user?.id);
-                        console.log('Post user object:', post?.user);
-                        console.log('User match (exact):', post?.user?.id === userId);
-                        console.log('User match (string):', String(post?.user?.id) === String(userId));
-                        console.log('User match (number):', Number(post?.user?.id) === Number(userId));
-                        console.log('Will show delete option: true (for testing)');
+                        const userId = userInfo?.id || user?.id || authUser?.id || currentUser?.id;
                         
                         // Check if we can match by email or other fields
                         const userEmail = userInfo?.email;
                         const postUserEmail = post?.user?.email;
-                        console.log('User email:', userEmail);
-                        console.log('Post user email:', postUserEmail);
-                        console.log('Email match:', userEmail === postUserEmail);
                         
                         // Check if this is the user's own post
                         // Since we have different user systems, we'll use email matching for now
                         const isOwnPost = userEmail === postUserEmail;
-                        console.log('Is own post:', isOwnPost);
                         
                         // Handle different scenarios
                         if (!isLoggedIn) {
-                            console.log('User not logged in - hiding delete option');
                             return false; // Don't show delete if not logged in
                         }
                         
                         if (isOwnPost) {
-                            console.log('User owns this post - showing delete option');
                             return true; // Show delete for own posts
                         }
                         
-                        console.log('User does not own this post - hiding delete option');
                         return false; // Don't show delete for other users' posts
                       } catch (error) {
-                        console.log('Error parsing user from localStorage:', error);
-                        console.log('Will show delete option: true (for testing)');
-                        return true; // Show delete for testing even if user parsing fails
+                        console.error('Error parsing user from localStorage:', error);
+                        return false; // Don't show delete if there's an error
                       }
                     })() && (
                       <>
@@ -386,12 +349,6 @@ const Posts = ({
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
-                            console.log('=== DELETE BUTTON CLICKED ===');
-                            console.log('Event:', e);
-                            console.log('Delete button clicked for post:', post);
-                            console.log('Post ID:', post.id);
-                            console.log('Post user:', post.user);
-                            console.log('Current localPosts:', localPosts.length);
                             
                             const confirmed = window.confirm(
                               '🗑️ Delete Post\n\n' +
@@ -400,11 +357,8 @@ const Posts = ({
                               'Click OK to delete or Cancel to keep the post.'
                             );
                             if (confirmed) {
-                              console.log('User confirmed deletion - calling deletePost function');
                               deletePost(post);
                               setOpenMenuId(null);
-                            } else {
-                              console.log('User cancelled deletion');
                             }
                           }}
                           className="w-full px-4 py-3 text-left hover:bg-red-50 active:bg-red-100 flex items-center space-x-3 text-red-600 transition-colors duration-150 group"

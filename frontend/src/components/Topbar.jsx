@@ -25,21 +25,15 @@ const Topbar = () => {
 
   const [user, setUser] = useState(getUser());
 
-  useEffect(() => {
-    const currentUser = getUser();
-    console.log("Topbar - current user:", currentUser);
-    setUser(currentUser);
-    
-    // Listen for user updates
-    const handleUserUpdate = () => {
-      const updatedUser = getUser();
-      console.log("Topbar - user updated event received");
-      console.log("Topbar - updated user data:", updatedUser);
-      console.log("Topbar - profile_picture:", updatedUser?.profile_picture);
-      console.log("Topbar - profile_pic:", updatedUser?.profile_pic);
-      console.log("Topbar - picture:", updatedUser?.picture);
-      setUser(updatedUser);
-    };
+      useEffect(() => {
+        const currentUser = getUser();
+        setUser(currentUser);
+        
+        // Listen for user updates
+        const handleUserUpdate = () => {
+          const updatedUser = getUser();
+          setUser(updatedUser);
+        };
     
     window.addEventListener('userUpdated', handleUserUpdate);
     

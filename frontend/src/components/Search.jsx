@@ -43,73 +43,52 @@ const Search = ({ isOpen, onClose }) => {
     if (!searchQuery.trim()) return;
 
     setLoading(true);
-    try {
-      console.log("Search - Starting search for:", searchQuery);
-      
-      // Save to recent searches
-      const newRecentSearches = [searchQuery, ...recentSearches.filter(s => s !== searchQuery)].slice(0, 5);
-      setRecentSearches(newRecentSearches);
-      localStorage.setItem('recentSearches', JSON.stringify(newRecentSearches));
+        try {
+          // Save to recent searches
+          const newRecentSearches = [searchQuery, ...recentSearches.filter(s => s !== searchQuery)].slice(0, 5);
+          setRecentSearches(newRecentSearches);
+          localStorage.setItem('recentSearches', JSON.stringify(newRecentSearches));
 
-      // Search posts
-      console.log("Search - Searching posts...");
-      const postsResponse = await client.run("get", `${endpoints?.search}posts/?q=${encodeURIComponent(searchQuery)}`, {}, true);
-      console.log("Search - Posts response:", postsResponse);
-      
-      // Search users
-      console.log("Search - Searching users...");
-      const usersResponse = await client.run("get", `${endpoints?.search}users/?q=${encodeURIComponent(searchQuery)}`, {}, true);
-      console.log("Search - Users response:", usersResponse);
-      
-      // Search hashtags
-      console.log("Search - Searching hashtags...");
-      const hashtagsResponse = await client.run("get", `${endpoints?.search}hashtags/?q=${encodeURIComponent(searchQuery)}`, {}, true);
-      console.log("Search - Hashtags response:", hashtagsResponse);
-      
-      // Get trending topics
-      console.log("Search - Searching trending...");
-      const trendingResponse = await client.run("get", `${endpoints?.search}trending/?q=${encodeURIComponent(searchQuery)}`, {}, true);
-      console.log("Search - Trending response:", trendingResponse);
+          // Search posts
+          const postsResponse = await client.run("get", `${endpoints?.search}posts/?q=${encodeURIComponent(searchQuery)}`, {}, true);
+          
+          // Search users
+          const usersResponse = await client.run("get", `${endpoints?.search}users/?q=${encodeURIComponent(searchQuery)}`, {}, true);
+          
+          // Search hashtags
+          const hashtagsResponse = await client.run("get", `${endpoints?.search}hashtags/?q=${encodeURIComponent(searchQuery)}`, {}, true);
+          
+          // Get trending topics
+          const trendingResponse = await client.run("get", `${endpoints?.search}trending/?q=${encodeURIComponent(searchQuery)}`, {}, true);
 
-      console.log("Search - Setting results...");
-      setResults({
-        posts: postsResponse?.results || postsResponse || [],
-        users: usersResponse?.results || usersResponse || [],
-        hashtags: hashtagsResponse?.results || hashtagsResponse || [],
-        trending: trendingResponse?.results || trendingResponse || []
-      });
-      console.log("Search - Results set:", {
-        posts: postsResponse?.results || postsResponse || [],
-        users: usersResponse?.results || usersResponse || [],
-        hashtags: hashtagsResponse?.results || hashtagsResponse || [],
-        trending: trendingResponse?.results || trendingResponse || []
-      });
-    } catch (error) {
-      console.error("Search error:", error);
-      console.error("Search error details:", error.response?.data);
-      console.error("Search error status:", error.response?.status);
-      
-      // Try global search as fallback
-      try {
-        console.log("Search - Trying global search fallback...");
-        const globalResponse = await client.run("get", `${endpoints?.search}?q=${encodeURIComponent(searchQuery)}`, {}, true);
-        console.log("Search - Global search response:", globalResponse);
-        
-        setResults({
-          posts: globalResponse?.posts || [],
-          users: globalResponse?.users || [],
-          hashtags: globalResponse?.hashtags || [],
-          trending: globalResponse?.trending || []
-        });
-      } catch (fallbackError) {
-        console.error("Search fallback error:", fallbackError);
-        setResults({
-          posts: [],
-          users: [],
-          hashtags: [],
-          trending: []
-        });
-      }
+          setResults({
+            posts: postsResponse?.results || postsResponse || [],
+            users: usersResponse?.results || usersResponse || [],
+            hashtags: hashtagsResponse?.results || hashtagsResponse || [],
+            trending: trendingResponse?.results || trendingResponse || []
+          });
+        } catch (error) {
+          console.error("Search error:", error);
+          
+          // Try global search as fallback
+          try {
+            const globalResponse = await client.run("get", `${endpoints?.search}?q=${encodeURIComponent(searchQuery)}`, {}, true);
+            
+            setResults({
+              posts: globalResponse?.posts || [],
+              users: globalResponse?.users || [],
+              hashtags: globalResponse?.hashtags || [],
+              trending: globalResponse?.trending || []
+            });
+          } catch (fallbackError) {
+            console.error("Search fallback error:", fallbackError);
+            setResults({
+              posts: [],
+              users: [],
+              hashtags: [],
+              trending: []
+            });
+          }
     } finally {
       setLoading(false);
     }
@@ -395,7 +374,7 @@ const SearchResults = ({ results, activeTab, query }) => {
 
 // Result Components
 const PostResult = ({ post }) => (
-  <Link to={`/app/${post.id}/post`} className="block p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+      <Link to={`/app/post/${post.id}`} className="block p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
     <div className="flex items-start gap-3">
       <img 
         src={post.user?.profile_picture || post.user?.profile_pic || "/avatar.png"} 

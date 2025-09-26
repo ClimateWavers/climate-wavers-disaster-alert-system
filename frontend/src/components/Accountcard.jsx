@@ -16,13 +16,14 @@ const Accountcard = ({ user, onFollowChange }) => {
 
   const follow = async (userId) => {
     try {
-      await client.run("post", endpoints?.follow, { following: userId }, true);
+      await client.run("post", endpoints?.follow, { following_id: userId }, true);
       setIsFollow(true);
       // Notify parent component of follow change
       if (onFollowChange) {
         onFollowChange(userId, true);
       }
     } catch (error) {
+      console.log("Follow error:", error.response?.data);
       // Handle specific follow errors
       if (error.response?.data?.detail === "You are already following this user.") {
         // User is already following, update UI to reflect this
