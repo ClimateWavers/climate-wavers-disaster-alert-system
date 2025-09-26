@@ -73,6 +73,13 @@ const TreeProjectAdmin = () => {
     gallery: []
   });
 
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Debug admin status
+  useEffect(() => {
+    console.log('Admin status changed:', isAdmin);
+  }, [isAdmin]);
+
   const projectTypes = [
     { value: 'reforestation', label: 'Reforestation' },
     { value: 'urban_greening', label: 'Urban Greening' },
@@ -102,7 +109,34 @@ const TreeProjectAdmin = () => {
     
     fetchProjects();
     fetchStats();
+    checkAdminStatus();
   }, []);
+
+  const checkAdminStatus = async () => {
+    try {
+      const token = getAuthToken();
+      if (!token) return;
+
+      // Use the auth user endpoint to get current user data
+      const response = await fetch(`${endpoints.user}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        console.log('User data from API:', userData);
+        console.log('is_staff:', userData.is_staff);
+        console.log('is_superuser:', userData.is_superuser);
+        setIsAdmin(userData.is_staff || userData.is_superuser);
+      } else {
+        console.error('Failed to fetch user data:', response.status);
+      }
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+    }
+  };
 
   const fetchProjects = async () => {
     try {
@@ -256,6 +290,7 @@ const TreeProjectAdmin = () => {
         funds_raised: parseFloat(formData.funds_raised) || 0,
         co2_absorption_per_tree: parseFloat(formData.co2_absorption_per_tree) || 22.0
       };
+
       
       const token = getAuthToken();
       if (!token) {
@@ -337,6 +372,8 @@ const TreeProjectAdmin = () => {
   };
 
   const handleVerify = async (projectId) => {
+    if (!window.confirm('Are you sure you want to verify this project?')) return;
+
     try {
       const token = getAuthToken();
       if (!token) {
@@ -344,23 +381,49 @@ const TreeProjectAdmin = () => {
         return;
       }
 
+      console.log('Verifying project:', projectId);
+      console.log('API endpoint:', `${endpoints.tree_projects}${projectId}/verify/`);
+
       const response = await fetch(`${endpoints.tree_projects}${projectId}/verify/`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
       if (response.ok) {
+        const result = await response.json();
+        console.log('Verification result:', result);
         toast.success('Project verified successfully!');
         fetchProjects();
+      } else if (response.status === 403) {
+        // Show sweet alert for permission denied
+        alert(`
+🌳 Project Verification Access Denied
+
+You don't have permission to verify projects.
+
+Only administrators can verify tree planting projects to ensure quality and authenticity.
+
+If you believe this is an error, please contact the system administrator.
+
+Thank you for your understanding! 🌱
+        `);
       } else {
-        toast.error('Failed to verify project');
+        const error = await response.json();
+        console.error('Verification error:', error);
+        toast.error(error.error || 'Failed to verify project');
       }
     } catch (error) {
+      console.error('Verification exception:', error);
       toast.error('Failed to verify project');
     }
   };
+
 
   const resetForm = () => {
     setFormData({
@@ -1245,7 +1308,7 @@ const TreeProjectAdmin = () => {
                         >
                           <FaEdit />
                         </button>
-                        {!project.is_verified && (
+                        {!project.is_verified && isAdmin && (
                           <button
                             onClick={() => handleVerify(project.id)}
                             className="text-green-600 hover:text-green-900"
@@ -1253,6 +1316,14 @@ const TreeProjectAdmin = () => {
                           >
                             <FaCheckCircle />
                           </button>
+                        )}
+                        {!project.is_verified && !isAdmin && (
+                          <span
+                            className="text-gray-400 cursor-not-allowed"
+                            title="Only administrators can verify projects"
+                          >
+                            <FaCheckCircle />
+                          </span>
                         )}
                         <button
                           onClick={() => handleDelete(project.id)}

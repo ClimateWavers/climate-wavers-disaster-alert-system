@@ -1076,6 +1076,7 @@ class TreeProjectViewSet(viewsets.ModelViewSet):
             )
         
         project.is_verified = True
+        project.status = 'active'  # Change status to active when verified
         project.verified_by = request.user
         project.verification_date = timezone.now()
         project.save()

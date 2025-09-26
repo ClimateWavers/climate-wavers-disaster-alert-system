@@ -476,9 +476,9 @@ class TreeProjectCreateSerializer(serializers.ModelSerializer):
         model = TreeProject
         fields = [
             'name', 'description', 'short_description', 'organization_name', 'organization_description',
-            'organization_website', 'country', 'region', 'city', 'latitude', 'longitude', 'address',
+            'organization_website', 'organization_logo', 'country', 'region', 'city', 'latitude', 'longitude', 'address',
             'project_type', 'target_trees', 'tree_species', 'tree_price', 'co2_absorption_per_tree',
-            'biodiversity_impact', 'soil_improvement', 'water_conservation', 'start_date',
+            'biodiversity_impact', 'soil_improvement', 'water_conservation', 'cover_image', 'gallery', 'start_date',
             'expected_completion', 'total_budget', 'funding_goal', 'contact_person', 'contact_email',
             'contact_phone', 'facebook_url', 'twitter_url', 'instagram_url', 'linkedin_url'
         ]
