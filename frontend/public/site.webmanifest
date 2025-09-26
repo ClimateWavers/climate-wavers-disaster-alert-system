@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "name": "Climate Wavers",
   "short_name": "ClimateWavers",
@@ -23,3 +24,30 @@
   "lang": "en",
   "dir": "ltr"
 }
+=======
+{
+  "name": "Climate Wavers",
+  "short_name": "ClimateWavers",
+  "description": "Disaster Alert & Climate Action Platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10B981",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ],
+  "categories": ["environment", "weather", "social", "productivity"],
+  "lang": "en",
+  "dir": "ltr"
+}
+>>>>>>> ecf39cd39a34388cab8e341bca4d362168fbdf9d

@@ -378,3 +378,201 @@ class Bookmark(models.Model):
 
     def __str__(self):
         return f"{self.user.username} bookmarked {self.post.title}"
+
+
+class TreeProject(models.Model):
+    """
+    Model for tree planting projects across Africa
+    """
+    PROJECT_STATUS = [
+        ('active', 'Active'),
+        ('completed', 'Completed'),
+        ('paused', 'Paused'),
+        ('pending_approval', 'Pending Approval'),
+    ]
+    
+    PROJECT_TYPES = [
+        ('reforestation', 'Reforestation'),
+        ('urban_greening', 'Urban Greening'),
+        ('agroforestry', 'Agroforestry'),
+        ('mangrove_restoration', 'Mangrove Restoration'),
+        ('community_garden', 'Community Garden'),
+        ('school_garden', 'School Garden'),
+        ('carbon_offset', 'Carbon Offset'),
+    ]
+    
+    # Basic Information
+    name = models.CharField(max_length=200)
+    description = models.TextField()
+    short_description = models.CharField(max_length=500, blank=True, null=True)
+    
+    # Organization Details
+    organization = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='tree_projects'
+    )
+    organization_name = models.CharField(max_length=200)
+    organization_description = models.TextField(blank=True, null=True)
+    organization_website = models.URLField(blank=True, null=True)
+    organization_logo = models.CharField(max_length=500, blank=True, null=True, help_text="Organization logo URL or path")
+    
+    # Location Details
+    country = models.CharField(max_length=100)
+    region = models.CharField(max_length=100)
+    city = models.CharField(max_length=100)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    address = models.TextField(blank=True, null=True)
+    
+    # Project Details
+    project_type = models.CharField(max_length=50, choices=PROJECT_TYPES)
+    status = models.CharField(max_length=20, choices=PROJECT_STATUS, default='pending_approval')
+    
+    # Tree Information
+    target_trees = models.PositiveIntegerField()
+    trees_planted = models.PositiveIntegerField(default=0)
+    tree_species = models.JSONField(default=list, blank=True)  # List of tree species
+    tree_price = models.DecimalField(max_digits=10, decimal_places=2, help_text="Price in USD")
+    
+    # Environmental Impact
+    co2_absorption_per_tree = models.DecimalField(max_digits=8, decimal_places=2, default=22.0)
+    biodiversity_impact = models.TextField(blank=True, null=True)
+    soil_improvement = models.TextField(blank=True, null=True)
+    water_conservation = models.TextField(blank=True, null=True)
+    
+    # Media
+    cover_image = models.CharField(max_length=500, blank=True, null=True, help_text="Project cover image URL or path")
+    gallery = models.JSONField(default=list, blank=True, help_text="List of image URLs")
+    
+    # Project Timeline
+    start_date = models.DateField()
+    expected_completion = models.DateField()
+    actual_completion = models.DateField(null=True, blank=True)
+    
+    # Funding
+    total_budget = models.DecimalField(max_digits=12, decimal_places=2, help_text="Budget in USD")
+    funds_raised = models.DecimalField(max_digits=12, decimal_places=2, default=0, help_text="Funds raised in USD")
+    funding_goal = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True, help_text="Funding goal in USD")
+    
+    # Verification
+    is_verified = models.BooleanField(default=False)
+    verification_documents = models.JSONField(default=list, blank=True)
+    verification_date = models.DateTimeField(null=True, blank=True)
+    verified_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='verified_projects'
+    )
+    
+    # Contact Information
+    contact_person = models.CharField(max_length=200)
+    contact_email = models.EmailField()
+    contact_phone = models.CharField(max_length=20, blank=True, null=True)
+    
+    # Social Media
+    facebook_url = models.URLField(blank=True, null=True)
+    twitter_url = models.URLField(blank=True, null=True)
+    instagram_url = models.URLField(blank=True, null=True)
+    linkedin_url = models.URLField(blank=True, null=True)
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['country']),
+            models.Index(fields=['project_type']),
+            models.Index(fields=['status']),
+            models.Index(fields=['is_verified']),
+        ]
+    
+    def __str__(self):
+        return f"{self.name} - {self.country}"
+    
+    @property
+    def progress_percentage(self):
+        """Calculate project progress percentage"""
+        if self.target_trees == 0:
+            return 0
+        return min((self.trees_planted / self.target_trees) * 100, 100)
+    
+    @property
+    def funding_percentage(self):
+        """Calculate funding progress percentage"""
+        if not self.funding_goal or self.funding_goal == 0:
+            return 0
+        return min((self.funds_raised / self.funding_goal) * 100, 100)
+    
+    @property
+    def total_co2_offset(self):
+        """Calculate total CO2 offset from planted trees"""
+        return self.trees_planted * self.co2_absorption_per_tree
+    
+    def get_absolute_url(self):
+        return f"/projects/{self.id}/"
+
+
+class TreeProjectUpdate(models.Model):
+    """
+    Model for project updates and progress reports
+    """
+    project = models.ForeignKey(
+        TreeProject, 
+        on_delete=models.CASCADE, 
+        related_name='updates'
+    )
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    images = models.JSONField(default=list, blank=True)  # List of image file paths
+    trees_planted_this_update = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Update for {self.project.name}: {self.title}"
+
+
+class TreeProjectDonation(models.Model):
+    """
+    Model for tracking donations to tree projects
+    """
+    project = models.ForeignKey(
+        TreeProject, 
+        on_delete=models.CASCADE, 
+        related_name='donations'
+    )
+    donor = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='tree_donations'
+    )
+    amount = models.DecimalField(max_digits=10, decimal_places=2, help_text="Amount in USD")
+    trees_purchased = models.PositiveIntegerField()
+    payment_reference = models.CharField(max_length=100, unique=True)
+    payment_status = models.CharField(
+        max_length=20,
+        choices=[
+            ('pending', 'Pending'),
+            ('completed', 'Completed'),
+            ('failed', 'Failed'),
+            ('refunded', 'Refunded'),
+        ],
+        default='pending'
+    )
+    dedication_message = models.TextField(blank=True, null=True)
+    is_anonymous = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Donation to {self.project.name} by {self.donor.username}"

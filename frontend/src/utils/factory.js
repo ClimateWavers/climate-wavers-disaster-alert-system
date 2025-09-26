@@ -31,10 +31,6 @@ export const getUser = () => {
   if (raw) {
     try {
       const userData = JSON.parse(raw);
-      console.log("getUser - user data from cookies:", userData);
-      console.log("getUser - profile_picture:", userData?.profile_picture);
-      console.log("getUser - profile_pic:", userData?.profile_pic);
-      console.log("getUser - picture:", userData?.picture);
       return userData;
     } catch (error) {
       console.error("Failed to parse user data from cookies:", error);
@@ -153,4 +149,10 @@ export function formatRecommendation(text) {
 
   return htmlString;
 }
+
+// Check if user is admin or staff
+export const isAdmin = () => {
+  const user = getUser();
+  return user && (user.is_staff || user.is_superuser || user.is_admin);
+};
 

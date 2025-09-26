@@ -10,8 +10,13 @@ from django.http import Http404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 import json
 import re
+import os
+import uuid
+from datetime import datetime
 from .models import (
     Notification,
     Post,
@@ -23,6 +28,9 @@ from .models import (
     View,
     Follow,
     Bookmark,
+    TreeProject,
+    TreeProjectUpdate,
+    TreeProjectDonation,
 )
 from .serializers import (
     NotificationSerializer,
@@ -37,11 +45,19 @@ from .serializers import (
     FollowSerializer,
     BookmarkSerializer,
     UserActivitySerializer,
+    TreeProjectSerializer,
+    TreeProjectCreateSerializer,
+    TreeProjectUpdateSerializer,
+    TreeProjectUpdateCreateSerializer,
+    TreeProjectDonationSerializer,
+    TreeProjectDonationCreateSerializer,
 )
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.http import JsonResponse, Http404
+from django.db import models
+from django.utils import timezone
 
 # Get the custom user model
 User = get_user_model()
@@ -592,7 +608,13 @@ class FollowViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         try:
-            return super().create(request, *args, **kwargs)
+            # Get the serializer with the request data
+            serializer = self.get_serializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             if "UNIQUE constraint failed" in str(e) or "already following" in str(e):
                 return Response(
@@ -924,3 +946,246 @@ def global_search(request):
         
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+
+# Tree Project Views
+class TreeProjectViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing tree projects across Africa
+    """
+    queryset = TreeProject.objects.all()
+    serializer_class = TreeProjectSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return TreeProjectCreateSerializer
+        return TreeProjectSerializer
+    
+    def get_queryset(self):
+        queryset = TreeProject.objects.all()
+        
+        # Filter by country
+        country = self.request.query_params.get('country', None)
+        if country:
+            queryset = queryset.filter(country__icontains=country)
+        
+        # Filter by project type
+        project_type = self.request.query_params.get('project_type', None)
+        if project_type:
+            queryset = queryset.filter(project_type=project_type)
+        
+        # Filter by status
+        status = self.request.query_params.get('status', None)
+        if status:
+            queryset = queryset.filter(status=status)
+        
+        # Filter verified projects only
+        verified_only = self.request.query_params.get('verified_only', None)
+        if verified_only == 'true':
+            queryset = queryset.filter(is_verified=True)
+        
+        # Filter by organization
+        organization = self.request.query_params.get('organization', None)
+        if organization:
+            queryset = queryset.filter(organization_id=organization)
+        
+        return queryset.order_by('-created_at')
+    
+    @action(detail=False, methods=['get'], permission_classes=[])
+    def african_projects(self, request):
+        """
+        Get all tree projects in African countries
+        """
+        african_countries = [
+            'Nigeria', 'Kenya', 'Ghana', 'South Africa', 'Tanzania', 'Uganda',
+            'Ethiopia', 'Morocco', 'Algeria', 'Sudan', 'Angola', 'Mozambique',
+            'Madagascar', 'Cameroon', 'Niger', 'Burkina Faso', 'Mali', 'Malawi',
+            'Zambia', 'Somalia', 'Senegal', 'Chad', 'Sierra Leone', 'Libya',
+            'Liberia', 'Central African Republic', 'Mauritania', 'Eritrea',
+            'Gambia', 'Botswana', 'Gabon', 'Lesotho', 'Guinea-Bissau',
+            'Equatorial Guinea', 'Mauritius', 'Eswatini', 'Djibouti',
+            'Comoros', 'Cape Verde', 'São Tomé and Príncipe', 'Seychelles'
+        ]
+        
+        projects = TreeProject.objects.filter(
+            country__in=african_countries,
+            is_verified=True,
+            status='active'
+        ).order_by('-created_at')
+        
+        serializer = self.get_serializer(projects, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'])
+    def add_update(self, request, pk=None):
+        """
+        Add an update to a tree project
+        """
+        project = self.get_object()
+        serializer = TreeProjectUpdateCreateSerializer(
+            data=request.data,
+            context={'project': project, 'request': request}
+        )
+        
+        if serializer.is_valid():
+            update = serializer.save()
+            
+            # Update project's trees_planted count
+            if update.trees_planted_this_update > 0:
+                project.trees_planted += update.trees_planted_this_update
+                project.save()
+            
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=True, methods=['post'])
+    def donate(self, request, pk=None):
+        """
+        Make a donation to a tree project
+        """
+        project = self.get_object()
+        serializer = TreeProjectDonationCreateSerializer(
+            data=request.data,
+            context={'project': project, 'request': request}
+        )
+        
+        if serializer.is_valid():
+            donation = serializer.save()
+            
+            # Update project's funds_raised
+            project.funds_raised += donation.amount
+            project.trees_planted += donation.trees_purchased
+            project.save()
+            
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=True, methods=['post'])
+    def verify(self, request, pk=None):
+        """
+        Verify a tree project (admin only)
+        """
+        project = self.get_object()
+        
+        # Check if user is admin or staff
+        if not request.user.is_staff:
+            return Response(
+                {"error": "Only administrators can verify projects"}, 
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        project.is_verified = True
+        project.status = 'active'  # Change status to active when verified
+        project.verified_by = request.user
+        project.verification_date = timezone.now()
+        project.save()
+        
+        return Response({"message": "Project verified successfully"})
+    
+    @action(detail=False, methods=['get'])
+    def stats(self, request):
+        """
+        Get global tree project statistics
+        """
+        total_projects = TreeProject.objects.count()
+        active_projects = TreeProject.objects.filter(status='active').count()
+        verified_projects = TreeProject.objects.filter(is_verified=True).count()
+        total_trees_planted = TreeProject.objects.aggregate(
+            total=models.Sum('trees_planted')
+        )['total'] or 0
+        total_funds_raised = TreeProject.objects.aggregate(
+            total=models.Sum('funds_raised')
+        )['total'] or 0
+        
+        # Country breakdown
+        country_stats = TreeProject.objects.values('country').annotate(
+            project_count=models.Count('id'),
+            trees_planted=models.Sum('trees_planted')
+        ).order_by('-project_count')
+        
+        return Response({
+            'total_projects': total_projects,
+            'active_projects': active_projects,
+            'verified_projects': verified_projects,
+            'total_trees_planted': total_trees_planted,
+            'total_funds_raised': total_funds_raised,
+            'country_breakdown': list(country_stats)
+        })
+
+
+class TreeProjectUpdateViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing tree project updates
+    """
+    queryset = TreeProjectUpdate.objects.all()
+    serializer_class = TreeProjectUpdateSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        project_id = self.request.query_params.get('project_id')
+        if project_id:
+            return TreeProjectUpdate.objects.filter(project_id=project_id)
+        return TreeProjectUpdate.objects.all()
+
+
+class TreeProjectDonationViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing tree project donations
+    """
+    queryset = TreeProjectDonation.objects.all()
+    serializer_class = TreeProjectDonationSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        project_id = self.request.query_params.get('project_id')
+        if project_id:
+            return TreeProjectDonation.objects.filter(project_id=project_id)
+        return TreeProjectDonation.objects.filter(donor=self.request.user)
+
+
+class FileUploadViewSet(viewsets.ViewSet):
+    """
+    Handle file uploads and return URLs
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def create(self, request):
+        if 'file' not in request.FILES:
+            return Response({'error': 'No file provided'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        file = request.FILES['file']
+        folder = request.data.get('folder', 'uploads')
+        
+        # Generate unique filename
+        file_extension = os.path.splitext(file.name)[1]
+        unique_filename = f"{uuid.uuid4()}{file_extension}"
+        
+        # Create folder path
+        folder_path = f"{folder}/{datetime.now().strftime('%Y/%m/%d')}"
+        full_path = f"{folder_path}/{unique_filename}"
+        
+        try:
+            # Save file to storage
+            saved_path = default_storage.save(full_path, ContentFile(file.read()))
+            
+            # Generate URL (adjust based on your media service)
+            # For development, use local storage URL
+            if hasattr(default_storage, 'url'):
+                file_url = default_storage.url(saved_path)
+            else:
+                # Fallback for development
+                file_url = f"/media/{saved_path}"
+            
+            return Response({
+                'success': True,
+                'url': file_url,
+                'secure_url': file_url,
+                'filename': unique_filename,
+                'path': saved_path
+            })
+            
+        except Exception as e:
+            return Response({
+                'error': f'Upload failed: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -73,7 +73,7 @@ const Footer = () => {
        
         <NavLink
           className="flex items-center py-2  lg:px-8  max-sm:text-xl"
-          to={`/app/donations`}
+          to={`/app/plant-tree`}
           style={({ isActive }) => {
             return isActive ? activeStyle : null;
           }}
@@ -82,7 +82,7 @@ const Footer = () => {
           {({ isActive }) => (
             <img
               alt=""
-              src={isActive ? "../../wallet1.png" : "../../wallet.png"}
+              src={isActive ? "../../tree1.svg" : "../../tree.svg"}
               className="w-[30px] h-[30px] object-contain"
             />
           )}
