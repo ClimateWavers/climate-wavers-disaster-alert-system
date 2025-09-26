@@ -17,5 +17,8 @@ export const endpoints = {
     "ai_generate_hashtags": "/api/v1/ai/generate-hashtags/",
     "hashtag": "/api/v1/hashtags/",
     "trending": "/api/v1/post/trending/",
-    "search": "/api/v1/search/"
+    "search": "/api/v1/search/",
+    "tree_projects": "/api/v1/tree-projects/",
+    "tree_projects_stats": "/api/v1/tree-projects/stats/",
+    "tree_projects_african": "/api/v1/tree-projects/african_projects/"
 }
