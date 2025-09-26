@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from 'react-helmet-async';
 // import Signuppage from "./pages/Signuppage";
 // import Loginpage from "./pages/LoginPage";
 // import Forgotpasswordpage from "./pages/Forgotpasswordpage";
@@ -56,14 +57,15 @@ import Donations from "./components/Donations";
 
 function App() {
   return (
-    <div>
-      <ToastContainer />
-      <BrowserRouter
-        future={{
-          v7_startTransition: true,
-          v7_relativeSplatPath: true,
-        }}
-      >
+    <HelmetProvider>
+      <div>
+        <ToastContainer />
+        <BrowserRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
         <Routes>
           <Route path="/bot" element={<AuthWaverX />} />
           <Route path="/campaigns" element={<AuthCampaigns />} />
@@ -135,8 +137,9 @@ function App() {
 
           {/* <Route path="/wallet"  element={<Web3 />} /> */}
         </Routes>
-      </BrowserRouter>
-    </div>
+        </BrowserRouter>
+      </div>
+    </HelmetProvider>
   );
 }
 

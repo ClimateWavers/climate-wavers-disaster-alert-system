@@ -6,6 +6,7 @@ import { getCampaigns } from "../utils/factory";
 import Payment from "../components/Payment";
 import Modal from "../components/Modal";
 import Footer from "../components/FooterBar";
+import { CampaignsPageSEO } from "../components/SEOComponents";
 
 const CampaignsPage = () => {
   const campaigns = getCampaigns();
@@ -52,7 +53,9 @@ const CampaignsPage = () => {
   ];
 
   return (
-    <div className="grid gap-y-3 w-[100%]">
+    <>
+      <CampaignsPageSEO />
+      <div className="grid gap-y-3 w-[100%]">
       <Topbar />
       <div className="flex justify-center md:px-4 pt-28">
         <button onClick={handleGoBack}>
@@ -107,7 +110,8 @@ const CampaignsPage = () => {
       <div className="md:hidden h-24 sm:flex">
         <Footer />
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

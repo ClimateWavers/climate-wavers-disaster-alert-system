@@ -1,0 +1,20 @@
+{
+  "name": "Climate Wavers",
+  "short_name": "ClimateWavers",
+  "description": "Disaster Alert & Climate Action Platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10B981",
+  "orientation": "portrait-primary",
+    "icons": [
+      {
+        "src": "/Vector.png",
+        "sizes": "any",
+        "type": "image/svg+xml"
+      }
+    ],
+  "categories": ["environment", "weather", "social", "productivity"],
+  "lang": "en",
+  "dir": "ltr"
+}

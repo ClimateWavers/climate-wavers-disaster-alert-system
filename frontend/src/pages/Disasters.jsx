@@ -5,6 +5,7 @@ import Menu from "../components/Menu";
 import Footer from "../components/FooterBar";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { DisastersPageSEO } from "../components/SEOComponents";
 
 // Use fallback URL if environment variable is not set
 const apiUrl = import.meta.env.VITE_APP_CHATBOT_URL 
@@ -103,7 +104,9 @@ const DisasterPage = () => {
       });
   }, []);
   return (
-    <div className="w-full overflow-hidden">
+    <>
+      <DisastersPageSEO />
+      <div className="w-full overflow-hidden">
       <div className="md:pb-20 pb-12">
         <Topbar />
       </div>
@@ -144,7 +147,8 @@ const DisasterPage = () => {
       <div className="md:hidden">
         <Footer />
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

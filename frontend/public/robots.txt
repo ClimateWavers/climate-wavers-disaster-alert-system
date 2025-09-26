@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://climatewavers.org/sitemap.xml
+
+# Disallow admin and private areas
+Disallow: /app/
+Disallow: /api/
+Disallow: /admin/
+Disallow: /onboarding/
+Disallow: /uploadphoto
+Disallow: /uploadcover
+
+# Allow important pages
+Allow: /
+Allow: /about
+Allow: /impact
+Allow: /landing
+Allow: /disasters
+Allow: /campaigns
+Allow: /bot
+
+# Crawl delay (optional)
+Crawl-delay: 1

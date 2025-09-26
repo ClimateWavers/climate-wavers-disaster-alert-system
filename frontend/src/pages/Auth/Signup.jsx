@@ -16,6 +16,7 @@ import { endpoints } from "../../utils/endpoints";
 import { validateSignupForm, showSuccessMessage } from "../../utils/validation";
 import "../styles/signup-page.css";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { SignupPageSEO } from "../../components/SEOComponents";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -70,7 +71,9 @@ const Signup = () => {
   };
 
   return (
-    <div className="h-[100vh] signup flex">
+    <>
+      <SignupPageSEO />
+      <div className="h-[100vh] signup flex">
       <div className="bg-[#2F4F4F] hidden md:flex md:min-h-screen md:overflow-hidden lg:w-[50%] md:w-[50%] flex justify-center banner ">
         <div className="self-center">
           <div className="writeup">
@@ -273,7 +276,8 @@ const Signup = () => {
           </Box>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

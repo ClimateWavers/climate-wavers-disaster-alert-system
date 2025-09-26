@@ -10,6 +10,7 @@ import {
 } from "../../services/firebase.service";
 import WaverxLeftBar from "./LeftSideBar";
 import { FiMenu } from "react-icons/fi";
+import { WaverXBotPageSEO } from "../../components/SEOComponents";
 
 const chatbot = `${import.meta.env.VITE_APP_CHATBOT_URL}/api/v1`;
 
@@ -88,7 +89,9 @@ const WaverXChatPage = () => {
   }
 
   return (
-    <div className=" md:w-[100vw] md:flex h-[100vh] max-sm:max-h-screen overflow-hidden text-black">
+    <>
+      <WaverXBotPageSEO />
+      <div className=" md:w-[100vw] md:flex h-[100vh] max-sm:max-h-screen overflow-hidden text-black">
       <div className="hidden md:grid md:w-[25vw] border-r-2 border-gray-200 ">
         <WaverxLeftBar
           handleCreateChat={handleCreateChat}
@@ -124,7 +127,8 @@ const WaverXChatPage = () => {
           />
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

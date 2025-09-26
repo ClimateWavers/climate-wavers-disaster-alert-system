@@ -8,6 +8,7 @@ import fb from "../assets/Icons/fb.webp";
 import exx from "../assets/Icons/x.png";
 import linkedIn from "../assets/Icons/lin.webp";
 import yt from "../assets/Icons/yt.svg";
+import { AboutPageSEO } from "../components/SEOComponents";
 
 const AboutPage = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -22,6 +23,7 @@ const AboutPage = () => {
 
   return (
     <>
+      <AboutPageSEO />
       <style jsx>{`
         .hero-slide {
           transition: opacity 1s ease-in-out;

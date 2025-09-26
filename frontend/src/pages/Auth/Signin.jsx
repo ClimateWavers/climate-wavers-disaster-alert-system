@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { endpoints } from "../../utils/endpoints";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Cookies from "js-cookie";
+import { LoginPageSEO } from "../../components/SEOComponents";
 
 const Signin = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -54,7 +55,9 @@ const Signin = () => {
     }
   };
   return (
-    <div className="lg:h-[100vh] md:h-[100vh] md:flex justify-between">
+    <>
+      <LoginPageSEO />
+      <div className="lg:h-[100vh] md:h-[100vh] md:flex justify-between">
       <div
         className="w-[100%] lg:w-[50%] md:w-[50%] bg-cover border-r-1 shadow-xl bg-center hidden lg:flex md:flex"
         style={{ backgroundImage: `url(${signinBg})` }}
@@ -142,7 +145,8 @@ const Signin = () => {
         </div>
 
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

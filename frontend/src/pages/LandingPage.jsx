@@ -11,6 +11,7 @@ import linkedIn from "../assets/Icons/lin.webp";
 import yt from "../assets/Icons/yt.svg";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { LandingPageSEO } from "../components/SEOComponents";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -22,6 +23,7 @@ import {
   ArcElement,
   PointElement,
   LineElement,
+  Filler,
 } from 'chart.js';
 import { Bar, Line, Pie, Doughnut } from 'react-chartjs-2';
 
@@ -34,7 +36,8 @@ ChartJS.register(
   Legend,
   ArcElement,
   PointElement,
-  LineElement
+  LineElement,
+  Filler
 );
 
 const LandingPage = () => {
@@ -381,6 +384,7 @@ const LandingPage = () => {
 
   return (
     <>
+      <LandingPageSEO />
       <main className="min-h-screen bg-gradient-to-br from-slate-50 to-white overflow-x-hidden">
       {/* Modern Navigation */}
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${

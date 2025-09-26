@@ -9,6 +9,7 @@ import fb from "../assets/Icons/fb.webp";
 import exx from "../assets/Icons/x.png";
 import linkedIn from "../assets/Icons/lin.webp";
 import yt from "../assets/Icons/yt.svg";
+import { ImpactPageSEO } from "../components/SEOComponents";
 
 const ImpactPage = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -23,6 +24,7 @@ const ImpactPage = () => {
 
   return (
     <>
+      <ImpactPageSEO />
       <style jsx>{`
         .hero-slide {
           transition: opacity 1s ease-in-out;
