@@ -94,17 +94,17 @@ const Menu = ({ setIsOpen }) => {
           )}
         </NavLink>
         <NavLink
-          to={`/app/donations`}
+          to={`/app/plant-tree`}
           className={({ isActive }) => getNavLinkClassName(isActive)}
           end
         >
           {({ isActive }) => (
             <>
               <img
-                src={isActive ? "../../wallet1.png" : "../../wallet.png"}
+                src={isActive ? "../../tree1.svg" : "../../tree.svg"}
                 className="mr-3 w-5 h-5"
               />
-              Donate
+              Plant Tree
             </>
           )}
         </NavLink>

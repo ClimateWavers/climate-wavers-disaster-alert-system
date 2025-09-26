@@ -53,6 +53,7 @@ import {
   AuthUploadPhoto 
 } from "./pages/AuthenticatedPages";
 import Donations from "./components/Donations";
+import PlantTree from "./components/PlantTree";
 
 
 function App() {
@@ -85,6 +86,7 @@ function App() {
             <Route path="/app/waverx" element={<AuthWaverXPosts />} />
             {/* <Route path="/happeningnow" element={<Happeningnow />} /> */}
             <Route path="/app/donations" element={<Donations />} />
+            <Route path="/app/plant-tree" element={<PlantTree />} />
             <Route path="/app/:userId/profile" element={<AuthProfile />} />
             <Route
               path="/app/:postId/comments"

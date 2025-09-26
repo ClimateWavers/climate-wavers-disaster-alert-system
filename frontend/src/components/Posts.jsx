@@ -170,7 +170,9 @@ const Posts = ({
 
   const deletePost = async (post) => {
     try {
-      const deleteUrl = `${endpoints.post}${post.id}/`;
+      // Determine if this is a post or comment based on the type prop
+      const isComment = type === "comments";
+      const deleteUrl = isComment ? `${endpoints.comments}${post.id}/` : `${endpoints.post}${post.id}/`;
       const token = getAuthToken();
       
       if (!token) {
@@ -193,7 +195,8 @@ const Posts = ({
           return filtered;
         });
         
-        toast.success('🗑️ Post deleted successfully!', {
+        const itemType = isComment ? 'Comment' : 'Post';
+        toast.success(`🗑️ ${itemType} deleted successfully!`, {
           position: "top-center",
           autoClose: 3000,
           hideProgressBar: false,
@@ -208,7 +211,10 @@ const Posts = ({
         });
 
         // If we're on a post detail page, redirect to home after deletion
-        if (window.location.pathname.includes('/post/')) {
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('/post/') || 
+            currentPath.includes(`/${post.id}/`) || 
+            currentPath.includes(`/post/${post.id}`)) {
           setTimeout(() => {
             navigate('/app');
           }, 1000); // Small delay to show the success message
@@ -220,7 +226,8 @@ const Posts = ({
     } catch (error) {
       console.error('Delete post error:', error);
       
-      toast.error(`❌ Failed to delete post: ${error.message}`, {
+      const itemType = type === "comments" ? 'comment' : 'post';
+      toast.error(`❌ Failed to delete ${itemType}: ${error.message}`, {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
@@ -350,11 +357,13 @@ const Posts = ({
                             e.preventDefault();
                             e.stopPropagation();
                             
+                            const itemType = type === "comments" ? 'comment' : 'post';
+                            const itemTypeCapitalized = type === "comments" ? 'Comment' : 'Post';
                             const confirmed = window.confirm(
-                              '🗑️ Delete Post\n\n' +
-                              'Are you sure you want to delete this post?\n' +
+                              `🗑️ Delete ${itemTypeCapitalized}\n\n` +
+                              `Are you sure you want to delete this ${itemType}?\n` +
                               'This action cannot be undone.\n\n' +
-                              'Click OK to delete or Cancel to keep the post.'
+                              `Click OK to delete or Cancel to keep the ${itemType}.`
                             );
                             if (confirmed) {
                               deletePost(post);
@@ -364,7 +373,9 @@ const Posts = ({
                           className="w-full px-4 py-3 text-left hover:bg-red-50 active:bg-red-100 flex items-center space-x-3 text-red-600 transition-colors duration-150 group"
                         >
                           <IoTrashOutline className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 group-hover:text-red-600" />
-                          <span className="text-sm sm:text-base font-medium">Delete Post</span>
+                          <span className="text-sm sm:text-base font-medium">
+                            Delete {type === "comments" ? "Comment" : "Post"}
+                          </span>
                         </button>
                       </>
                     )}

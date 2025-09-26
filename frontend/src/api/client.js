@@ -21,6 +21,11 @@ class Client {
         return false;
       }
       
+      // Skip showing popup for 404 errors on post endpoints (these are handled by components)
+      if (error.response.status === 404 && error.config?.url?.includes('/post/')) {
+        return false;
+      }
+      
       let errorMessages = [];
 
       // Handle different types of validation errors
