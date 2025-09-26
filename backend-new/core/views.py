@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import json
+import re
 from .models import (
     Notification,
     Post,
@@ -680,5 +681,246 @@ def websocket_notifications(request):
             "message": "WebSocket connection established",
             "status": "connected"
         })
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+# Search functionality
+@csrf_exempt
+@require_http_methods(["GET"])
+def search_posts(request):
+    """
+    Search posts by content, hashtags, or location
+    """
+    try:
+        query = request.GET.get('q', '').strip()
+        if not query:
+            return JsonResponse({"results": []})
+        
+        # Search in content, hashtags, and location
+        posts = Post.objects.filter(
+            Q(content__icontains=query) |
+            Q(hashtags__icontains=query) |
+            Q(location__icontains=query)
+        ).annotate(
+            total_comments=Count('comments', distinct=True),
+            total_reactions=Count('reactions', distinct=True),
+            total_views=Count('views', distinct=True),
+            total_reposts=Count('reposts', distinct=True),
+            total_bookmarks=Count('bookmarks', distinct=True)
+        ).order_by('-created_at')
+        
+        serializer = PostSerializer(posts, many=True, context={'request': request})
+        return JsonResponse({"results": serializer.data})
+        
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def search_users(request):
+    """
+    Search users by name, username, or profession
+    """
+    try:
+        query = request.GET.get('q', '').strip()
+        if not query:
+            return JsonResponse({"results": []})
+        
+        # Search in first_name, last_name, username, and profession
+        users = User.objects.filter(
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(username__icontains=query) |
+            Q(profession__icontains=query)
+        ).order_by('-date_joined')
+        
+        serializer = UserSerializer(users, many=True, context={'request': request})
+        return JsonResponse({"results": serializer.data})
+        
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def search_hashtags(request):
+    """
+    Search hashtags
+    """
+    try:
+        query = request.GET.get('q', '').strip()
+        if not query:
+            return JsonResponse({"results": []})
+        
+        # Extract hashtags from posts
+        posts = Post.objects.filter(hashtags__icontains=query)
+        hashtags = set()
+        
+        for post in posts:
+            if post.hashtags:
+                # Extract hashtags from the hashtags field
+                post_hashtags = re.findall(r'#\w+', post.hashtags)
+                for hashtag in post_hashtags:
+                    if query.lower() in hashtag.lower():
+                        hashtags.add(hashtag)
+        
+        # Convert to list and create results
+        results = []
+        for hashtag in list(hashtags)[:20]:  # Limit to 20 results
+            # Count posts with this hashtag
+            post_count = Post.objects.filter(hashtags__icontains=hashtag).count()
+            results.append({
+                "name": hashtag,
+                "tag": hashtag,
+                "post_count": post_count
+            })
+        
+        return JsonResponse({"results": results})
+        
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def search_trending(request):
+    """
+    Search trending topics
+    """
+    try:
+        query = request.GET.get('q', '').strip()
+        if not query:
+            return JsonResponse({"results": []})
+        
+        # Get trending posts that match the query
+        posts = Post.objects.filter(
+            Q(content__icontains=query) |
+            Q(hashtags__icontains=query)
+        ).annotate(
+            total_comments=Count('comments', distinct=True),
+            total_reactions=Count('reactions', distinct=True),
+            total_views=Count('views', distinct=True),
+            total_reposts=Count('reposts', distinct=True),
+            total_bookmarks=Count('bookmarks', distinct=True)
+        ).order_by('-total_reactions', '-total_comments', '-created_at')
+        
+        # Create trending topics from posts
+        trending_topics = []
+        seen_topics = set()
+        
+        for post in posts[:10]:  # Limit to 10 trending topics
+            if post.hashtags:
+                hashtags = re.findall(r'#\w+', post.hashtags)
+                for hashtag in hashtags:
+                    if query.lower() in hashtag.lower() and hashtag not in seen_topics:
+                        seen_topics.add(hashtag)
+                        trending_topics.append({
+                            "name": hashtag,
+                            "title": hashtag,
+                            "post_count": Post.objects.filter(hashtags__icontains=hashtag).count(),
+                            "status": "trending"
+                        })
+        
+        return JsonResponse({"results": trending_topics})
+        
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["GET"])
+def global_search(request):
+    """
+    Global search across all content types
+    """
+    try:
+        query = request.GET.get('q', '').strip()
+        if not query:
+            return JsonResponse({
+                "posts": [],
+                "users": [],
+                "hashtags": [],
+                "trending": []
+            })
+        
+        # Search posts
+        posts = Post.objects.filter(
+            Q(content__icontains=query) |
+            Q(hashtags__icontains=query) |
+            Q(location__icontains=query)
+        ).annotate(
+            total_comments=Count('comments', distinct=True),
+            total_reactions=Count('reactions', distinct=True),
+            total_views=Count('views', distinct=True),
+            total_reposts=Count('reposts', distinct=True),
+            total_bookmarks=Count('bookmarks', distinct=True)
+        ).order_by('-created_at')[:10]
+        
+        # Search users
+        users = User.objects.filter(
+            Q(first_name__icontains=query) |
+            Q(last_name__icontains=query) |
+            Q(username__icontains=query) |
+            Q(profession__icontains=query)
+        ).order_by('-date_joined')[:10]
+        
+        # Search hashtags
+        posts_with_hashtags = Post.objects.filter(hashtags__icontains=query)
+        hashtags = set()
+        
+        for post in posts_with_hashtags:
+            if post.hashtags:
+                post_hashtags = re.findall(r'#\w+', post.hashtags)
+                for hashtag in post_hashtags:
+                    if query.lower() in hashtag.lower():
+                        hashtags.add(hashtag)
+        
+        hashtag_results = []
+        for hashtag in list(hashtags)[:10]:
+            post_count = Post.objects.filter(hashtags__icontains=hashtag).count()
+            hashtag_results.append({
+                "name": hashtag,
+                "tag": hashtag,
+                "post_count": post_count
+            })
+        
+        # Search trending
+        trending_posts = Post.objects.filter(
+            Q(content__icontains=query) |
+            Q(hashtags__icontains=query)
+        ).annotate(
+            total_reactions=Count('reactions', distinct=True),
+            total_comments=Count('comments', distinct=True)
+        ).order_by('-total_reactions', '-total_comments', '-created_at')[:5]
+        
+        trending_results = []
+        seen_trends = set()
+        
+        for post in trending_posts:
+            if post.hashtags:
+                hashtags = re.findall(r'#\w+', post.hashtags)
+                for hashtag in hashtags:
+                    if query.lower() in hashtag.lower() and hashtag not in seen_trends:
+                        seen_trends.add(hashtag)
+                        trending_results.append({
+                            "name": hashtag,
+                            "title": hashtag,
+                            "post_count": Post.objects.filter(hashtags__icontains=hashtag).count(),
+                            "status": "trending"
+                        })
+        
+        # Serialize results
+        posts_serializer = PostSerializer(posts, many=True, context={'request': request})
+        users_serializer = UserSerializer(users, many=True, context={'request': request})
+        
+        return JsonResponse({
+            "posts": posts_serializer.data,
+            "users": users_serializer.data,
+            "hashtags": hashtag_results,
+            "trending": trending_results
+        })
+        
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)

@@ -4,7 +4,8 @@ from .views import (
     PostViewSet, PollViewSet, PollVoteViewSet, CommentViewSet,
     ReactionViewSet, RepostViewSet, ViewViewSet, FollowViewSet,
     BookmarkViewSet, UserViewSet, NotificationListView, MarkNotificationsAsReadView, 
-    status_view, websocket_notifications
+    status_view, websocket_notifications, search_posts, search_users, 
+    search_hashtags, search_trending, global_search
 )
 from .ai_views import generate_content, analyze_content, generate_hashtags
 
@@ -46,4 +47,11 @@ urlpatterns = [
     
     # WebSocket-like endpoint for notifications
     path('ws/notifications/', websocket_notifications, name='websocket_notifications'),
+    
+    # Search endpoints
+    path('search/posts/', search_posts, name='search_posts'),
+    path('search/users/', search_users, name='search_users'),
+    path('search/hashtags/', search_hashtags, name='search_hashtags'),
+    path('search/trending/', search_trending, name='search_trending'),
+    path('search/', global_search, name='global_search'),
 ]

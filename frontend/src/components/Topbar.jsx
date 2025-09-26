@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import Mobilemenu from "./Mobilemenu";
+import Search from "./Search";
 import { getUser, logout } from "../utils/factory";
 import Modal from "../components/Modal";
 import Report from "./Report";
 import { NavLink } from "react-router-dom";
 import { IoIosNotifications, IoIosNotificationsOutline } from "react-icons/io";
-import { IoNotifications, IoNotificationsOutline } from "react-icons/io5";
+import { IoNotifications, IoNotificationsOutline, IoSearch } from "react-icons/io5";
 import { MdOutlineAddAlarm } from "react-icons/md";
 import { IoLogOutOutline, IoPersonOutline } from "react-icons/io5";
 import { useNotifications } from "../context/NotificationContext";
@@ -14,6 +15,7 @@ const Topbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { hasNewNotification, markAsRead } = useNotifications();
   const userMenuRef = useRef(null);
 
@@ -78,11 +80,13 @@ const Topbar = () => {
         <img alt="logo" src="/logo.jpg" className="h-10 w-auto" />
       </div>
       <div className="flex-1 max-w-2xl mx-4 hidden md:flex">
-        <input
-          className="w-full h-10 px-4 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F4F4F] focus:border-transparent"
-          type="text"
-          placeholder="🔍 Search"
-        />
+        <button
+          onClick={() => setIsSearchOpen(true)}
+          className="w-full h-10 px-4 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F4F4F] focus:border-transparent flex items-center gap-3 text-left text-gray-500 hover:bg-gray-200 transition-colors"
+        >
+          <IoSearch size={18} />
+          <span>Search posts, users, hashtags...</span>
+        </button>
       </div>
       <div className="flex  justify-end self-center">
         <button
@@ -181,6 +185,9 @@ const Topbar = () => {
           )}
         </div>
       </div>
+
+      {/* Search Modal */}
+      <Search isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </div>
   );
 };
