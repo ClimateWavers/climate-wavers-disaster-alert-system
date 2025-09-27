@@ -4,7 +4,7 @@ import { formatDistanceToNow } from "date-fns";
 import Accountcard from "./Accountcard";
 import { client } from "../api";
 import { endpoints } from "../utils/endpoints";
-import { getAuthToken } from "../utils/factory";
+import { getAuthToken, getUser } from "../utils/factory";
 import { toast } from "react-toastify";
 import { AiOutlineHeart, AiFillHeart, AiOutlineRetweet } from "react-icons/ai";
 import { IoChatboxEllipsesOutline, IoEllipsisHorizontal, IoTrashOutline, IoEyeOutline } from "react-icons/io5";
@@ -59,12 +59,7 @@ const Posts = ({
     }
   }, [posts]);
 
-  // Save updated posts to localStorage whenever localPosts change
-  useEffect(() => {
-    if (localPosts && localPosts.length > 0) {
-      localStorage.setItem("posts", JSON.stringify(localPosts));
-    }
-  }, [localPosts]);
+  // Posts data is managed by the database, no localStorage needed
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -315,20 +310,17 @@ const Posts = ({
                     </button>
                     {(() => {
                       try {
-                        // Check the correct localStorage key: 'user_info'
-                        const userInfo = JSON.parse(localStorage.getItem('user_info') || '{}');
-                        const user = JSON.parse(localStorage.getItem('user') || '{}');
-                        const authUser = JSON.parse(localStorage.getItem('authUser') || '{}');
-                        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                        // Use proper getUser() function instead of localStorage
+                        const currentUser = getUser();
                         
                         // Check if user is logged in
-                        const isLoggedIn = !!(userInfo?.id || user?.id || authUser?.id || currentUser?.id);
+                        const isLoggedIn = !!currentUser?.id;
                         
-                        // Try to get user ID from the correct location: user_info
-                        const userId = userInfo?.id || user?.id || authUser?.id || currentUser?.id;
+                        // Get user ID from proper source
+                        const userId = currentUser?.id;
                         
                         // Check if we can match by email or other fields
-                        const userEmail = userInfo?.email;
+                        const userEmail = currentUser?.email;
                         const postUserEmail = post?.user?.email;
                         
                         // Check if this is the user's own post

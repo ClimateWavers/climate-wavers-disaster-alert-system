@@ -7,6 +7,7 @@ import Report from "./Report";
 import { NavLink } from "react-router-dom";
 import { IoIosNotifications, IoIosNotificationsOutline } from "react-icons/io";
 import { IoNotifications, IoNotificationsOutline, IoSearch } from "react-icons/io5";
+import TreeBadge from './TreeBadge';
 import { MdOutlineAddAlarm } from "react-icons/md";
 import { IoLogOutOutline, IoPersonOutline } from "react-icons/io5";
 import { useNotifications } from "../context/NotificationContext";
@@ -134,7 +135,7 @@ const Topbar = () => {
         <div className="relative" ref={userMenuRef}>
           <button
             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-            className="ml-2 hidden md:flex self-end rounded-full h-12 w-12 overflow-hidden hover:ring-2 hover:ring-[#2F4F4F] transition-all duration-200"
+            className="ml-2 hidden md:flex self-end rounded-full h-12 w-12 overflow-hidden hover:ring-2 hover:ring-[#2F4F4F] transition-all duration-200 relative"
           >
         <img
               src={user?.profile_picture || "/avatar.png"}
@@ -143,6 +144,15 @@ const Topbar = () => {
               onError={(e) => {
                 e.target.src = "/avatar.png";
               }}
+            />
+            
+            {/* Tree Badge */}
+            <TreeBadge 
+              hasPlantedTrees={true}
+              treesCount={0}
+              size="small"
+              userId={user?.id}
+              className="absolute -bottom-1 -right-1"
             />
           </button>
           

@@ -44,3 +44,4 @@ const ProtectedRoute = ({ children, redirectTo = '/login' }) => {
 };
 
 export default ProtectedRoute;
+

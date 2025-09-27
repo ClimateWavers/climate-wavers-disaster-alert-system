@@ -5,7 +5,7 @@ const SEO = ({
   description = "Join Climate Wavers, the leading platform for disaster alerts, climate action, and environmental community engagement. Get real-time disaster warnings, connect with climate activists, and make a positive impact on our planet.",
   keywords = "climate change, disaster alerts, environmental action, climate activism, disaster preparedness, environmental community, climate awareness, natural disasters, emergency alerts, climate solutions",
   image = "/assets/og-image.jpg",
-  url = "https://climatewavers.me",
+  url = "https://climatewavers.org",
   type = "website",
   author = "Climate Wavers",
   publishedTime,
@@ -18,8 +18,8 @@ const SEO = ({
   nofollow = false
 }) => {
   const fullTitle = title.includes("Climate Wavers") ? title : `${title} | Climate Wavers`;
-  const fullUrl = url.startsWith('http') ? url : `https://climatewavers.me${url}`;
-  const fullImage = image.startsWith('http') ? image : `https://climatewavers.me${image}`;
+  const fullUrl = url.startsWith('http') ? url : `https://climatewavers.org${url}`;
+  const fullImage = image.startsWith('http') ? image : `https://climatewavers.org${image}`;
 
   return (
     <Helmet>
@@ -83,3 +83,4 @@ const SEO = ({
 };
 
 export default SEO;
+

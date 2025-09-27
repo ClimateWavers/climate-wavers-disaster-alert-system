@@ -59,6 +59,8 @@ import PlantTree from "./components/PlantTree";
 import TreeProjectAdmin from "./components/TreeProjectAdmin";
 import PublicProjectView from "./components/PublicProjectView";
 import ProtectedRoute from "./components/ProtectedRoute";
+import MyCertificates from "./pages/MyCertificates";
+import PaymentSuccess from "./pages/PaymentSuccess";
 
 
 function App() {
@@ -95,6 +97,7 @@ function App() {
             {/* <Route path="/happeningnow" element={<Happeningnow />} /> */}
             <Route path="/app/donations" element={<Donations />} />
             <Route path="/app/plant-tree" element={<ProtectedRoute><PlantTree /></ProtectedRoute>} />
+            <Route path="/app/my-certificates" element={<ProtectedRoute><MyCertificates /></ProtectedRoute>} />
             <Route path="/app/admin/tree-projects" element={<TreeProjectAdmin />} />
             <Route path="/app/:userId/profile" element={<AuthProfile />} />
             <Route
@@ -146,6 +149,7 @@ function App() {
           <Route path="/verifymail" element={<VerifyMail />} />
           <Route path="/uploadphoto" element={<AuthUploadPhoto />} />
           <Route path="/uploadcover" element={<AuthUploadCover />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
 
 
           {/* <Route path="/wallet"  element={<Web3 />} /> */}

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { BsBriefcase } from "react-icons/bs";
 import { FiMapPin } from "react-icons/fi";
-import { IoCreateOutline, IoCamera, IoCallOutline, IoGlobeOutline } from "react-icons/io5";
+import { IoCreateOutline, IoCamera, IoCallOutline, IoGlobeOutline, IoLeaf } from "react-icons/io5";
+import TreeBadge from "./TreeBadge";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
 import Feed from "./Feed";
@@ -107,13 +108,7 @@ const Profile = () => {
       ...updatedUser
     }));
     
-    // Update localStorage with new user data
-    const currentUser = getUser();
-    const updatedUserData = {
-      ...currentUser,
-      ...updatedUser
-    };
-    localStorage.setItem('user_info', JSON.stringify(updatedUserData));
+    // User data is managed by cookies and database, no localStorage needed
     
     // Also update cookies for getUser() function
     if (currentUser) {
@@ -203,7 +198,7 @@ const Profile = () => {
           </div>
           
           {/* Profile Picture */}
-          <div className="absolute -bottom-16 md:-bottom-20 left-4 md:left-8">
+          <div className="absolute -bottom-2 md:-bottom-4 left-4 md:left-8">
             <div className="relative group">
               {console.log("Rendering profile picture:", profile?.profile_picture, "profile_pic:", profile?.profile_pic, "picture:", profile?.picture)}
               {(() => {
@@ -243,44 +238,27 @@ const Profile = () => {
               <div className="absolute inset-0 rounded-full bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
                 <IoCamera className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={24} />
               </div>
+              {/* Tree Badge */}
+              <TreeBadge 
+                hasPlantedTrees={true}
+                treesCount={0}
+                size="large"
+                userId={profile?.id}
+                className="absolute bottom-10 right-5 z-[9999] sm:bottom-14 sm:right-7"
+          />
         </div>
       </div>
         </div>
 
         {/* Profile Info Section */}
-        <div className="bg-white rounded-t-3xl -mt-8 md:-mt-12 lg:-mt-16 relative z-10 shadow-xl">
-          <div className="px-4 md:px-6 lg:px-8 pt-16 md:pt-20 lg:pt-24 pb-6">
+        <div className="bg-white rounded-t-3xl -mt-1 md:-mt-2 lg:-mt-3 relative z-[1] shadow-xl">
+          <div className="px-4 md:px-6 lg:px-8 pt-10 md:pt-14 lg:pt-18 pb-6">
             {/* User Info Header */}
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
               <div className="flex-1">
                 <div className="flex flex-col md:flex-row md:items-center gap-3">
-                  {/* Small Profile Picture */}
+                  {/* User Info */}
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-200 shadow-md">
-                      {(() => {
-                        const imageSrc = profile?.profile_picture || profile?.profile_pic || profile?.picture;
-                        if (imageSrc) {
-                          return (
-                            <img
-                              src={imageSrc}
-                              className="w-full h-full object-cover"
-                              alt="Profile"
-                              onError={(e) => {
-                                e.target.style.display = 'none';
-                                e.target.nextSibling.style.display = 'flex';
-                              }}
-                            />
-                          );
-                        }
-                        return null;
-                      })()}
-                      <div 
-                        className="w-full h-full bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center text-white font-bold text-lg"
-                        style={{ display: profile?.profile_picture || profile?.profile_pic || profile?.picture ? 'none' : 'flex' }}
-                      >
-                        {profile?.first_name?.charAt(0)?.toUpperCase() || profile?.username?.charAt(0)?.toUpperCase() || "U"}
-                      </div>
-                    </div>
                     <div>
                       <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-1">
                         {profile?.first_name} {profile?.last_name}
@@ -308,13 +286,23 @@ const Profile = () => {
           {isFollow ? "Following" : "Follow"}
         </button>
                     ) : (
-                      <button
-                        onClick={() => setIsEditModalOpen(true)}
-                        className="bg-teal-500 text-white px-6 py-3 rounded-full font-semibold text-sm hover:bg-teal-600 transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl"
-                      >
-                        <IoCreateOutline size={18} />
-                        Edit Profile
-        </button>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => window.location.href = '/app/my-certificates'}
+                          className="bg-green-500 text-white px-6 py-3 rounded-full font-semibold text-sm hover:bg-green-600 transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl"
+                        >
+                          <IoLeaf size={18} />
+                          My Certificates
+                        </button>
+                        
+                        <button
+                          onClick={() => setIsEditModalOpen(true)}
+                          className="bg-teal-500 text-white px-6 py-3 rounded-full font-semibold text-sm hover:bg-teal-600 transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl"
+                        >
+                          <IoCreateOutline size={18} />
+                          Edit Profile
+                        </button>
+                      </div>
       )}
       </div>
                 </div>

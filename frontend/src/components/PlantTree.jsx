@@ -6,7 +6,10 @@ import SocialShare from './SocialShare';
 import ProjectSEO from './ProjectSEO';
 import { FaTree, FaLeaf, FaSeedling, FaGlobe, FaHeart, FaMapMarkerAlt, FaUsers, FaFilter, FaShare } from 'react-icons/fa';
 import { endpoints } from '../utils/endpoints';
-import { getAuthToken } from '../utils/factory';
+import { getAuthToken, getUser } from '../utils/factory';
+import { useExchangeRate } from '../hooks/useExchangeRate';
+import ProjectCard from './ProjectCard';
+import { client } from '../api';
 
 const PlantTree = () => {
   const [selectedTree, setSelectedTree] = useState(null);
@@ -33,11 +36,40 @@ const PlantTree = () => {
 
   // Removed dummy tree types - now using real African projects only
 
-  // Load user's tree data from localStorage
+  // Load user's tree data from database
   useEffect(() => {
-    const savedTrees = localStorage.getItem('userTrees');
-    if (savedTrees) {
-      const trees = JSON.parse(savedTrees);
+    const fetchUserTrees = async () => {
+      try {
+        const user = getUser();
+        if (!user?.id) return;
+
+        // Fetch user's tree donations from the database
+        const token = getAuthToken();
+        const response = await fetch(`${endpoints.treeProjectDonations}?donor=${user.id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch user trees');
+        }
+        
+        const data = await response.json();
+        console.log('User trees API response:', data);
+        
+        if (data.results) {
+          const trees = data.results.map(donation => ({
+            id: donation.id,
+            name: donation.project_name || 'Tree Planting',
+            co2Absorption: donation.co2_absorption_per_tree || 0,
+            location: `${donation.project_city || 'Unknown'}, ${donation.project_country || 'Unknown'}`,
+            date: donation.created_at,
+            amount: donation.amount || 0
+          }));
+          
+      console.log('Mapped trees:', trees);
       setUserTrees(trees);
       setTotalTreesPlanted(trees.length);
       
@@ -51,6 +83,12 @@ const PlantTree = () => {
         impactScore: impactScore
       });
     }
+      } catch (error) {
+        console.error('Error fetching user trees:', error);
+      }
+    };
+
+    fetchUserTrees();
     
     // Handle URL parameters for shared project links
     const urlParams = new URLSearchParams(window.location.search);
@@ -126,8 +164,7 @@ const PlantTree = () => {
     setUserTrees(updatedTrees);
     setTotalTreesPlanted(updatedTrees.length);
     
-    // Update localStorage
-    localStorage.setItem('userTrees', JSON.stringify(updatedTrees));
+    // Data is now managed by the database, no localStorage needed
     
     // Update stats
     const totalCo2 = updatedTrees.reduce((sum, tree) => sum + tree.co2Absorption, 0);
@@ -273,97 +310,19 @@ const PlantTree = () => {
                       return true;
                     })
                     .map((project) => (
-                    <div
+                      <ProjectCard
                       key={project.id}
-                      className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-105"
-                    >
-                      {project.cover_image_url && (
-                        <div className="h-40 sm:h-48 bg-cover bg-center relative" style={{ backgroundImage: `url(${project.cover_image_url})` }}>
-                          <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-                          {project.gallery_urls && project.gallery_urls.length > 0 && (
-                            <div className="absolute bottom-2 right-2 bg-white bg-opacity-90 rounded-full px-2 py-1 text-xs font-semibold text-gray-700">
-                              +{project.gallery_urls.length} more
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      <div className="p-4 sm:p-6">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
-                          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 sm:mb-0">
-                            {project.name}
-                          </h3>
-                          {project.is_verified && (
-                            <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full self-start sm:self-auto">
-                              Verified
-                            </span>
-                          )}
-                        </div>
-                        
-                        <div className="flex items-center text-xs sm:text-sm text-gray-600 mb-2">
-                          <FaMapMarkerAlt className="mr-1 sm:mr-2 text-green-600 text-xs sm:text-sm" />
-                          <span className="truncate">{project.city}, {project.country}</span>
-                        </div>
-                        
-                        <div className="flex items-center text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">
-                          <FaUsers className="mr-1 sm:mr-2 text-blue-600 text-xs sm:text-sm" />
-                          <span className="truncate">{project.organization_name}</span>
-                        </div>
-                        
-                        <p className="text-gray-600 mb-3 sm:mb-4 text-xs sm:text-sm line-clamp-2">
-                          {project.short_description || project.description.substring(0, 80) + '...'}
-                        </p>
-                        
-                        <div className="mb-3 sm:mb-4">
-                          <div className="flex justify-between text-xs sm:text-sm text-gray-600 mb-1">
-                            <span className="truncate">Progress: {project.trees_planted} / {project.target_trees}</span>
-                            <span className="ml-2">{project.progress_percentage.toFixed(1)}%</span>
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-2">
-                            <div
-                              className="bg-green-600 h-1.5 sm:h-2 rounded-full"
-                              style={{ width: `${project.progress_percentage}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4">
-                         <div className="mb-1 sm:mb-0">
-                           <span className="text-lg sm:text-2xl font-bold text-green-600">
-                             ${project.tree_price.toLocaleString()}
-                           </span>
-                           <span className="text-xs sm:text-sm text-gray-500 ml-1">per tree</span>
-                         </div>
-                          <div className="text-left sm:text-right">
-                            <div className="text-xs sm:text-sm text-gray-600">
-                              {project.co2_absorption_per_tree}kg CO₂/year
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-col gap-2">
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => {
+                        project={project}
+                        onViewDetails={(project) => {
                                 setSelectedProject(project);
                                 setShowProjectDetails(true);
                               }}
-                              className="flex-1 bg-blue-600 text-white py-2 px-3 sm:px-4 rounded-md hover:bg-blue-700 transition-colors font-semibold text-sm sm:text-base"
-                            >
-                              View Details
-                            </button>
-                            <button
-                              onClick={() => {
+                        onShare={(project) => {
                                 setSelectedProject(project);
                                 setShowSocialShare(true);
                               }}
-                              className="px-3 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
-                              title="Share Project"
-                            >
-                              <FaShare className="w-4 h-4" />
-                            </button>
-                          </div>
-                          <button
-                            onClick={() => handleTreePurchase({
+                        onPlantTree={(project) => {
+                          handleTreePurchase({
                               ...project,
                               name: `${project.name} Tree`,
                               description: project.description,
@@ -371,14 +330,9 @@ const PlantTree = () => {
                               co2Absorption: project.co2_absorption_per_tree,
                               benefits: ['Environmental impact', 'Community benefit', 'Verified project'],
                               plantingLocation: `${project.city}, ${project.country}`
-                            })}
-                            className="w-full bg-green-600 text-white py-2 px-3 sm:px-4 rounded-md hover:bg-green-700 transition-colors font-semibold text-sm sm:text-base"
-                          >
-                            Plant Tree
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                          });
+                        }}
+                      />
                   ))}
                 </div>
               )}
@@ -389,6 +343,7 @@ const PlantTree = () => {
         )}
 
         {/* My Trees Section */}
+        {console.log('Current userTrees:', userTrees, 'Length:', userTrees.length)}
         {userTrees.length > 0 && (
           <div className="mt-8 sm:mt-12">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 text-center">

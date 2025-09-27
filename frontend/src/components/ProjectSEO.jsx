@@ -88,3 +88,4 @@ const ProjectSEO = ({ project }) => {
 };
 
 export default ProjectSEO;
+

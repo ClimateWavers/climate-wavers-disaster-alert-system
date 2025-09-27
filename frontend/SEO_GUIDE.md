@@ -225,3 +225,4 @@ Disallow: /onboarding/
 The Climate Wavers platform now has comprehensive SEO implementation covering technical optimization, content strategy, and performance monitoring. This foundation will help improve search engine visibility, user experience, and overall platform performance.
 
 For questions or updates to this SEO implementation, please refer to the development team or update this documentation accordingly.
+

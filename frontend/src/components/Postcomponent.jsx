@@ -28,12 +28,7 @@ const Postcomponent = ({ type, postId, comment }) => {
     }
   }, [error]);
 
-  useEffect(() => {
-    if (posts && posts.length > 0) {
-      // Save posts to localStorage when they are fetched
-      localStorage.setItem("posts", JSON.stringify(posts));
-    }
-  }, [posts]);
+  // Posts data is managed by the database, no localStorage needed
 
   return (
     <div>

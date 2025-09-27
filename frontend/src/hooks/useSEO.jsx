@@ -206,3 +206,4 @@ export const useDynamicSEO = (contentType, contentData) => {
 
   return generateDynamicSEO();
 };
+
