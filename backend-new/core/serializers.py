@@ -396,11 +396,16 @@ class TreeProjectUpdateSerializer(serializers.ModelSerializer):
 
 class TreeProjectDonationSerializer(serializers.ModelSerializer):
     donor_name = serializers.SerializerMethodField()
+    project_name = serializers.CharField(source='project.name', read_only=True)
+    project_city = serializers.CharField(source='project.city', read_only=True)
+    project_country = serializers.CharField(source='project.country', read_only=True)
+    co2_absorption_per_tree = serializers.DecimalField(source='project.co2_absorption_per_tree', max_digits=5, decimal_places=2, read_only=True)
     
     class Meta:
         model = TreeProjectDonation
         fields = ['id', 'amount', 'trees_purchased', 'payment_reference', 'payment_status', 
-                 'dedication_message', 'is_anonymous', 'created_at', 'donor_name']
+                 'dedication_message', 'is_anonymous', 'created_at', 'donor_name',
+                 'project_name', 'project_city', 'project_country', 'co2_absorption_per_tree']
         read_only_fields = ['payment_reference', 'created_at']
     
     def get_donor_name(self, obj):

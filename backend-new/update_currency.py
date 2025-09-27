@@ -50,3 +50,4 @@ def update_currency_to_usd():
 
 if __name__ == "__main__":
     update_currency_to_usd()
+

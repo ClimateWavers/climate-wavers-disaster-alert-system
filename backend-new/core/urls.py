@@ -7,7 +7,8 @@ from .views import (
     status_view, websocket_notifications, search_posts, search_users, 
     search_hashtags, search_trending, global_search,
     TreeProjectViewSet, TreeProjectUpdateViewSet, TreeProjectDonationViewSet,
-    FileUploadViewSet
+    FileUploadViewSet, verify_paystack_payment, paystack_webhook, mark_certificate_downloaded,
+    verify_payment
 )
 from .ai_views import generate_content, analyze_content, generate_hashtags
 
@@ -60,4 +61,14 @@ urlpatterns = [
     path('search/hashtags/', search_hashtags, name='search_hashtags'),
     path('search/trending/', search_trending, name='search_trending'),
     path('search/', global_search, name='global_search'),
+    
+    # Payment verification
+    path('verify-payment/', verify_paystack_payment, name='verify_payment'),
+    path('verify-payment-new/', verify_payment, name='verify_payment_new'),
+    
+    # Paystack webhook
+    path('paystack-webhook/', paystack_webhook, name='paystack_webhook'),
+    
+    # Certificate download tracking
+    path('mark-certificate-downloaded/', mark_certificate_downloaded, name='mark_certificate_downloaded'),
 ]

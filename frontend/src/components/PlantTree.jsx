@@ -176,7 +176,8 @@ const PlantTree = () => {
     });
 
     setShowCertificate(true);
-    setSelectedTree(null);
+    // Don't immediately close the payment component - let the success modal show first
+    // setSelectedTree(null); // This will be called when the success modal is closed
     toast.success(`🌱 Tree planted successfully! You've contributed to a greener planet.`);
   };
 

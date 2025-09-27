@@ -162,7 +162,7 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
         selected_species: selectedSpecies
       };
       
-      console.log('Sending payment verification data:', paymentData);
+      // Send payment verification to backend
       
       const response = await fetch('https://backend-production-5f10.up.railway.app/api/v1/verify-payment/', {
         method: 'POST',
@@ -498,6 +498,10 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
           onClose={() => {
             setShowPaymentSuccess(false);
             setPaymentSuccessData(null);
+            // Close the payment component after success modal is closed
+            if (onBack) {
+              onBack();
+            }
           }}
         />
       )}
