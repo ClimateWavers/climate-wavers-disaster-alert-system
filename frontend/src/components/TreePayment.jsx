@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { FaTree, FaLeaf, FaGlobe, FaArrowLeft } from 'react-icons/fa';
 import TreeCertificate from './TreeCertificate';
+import PaymentSuccess from './PaymentSuccess';
 
 const TreePayment = ({ treeData, onSuccess, onBack }) => {
   const [email, setEmail] = useState('');
@@ -14,6 +15,8 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
   const [showCertificate, setShowCertificate] = useState(false);
   const [certificateData, setCertificateData] = useState(null);
   const [downloadedCertificates, setDownloadedCertificates] = useState(new Set());
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+  const [paymentSuccessData, setPaymentSuccessData] = useState(null);
 
   // Currency configuration
   const currencyConfig = {
@@ -129,7 +132,7 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
       
       console.log('Sending payment verification data:', paymentData);
       
-      const response = await fetch('/api/v1/verify-payment/', {
+      const response = await fetch('https://backend-production-5f10.up.railway.app/api/v1/verify-payment-new/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -142,16 +145,23 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
       if (result.success) {
         toast.success('🌱 Payment verified! Your tree will be planted soon.');
         
-        // Set certificate data
-        console.log('Payment result:', result);
-        if (result.certificate_data) {
-          console.log('Setting certificate data:', result.certificate_data);
-          setCertificateData(result.certificate_data);
-          setShowCertificate(true);
-          console.log('Certificate modal should be showing now');
-        } else {
-          console.log('No certificate data in result');
-        }
+        // Set payment success data
+        const successData = {
+          project_name: treeData.name,
+          project_location: treeData.plantingLocation,
+          trees_planted: 1,
+          amount: treeData.price,
+          date: new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          }),
+          dedication_message: dedicationMessage || '',
+          donor_name: donorName || 'Anonymous'
+        };
+        
+        setPaymentSuccessData(successData);
+        setShowPaymentSuccess(true);
         
         // Update user's total trees planted for badge system
         if (result.user_total_trees !== undefined) {
@@ -389,6 +399,17 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
         </div>
       </div>
       
+      {/* Payment Success Modal */}
+      {showPaymentSuccess && paymentSuccessData && (
+        <PaymentSuccess
+          paymentData={paymentSuccessData}
+          onClose={() => {
+            setShowPaymentSuccess(false);
+            setPaymentSuccessData(null);
+          }}
+        />
+      )}
+
       {/* Certificate Modal */}
       <TreeCertificate
         isOpen={showCertificate}
