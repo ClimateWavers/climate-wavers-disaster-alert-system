@@ -91,6 +91,21 @@ const PaymentSuccess = ({ paymentData, onClose }) => {
                   <span className="text-gray-600">Trees Planted:</span>
                   <span className="font-medium">{paymentData.trees_planted}</span>
                 </div>
+                {paymentData.selected_species && Object.keys(paymentData.selected_species).length > 0 && (
+                  <div className="mt-2">
+                    <span className="text-gray-600 text-sm">Species Selected:</span>
+                    <div className="mt-1 space-y-1">
+                      {Object.entries(paymentData.selected_species).map(([species, quantity]) => (
+                        quantity > 0 && (
+                          <div key={species} className="flex justify-between text-sm">
+                            <span className="text-gray-600">{species}:</span>
+                            <span className="font-medium">{quantity}</span>
+                          </div>
+                        )
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-gray-600">Amount:</span>
                   <span className="font-medium">${paymentData.amount}</span>

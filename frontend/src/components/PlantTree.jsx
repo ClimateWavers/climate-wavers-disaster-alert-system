@@ -57,10 +57,11 @@ const PlantTree = () => {
         }
         
         const data = await response.json();
-        console.log('User trees API response:', data);
+        // Handle both array response and paginated response
+        const donations = Array.isArray(data) ? data : (data.results || []);
         
-        if (data.results) {
-          const trees = data.results.map(donation => ({
+        if (donations.length > 0) {
+          const trees = donations.map(donation => ({
             id: donation.id,
             name: donation.project_name || 'Tree Planting',
             co2Absorption: donation.co2_absorption_per_tree || 0,
@@ -68,8 +69,6 @@ const PlantTree = () => {
             date: donation.created_at,
             amount: donation.amount || 0
           }));
-          
-      console.log('Mapped trees:', trees);
       setUserTrees(trees);
       setTotalTreesPlanted(trees.length);
       
@@ -343,7 +342,6 @@ const PlantTree = () => {
         )}
 
         {/* My Trees Section */}
-        {console.log('Current userTrees:', userTrees, 'Length:', userTrees.length)}
         {userTrees.length > 0 && (
           <div className="mt-8 sm:mt-12">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 text-center">

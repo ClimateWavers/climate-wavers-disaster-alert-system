@@ -17,6 +17,9 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
   const [downloadedCertificates, setDownloadedCertificates] = useState(new Set());
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
   const [paymentSuccessData, setPaymentSuccessData] = useState(null);
+  const [selectedSpecies, setSelectedSpecies] = useState({});
+  const [totalQuantity, setTotalQuantity] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
 
   // Currency configuration
   const currencyConfig = {
@@ -29,6 +32,33 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
   // Default to KES for test mode, can be changed to other currencies for production
   // To switch to other currencies for production, change to: currencyConfig.NGN, currencyConfig.USD, etc.
   const selectedCurrency = currencyConfig.KES;
+
+  // Calculate total quantity and amount
+  useEffect(() => {
+    const quantities = Object.values(selectedSpecies);
+    const total = quantities.reduce((sum, qty) => sum + (qty || 0), 0);
+    setTotalQuantity(total);
+    setTotalAmount(total * treeData.price);
+  }, [selectedSpecies, treeData.price]);
+
+  // Recalculate exchange rate when total amount changes
+  useEffect(() => {
+    if (exchangeRate && totalAmount > 0) {
+      const converted = totalAmount * exchangeRate;
+      setConvertedAmount(converted);
+    }
+  }, [totalAmount, exchangeRate]);
+
+  // Handle species quantity change
+  const handleSpeciesQuantityChange = (species, quantity) => {
+    setSelectedSpecies(prev => ({
+      ...prev,
+      [species]: Math.max(0, parseInt(quantity) || 0)
+    }));
+  };
+
+  // Get available tree species from project data
+  const availableSpecies = treeData.tree_species || [];
 
   // Fetch exchange rate
   const fetchExchangeRate = async () => {
@@ -43,12 +73,13 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
         const usdToKesRate = data.conversion_rates.KES;
         setExchangeRate(usdToKesRate);
         
-        // Convert USD price to KES
-        const converted = treeData.price * usdToKesRate;
+        // Convert USD total amount to KES (use treeData.price as fallback)
+        const amountToConvert = totalAmount > 0 ? totalAmount : treeData.price;
+        const converted = amountToConvert * usdToKesRate;
         setConvertedAmount(converted);
         
         console.log(`Exchange rate: 1 USD = ${usdToKesRate} KES`);
-        console.log(`Converted amount: $${treeData.price} = KSh${converted.toFixed(2)}`);
+        console.log(`Converted amount: $${amountToConvert} = KSh${converted.toFixed(2)}`);
       }
     } catch (error) {
       console.error('Failed to fetch exchange rate:', error);
@@ -125,14 +156,15 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
         reference: reference,
         project_id: treeData.id,
         amount: convertedAmount, // Send the converted KES amount
-        trees_purchased: 1,
+        trees_purchased: totalQuantity,
         donor_name: donorName,
-        dedication_message: dedicationMessage
+        dedication_message: dedicationMessage,
+        selected_species: selectedSpecies
       };
       
       console.log('Sending payment verification data:', paymentData);
       
-      const response = await fetch('https://backend-production-5f10.up.railway.app/api/v1/verify-payment-new/', {
+      const response = await fetch('https://backend-production-5f10.up.railway.app/api/v1/verify-payment/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -149,15 +181,16 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
         const successData = {
           project_name: treeData.name,
           project_location: treeData.plantingLocation,
-          trees_planted: 1,
-          amount: treeData.price,
+          trees_planted: totalQuantity,
+          amount: totalAmount,
           date: new Date().toLocaleDateString('en-US', { 
             year: 'numeric', 
             month: 'long', 
             day: 'numeric' 
           }),
           dedication_message: dedicationMessage || '',
-          donor_name: donorName || 'Anonymous'
+          donor_name: donorName || 'Anonymous',
+          selected_species: selectedSpecies
         };
         
         setPaymentSuccessData(successData);
@@ -202,6 +235,11 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
 
     if (!donorName.trim()) {
       toast.error('Please enter your name');
+      return;
+    }
+
+    if (totalQuantity === 0) {
+      toast.error('Please select at least one tree to plant');
       return;
     }
 
@@ -340,6 +378,59 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
               />
             </div>
 
+            {/* Tree Species Selection */}
+            {availableSpecies.length > 0 && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Select Tree Species & Quantities
+                </label>
+                <div className="space-y-3">
+                  {availableSpecies.map((species, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-gray-900">{species}</h4>
+                        <p className="text-sm text-gray-600">${treeData.price} per tree</p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          type="button"
+                          onClick={() => handleSpeciesQuantityChange(species, (selectedSpecies[species] || 0) - 1)}
+                          className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-gray-600"
+                          disabled={!selectedSpecies[species] || selectedSpecies[species] <= 0}
+                        >
+                          −
+                        </button>
+                        <input
+                          type="number"
+                          min="0"
+                          value={selectedSpecies[species] || 0}
+                          onChange={(e) => handleSpeciesQuantityChange(species, e.target.value)}
+                          className="w-16 text-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleSpeciesQuantityChange(species, (selectedSpecies[species] || 0) + 1)}
+                          className="w-8 h-8 rounded-full bg-green-200 hover:bg-green-300 flex items-center justify-center text-green-600"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Total Summary */}
+                {totalQuantity > 0 && (
+                  <div className="mt-4 p-3 bg-green-50 rounded-lg">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium text-green-800">Total Trees Selected:</span>
+                      <span className="font-bold text-green-800">{totalQuantity}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Tree Benefits Reminder */}
             <div className="bg-green-50 p-4 rounded-md">
               <h4 className="font-semibold text-green-800 mb-2">Your Tree Will:</h4>
@@ -359,7 +450,7 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
                 <span className="text-lg font-medium text-gray-700">Total Amount:</span>
                 <div className="text-right">
                   <div className="text-2xl font-bold text-green-600">
-                  ${treeData.price.toLocaleString()}
+                    ${totalAmount.toLocaleString()}
                   </div>
                   {loadingExchangeRate ? (
                     <div className="text-sm text-gray-500">
@@ -379,15 +470,16 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
               )}
               <p className="text-sm text-gray-600">
                 Includes tree planting, maintenance, and certificate
+                {totalQuantity > 1 && ` for ${totalQuantity} trees`}
               </p>
             </div>
 
             <button
               onClick={handlePayment}
-              disabled={loading || loadingExchangeRate || !convertedAmount}
+              disabled={loading || loadingExchangeRate || !convertedAmount || totalQuantity === 0}
               className="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-lg"
             >
-              {loading ? 'Processing...' : loadingExchangeRate ? 'Loading exchange rate...' : `🌱 Plant Tree for KSh${convertedAmount ? convertedAmount.toLocaleString(undefined, {maximumFractionDigits: 0}) : '...'} ($${treeData.price.toLocaleString()})`}
+              {loading ? 'Processing...' : loadingExchangeRate ? 'Loading exchange rate...' : totalQuantity === 0 ? 'Select trees to plant' : `🌱 Plant ${totalQuantity} Tree${totalQuantity > 1 ? 's' : ''} for KSh${convertedAmount ? convertedAmount.toLocaleString(undefined, {maximumFractionDigits: 0}) : '...'} ($${totalAmount.toLocaleString()})`}
             </button>
           </div>
           
