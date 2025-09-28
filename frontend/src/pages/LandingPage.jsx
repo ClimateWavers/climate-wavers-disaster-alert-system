@@ -2483,7 +2483,7 @@ const LandingPage = () => {
                     className="w-10 h-10 md:w-12 md:h-12 bg-white/20 backdrop-blur-sm hover:bg-white/30 border border-white/30 hover:border-white/50 rounded-lg md:rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-xl hover:shadow-white/20"
                     aria-label="Connect with us on LinkedIn"
                   >
-                    <img src={linkedIn} alt="LinkedIn" className="w-4 h-4 md:w-6 md:h-6 filter brightness-0 invert" />
+                    <img src={linkedIn} alt="LinkedIn" className="w-4 h-4 md:w-6 md:h-6" />
                   </a>
                 </div>
               </div>
