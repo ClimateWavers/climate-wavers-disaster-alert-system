@@ -20,6 +20,14 @@ import {
 import LandingPage from "./pages/LandingPage";
 import AboutPage from "./pages/AboutPage";
 import ImpactPage from "./pages/ImpactPage";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import FAQ from "./pages/FAQ";
+import ContactUs from "./pages/ContactUs";
+import Support from "./pages/Support";
+import TrafficReport from "./pages/TrafficReport";
+import TransparencyReport from "./pages/TransparencyReport";
+import Consulting from "./pages/Consulting";
 import {
   OnboardingLayout,
   Welcome,
@@ -84,6 +92,16 @@ function App() {
           <Route path="/landing" element={<LandingPage/>} />
           <Route path="/about" element={<AboutPage/>} />
           <Route path="/impact" element={<ImpactPage/>} />
+          
+          {/* Footer Pages */}
+          <Route path="/privacy-policy" element={<PrivacyPolicy/>} />
+          <Route path="/terms-of-service" element={<TermsOfService/>} />
+          <Route path="/faq" element={<FAQ/>} />
+          <Route path="/contact" element={<ContactUs/>} />
+          <Route path="/support" element={<Support/>} />
+          <Route path="/traffic-report" element={<TrafficReport/>} />
+          <Route path="/transparency-report" element={<TransparencyReport/>} />
+          <Route path="/consulting" element={<Consulting/>} />
           
           {/* Public project view for shared links */}
           <Route path="/project" element={<PublicProjectView />} />

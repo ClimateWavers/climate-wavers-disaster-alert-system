@@ -12,6 +12,7 @@ import yt from "../assets/Icons/yt.svg";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { LandingPageSEO } from "../components/SEOComponents";
+import DonationForm from "../components/DonationForm";
 
 // Mock Google Maps component with detailed world map
 const MockGoogleMap = ({ disasters, onDisasterClick }) => {
@@ -789,6 +790,7 @@ const LandingPage = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showDisasterMap, setShowDisasterMap] = useState(false);
+  const [showDonationModal, setShowDonationModal] = useState(false);
   const [selectedDisaster, setSelectedDisaster] = useState(null);
   const [measurementMode, setMeasurementMode] = useState(false);
   const [measurementPoints, setMeasurementPoints] = useState([]);
@@ -817,7 +819,7 @@ const LandingPage = () => {
     },
     {
       id: 3,
-      image: background,
+      image: "/emergency-response.jpg",
       title: "Emergency",
       subtitle: "Response",
       description: "Coordinate with emergency services and community networks for rapid disaster response and efficient resource allocation.",
@@ -825,7 +827,7 @@ const LandingPage = () => {
     },
     {
       id: 4,
-      image: imageOne,
+      image: "/community-respond.jpg",
       title: "Community",
       subtitle: "Protection",
       description: "Protect your community with advanced early warning systems that provide real-time monitoring, AI-powered predictions, and coordinated emergency response protocols.",
@@ -1341,13 +1343,40 @@ const LandingPage = () => {
             </div>
 
             <div className="flex items-center space-x-4">
-              {/* Emergency Alert Button */}
+              {/* Emergency Alert Button with Global Map */}
               <button 
                 onClick={() => setShowDisasterMap(true)}
-                className="relative group hidden md:flex items-center p-3 hover:bg-red-50 rounded-md transition-all duration-300 transform hover:scale-110"
+                className="relative group hidden md:flex items-center p-3 hover:bg-red-50 rounded-md transition-all duration-300 transform hover:scale-110 overflow-hidden"
                 title="Emergency Disaster Alert"
               >
-                <div className="relative">
+                {/* Global Map Background */}
+                <div className="absolute inset-0 opacity-20 bg-cover bg-center bg-no-repeat rounded-md"
+                  style={{
+                    backgroundImage: `url('/globe.png')`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    filter: 'brightness(0.3) contrast(1.2) saturate(1.2)'
+                  }}
+                ></div>
+                
+                {/* Animated Network Pattern Overlay */}
+                <div className="absolute inset-0 opacity-15 rounded-md">
+                  <div className="absolute inset-0" style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg stroke='%23ffffff' stroke-opacity='0.1' stroke-width='0.5'%3E%3Ccircle cx='15' cy='15' r='1'/%3E%3Ccircle cx='45' cy='15' r='1'/%3E%3Ccircle cx='15' cy='45' r='1'/%3E%3Ccircle cx='45' cy='45' r='1'/%3E%3Ccircle cx='30' cy='30' r='1.5'/%3E%3Cpath d='M15 15L30 30M45 15L30 30M15 45L30 30M45 45L30 30'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                    backgroundSize: '60px 60px',
+                    animation: 'float 15s ease-in-out infinite'
+                  }}></div>
+                </div>
+                
+                {/* Floating Data Points */}
+                <div className="absolute inset-0 overflow-hidden rounded-md">
+                  <div className="absolute top-1/4 left-1/4 w-1 h-1 bg-red-400/60 rounded-full animate-pulse" style={{animationDelay: '0s', animationDuration: '2s'}}></div>
+                  <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-yellow-400/60 rounded-full animate-pulse" style={{animationDelay: '1s', animationDuration: '3s'}}></div>
+                  <div className="absolute bottom-1/3 left-1/3 w-1 h-1 bg-green-400/60 rounded-full animate-pulse" style={{animationDelay: '2s', animationDuration: '2.5s'}}></div>
+                  <div className="absolute bottom-1/4 right-1/4 w-1 h-1 bg-blue-400/60 rounded-full animate-pulse" style={{animationDelay: '3s', animationDuration: '4s'}}></div>
+                </div>
+                
+                <div className="relative z-10">
                   {/* Alert Icon */}
                   <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-red-500">
                     <path d="M16 2L2 8v8c0 6 6 12 14 12s14-6 14-12V8L16 2z" fill="currentColor"/>
@@ -1363,6 +1392,28 @@ const LandingPage = () => {
                   </div>
                 </div>
               </button>
+
+              {/* Donate Button */}
+              <button 
+                onClick={() => setShowDonationModal(true)}
+                className="hidden md:flex items-center px-3 py-1.5 bg-[#2F4F4F] text-white rounded-md hover:bg-[#1e3a3a] transition-colors text-sm font-medium"
+              >
+                <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                </svg>
+                Donate
+              </button>
+
+              {/* Plant Tree Button */}
+              <a 
+                href="/app/plant-tree"
+                className="hidden md:flex items-center px-3 py-1.5 bg-[#2F4F4F] text-white rounded-md hover:bg-[#1e3a3a] transition-colors text-sm font-medium"
+              >
+                <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 2L8 4h2l2-2h-2zm-2 4L6 8h2l2-2h-2zm4 0L14 8h-2l-2-2h2zm-2 4L10 12h2l2-2h-2zm4 0L18 12h-2l-2-2h2zm-8 4L6 16h2l2-2h-2zm4 0L10 16h2l2-2h-2zm4 0L18 16h-2l-2-2h2z" clipRule="evenodd" />
+                </svg>
+                Plant Tree
+              </a>
 
               <a href="/login" className={`hidden md:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md transition-colors ${isScrolled ? 'text-[#2F4F4F] hover:text-[#1F3F3F]' : 'text-white hover:text-[#4F6F6F]'}`}>
                 Sign In
@@ -1428,13 +1479,39 @@ const LandingPage = () => {
                 Impact
               </Link>
               
+              {/* Donate Button for Mobile */}
+              <button 
+                onClick={() => {
+                  setShowDonationModal(true);
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center justify-center px-4 py-2 bg-[#2F4F4F] text-white rounded-lg hover:bg-[#1e3a3a] transition-colors duration-200 mt-4 text-sm font-medium"
+              >
+                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                </svg>
+                Donate
+              </button>
+
+              {/* Plant Tree Button for Mobile */}
+              <Link 
+                to="/app/plant-tree"
+                className="w-full flex items-center justify-center px-4 py-2 bg-[#2F4F4F] text-white rounded-lg hover:bg-[#1e3a3a] transition-colors duration-200 text-sm font-medium"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 2L8 4h2l2-2h-2zm-2 4L6 8h2l2-2h-2zm4 0L14 8h-2l-2-2h2zm-2 4L10 12h2l2-2h-2zm4 0L18 12h-2l-2-2h2zm-8 4L6 16h2l2-2h-2zm4 0L10 16h2l2-2h-2zm4 0L18 16h-2l-2-2h2z" clipRule="evenodd" />
+                </svg>
+                Plant Tree
+              </Link>
+              
               {/* Emergency Alert Button for Mobile */}
               <button 
                 onClick={() => {
                   setShowDisasterMap(true);
                   setIsMobileMenuOpen(false);
                 }}
-                className="w-full flex items-center justify-center px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 mt-4"
+                className="w-full flex items-center justify-center px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
               >
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -2148,39 +2225,221 @@ const LandingPage = () => {
 
 
 
-      {/* Modern Footer */}
-      <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-5">
+      {/* Modern Footer with Global Map Background */}
+      <footer className="relative text-white overflow-hidden" style={{
+        background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)'
+      }}>
+        {/* Global Map Background */}
+        <div 
+          className="absolute inset-0 opacity-40 bg-cover bg-center bg-no-repeat animate-pulse"
+          style={{
+            backgroundImage: `url('/globe.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'brightness(0.4) contrast(1.3) saturate(1.2)'
+          }}
+        ></div>
+        
+        {/* Animated Data Streams */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/4 left-1/4 w-1 h-20 bg-gradient-to-b from-transparent via-green-400 to-transparent animate-pulse" style={{animationDelay: '0s', animationDuration: '2s'}}></div>
+          <div className="absolute top-1/3 right-1/3 w-1 h-16 bg-gradient-to-b from-transparent via-blue-400 to-transparent animate-pulse" style={{animationDelay: '1s', animationDuration: '3s'}}></div>
+          <div className="absolute bottom-1/3 left-1/3 w-1 h-24 bg-gradient-to-b from-transparent via-yellow-400 to-transparent animate-pulse" style={{animationDelay: '2s', animationDuration: '2.5s'}}></div>
+          <div className="absolute bottom-1/4 right-1/4 w-1 h-18 bg-gradient-to-b from-transparent via-red-400 to-transparent animate-pulse" style={{animationDelay: '3s', animationDuration: '4s'}}></div>
+        </div>
+        
+        {/* Animated Network Overlay */}
+        <div className="absolute inset-0 opacity-20">
           <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            backgroundSize: '60px 60px'
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='300' height='300' viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg stroke='%23ffffff' stroke-opacity='0.1' stroke-width='1'%3E%3Ccircle cx='50' cy='50' r='3'/%3E%3Ccircle cx='250' cy='50' r='3'/%3E%3Ccircle cx='50' cy='250' r='3'/%3E%3Ccircle cx='250' cy='250' r='3'/%3E%3Ccircle cx='150' cy='150' r='4'/%3E%3Cpath d='M50 50L150 150M250 50L150 150M50 250L150 150M250 250L150 150'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundSize: '300px 300px',
+            animation: 'float 25s ease-in-out infinite'
           }}></div>
         </div>
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-            {/* Company Info */}
-            <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center mb-6">
-                <img alt="logo" src="/logo.jpg" className="h-10 w-auto mr-4" />
-                <h3 className="text-3xl font-bold text-[#2F4F4F]">Disaster Alert System</h3>
+        {/* Enhanced Floating Data Points */}
+        <div className="absolute inset-0 overflow-hidden">
+          {/* North America */}
+          <div className="absolute top-1/3 left-1/5 w-6 h-6 bg-green-500/60 rounded-full animate-pulse shadow-lg shadow-green-500/30" style={{animationDelay: '0s', animationDuration: '3s'}}></div>
+          <div className="absolute top-1/3 left-1/5 w-3 h-3 bg-green-400 rounded-full animate-ping shadow-lg shadow-green-400/50" style={{animationDelay: '0s'}}></div>
+          <div className="absolute top-1/3 left-1/5 w-8 h-8 border border-green-400/30 rounded-full animate-ping" style={{animationDelay: '0s', animationDuration: '4s'}}></div>
+          
+          {/* Europe */}
+          <div className="absolute top-1/4 left-1/2 w-5 h-5 bg-blue-500/60 rounded-full animate-pulse shadow-lg shadow-blue-500/30" style={{animationDelay: '1s', animationDuration: '4s'}}></div>
+          <div className="absolute top-1/4 left-1/2 w-3 h-3 bg-blue-400 rounded-full animate-ping shadow-lg shadow-blue-400/50" style={{animationDelay: '1s'}}></div>
+          <div className="absolute top-1/4 left-1/2 w-7 h-7 border border-blue-400/30 rounded-full animate-ping" style={{animationDelay: '1s', animationDuration: '5s'}}></div>
+          
+          {/* Asia */}
+          <div className="absolute top-1/3 right-1/4 w-6 h-6 bg-yellow-500/60 rounded-full animate-pulse shadow-lg shadow-yellow-500/30" style={{animationDelay: '2s', animationDuration: '5s'}}></div>
+          <div className="absolute top-1/3 right-1/4 w-3 h-3 bg-yellow-400 rounded-full animate-ping shadow-lg shadow-yellow-400/50" style={{animationDelay: '2s'}}></div>
+          <div className="absolute top-1/3 right-1/4 w-8 h-8 border border-yellow-400/30 rounded-full animate-ping" style={{animationDelay: '2s', animationDuration: '3s'}}></div>
+          
+          {/* Africa */}
+          <div className="absolute bottom-1/3 left-1/2 w-5 h-5 bg-red-500/60 rounded-full animate-pulse shadow-lg shadow-red-500/30" style={{animationDelay: '3s', animationDuration: '4s'}}></div>
+          <div className="absolute bottom-1/3 left-1/2 w-3 h-3 bg-red-400 rounded-full animate-ping shadow-lg shadow-red-400/50" style={{animationDelay: '3s'}}></div>
+          <div className="absolute bottom-1/3 left-1/2 w-7 h-7 border border-red-400/30 rounded-full animate-ping" style={{animationDelay: '3s', animationDuration: '6s'}}></div>
+          
+          {/* South America */}
+          <div className="absolute bottom-1/4 left-1/3 w-5 h-5 bg-purple-500/60 rounded-full animate-pulse shadow-lg shadow-purple-500/30" style={{animationDelay: '4s', animationDuration: '3s'}}></div>
+          <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-purple-400 rounded-full animate-ping shadow-lg shadow-purple-400/50" style={{animationDelay: '4s'}}></div>
+          <div className="absolute bottom-1/4 left-1/3 w-7 h-7 border border-purple-400/30 rounded-full animate-ping" style={{animationDelay: '4s', animationDuration: '4s'}}></div>
+          
+          {/* Australia */}
+          <div className="absolute bottom-1/3 right-1/5 w-5 h-5 bg-cyan-500/60 rounded-full animate-pulse shadow-lg shadow-cyan-500/30" style={{animationDelay: '5s', animationDuration: '6s'}}></div>
+          <div className="absolute bottom-1/3 right-1/5 w-3 h-3 bg-cyan-400 rounded-full animate-ping shadow-lg shadow-cyan-400/50" style={{animationDelay: '5s'}}></div>
+          <div className="absolute bottom-1/3 right-1/5 w-7 h-7 border border-cyan-400/30 rounded-full animate-ping" style={{animationDelay: '5s', animationDuration: '5s'}}></div>
+        </div>
+        
+        {/* Animated Connection Lines */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/3 left-1/5 w-32 h-0.5 bg-gradient-to-r from-green-400/60 via-transparent to-blue-400/60 animate-pulse" style={{transform: 'rotate(15deg)', animationDelay: '0s', animationDuration: '3s'}}></div>
+          <div className="absolute top-1/4 left-1/2 w-24 h-0.5 bg-gradient-to-r from-blue-400/60 via-transparent to-yellow-400/60 animate-pulse" style={{transform: 'rotate(-20deg)', animationDelay: '1s', animationDuration: '4s'}}></div>
+          <div className="absolute bottom-1/3 left-1/2 w-28 h-0.5 bg-gradient-to-r from-red-400/60 via-transparent to-purple-400/60 animate-pulse" style={{transform: 'rotate(25deg)', animationDelay: '2s', animationDuration: '5s'}}></div>
+          <div className="absolute bottom-1/3 right-1/5 w-20 h-0.5 bg-gradient-to-r from-cyan-400/60 via-transparent to-yellow-400/60 animate-pulse" style={{transform: 'rotate(-15deg)', animationDelay: '3s', animationDuration: '4s'}}></div>
+        </div>
+        
+        {/* Subtle Grid Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg stroke='%23ffffff' stroke-opacity='0.1' stroke-width='0.5'%3E%3Cpath d='M0 0h80v80H0z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundSize: '80px 80px'
+          }}></div>
+        </div>
+        
+        {/* Animated Radar Sweep */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/2 left-1/2 w-96 h-96 border border-green-400/20 rounded-full animate-spin" style={{animationDuration: '20s'}}></div>
+          <div className="absolute top-1/2 left-1/2 w-64 h-64 border border-blue-400/20 rounded-full animate-spin" style={{animationDuration: '15s', animationDirection: 'reverse'}}></div>
+          <div className="absolute top-1/2 left-1/2 w-32 h-32 border border-yellow-400/20 rounded-full animate-spin" style={{animationDuration: '10s'}}></div>
+        </div>
+        
+        {/* Floating Tech Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/4 right-1/4 w-2 h-2 bg-white/40 rounded-full animate-bounce" style={{animationDelay: '0s', animationDuration: '3s'}}></div>
+          <div className="absolute top-1/2 left-1/4 w-1 h-1 bg-white/30 rounded-full animate-bounce" style={{animationDelay: '1s', animationDuration: '4s'}}></div>
+          <div className="absolute bottom-1/4 right-1/3 w-1.5 h-1.5 bg-white/50 rounded-full animate-bounce" style={{animationDelay: '2s', animationDuration: '5s'}}></div>
+          <div className="absolute bottom-1/3 left-1/5 w-1 h-1 bg-white/40 rounded-full animate-bounce" style={{animationDelay: '3s', animationDuration: '3.5s'}}></div>
+        </div>
+        
+        {/* Dark Overlay for Text Readability */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/70 to-black/80"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 lg:py-20 relative z-10">
+          {/* Partners Section */}
+          <div className="mb-12 md:mb-16">
+            <h3 className="text-xl md:text-2xl font-bold text-center mb-6 md:mb-8 text-white">Trusted by Global Partners</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6 gap-4 md:gap-6 lg:gap-8 items-center justify-items-center">
+              {/* Red Cross */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 md:p-4 hover:bg-white/20 transition-all duration-300 hover:scale-105 w-full max-w-[120px]">
+                <img src="/red-cross.jpg" alt="Red Cross" className="h-6 md:h-8 w-auto mx-auto" />
+                <div className="text-white text-xs text-center mt-1">Red Cross</div>
               </div>
-              <p className="text-gray-300 mb-8 max-w-lg text-lg leading-relaxed">
+              
+              {/* World Bank */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 md:p-4 hover:bg-white/20 transition-all duration-300 hover:scale-105 w-full max-w-[120px]">
+                <img src="/world-bank.webp" alt="World Bank" className="h-6 md:h-8 w-auto mx-auto" />
+                <div className="text-white text-xs text-center mt-1">World Bank</div>
+              </div>
+              
+              {/* UNFCCC */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 md:p-4 hover:bg-white/20 transition-all duration-300 hover:scale-105 w-full max-w-[120px]">
+                <img src="/unfcc.png" alt="UNFCCC" className="h-6 md:h-8 w-auto mx-auto" />
+                <div className="text-white text-xs text-center mt-1">UNFCCC</div>
+              </div>
+              
+              {/* UNDP */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 md:p-4 hover:bg-white/20 transition-all duration-300 hover:scale-105 w-full max-w-[120px]">
+                <img src="/undp.png" alt="UNDP" className="h-6 md:h-8 w-auto mx-auto" />
+                <div className="text-white text-xs text-center mt-1">UNDP</div>
+              </div>
+              
+              {/* Green Climate Fund */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 md:p-4 hover:bg-white/20 transition-all duration-300 hover:scale-105 w-full max-w-[120px]">
+                <img src="/gef.png" alt="Green Climate Fund" className="h-6 md:h-8 w-auto mx-auto" />
+                <div className="text-white text-xs text-center mt-1">Green Climate Fund</div>
+              </div>
+              
+              {/* UN Environment Programme */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 md:p-4 hover:bg-white/20 transition-all duration-300 hover:scale-105 w-full max-w-[120px]">
+                <img src="/unep.png" alt="UNEP" className="h-6 md:h-8 w-auto mx-auto" />
+                <div className="text-white text-xs text-center mt-1">UNEP</div>
+              </div>
+              
+              {/* World Health Organization */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 md:p-4 hover:bg-white/20 transition-all duration-300 hover:scale-105 w-full max-w-[120px]">
+                <img src="/who.png" alt="WHO" className="h-6 md:h-8 w-auto mx-auto" />
+                <div className="text-white text-xs text-center mt-1">WHO</div>
+              </div>
+              
+              {/* International Federation of Red Cross */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 md:p-4 hover:bg-white/20 transition-all duration-300 hover:scale-105 w-full max-w-[120px]">
+                <img src="/IFRC.png" alt="IFRC" className="h-6 md:h-8 w-auto mx-auto" />
+                <div className="text-white text-xs text-center mt-1">IFRC</div>
+              </div>
+              
+              {/* UNN */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 md:p-4 hover:bg-white/20 transition-all duration-300 hover:scale-105 w-full max-w-[120px]">
+                <img src="/unn.png" alt="UNN" className="h-6 md:h-8 w-auto mx-auto" />
+                <div className="text-white text-xs text-center mt-1">UNN</div>
+              </div>
+              
+              {/* Global Environment Facility */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 md:p-4 hover:bg-white/20 transition-all duration-300 hover:scale-105 w-full max-w-[120px]">
+                <div className="text-white font-bold text-xs md:text-sm text-center">
+                  <div className="w-6 h-6 md:w-8 md:h-8 mx-auto mb-1 md:mb-2 bg-teal-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">GEF</span>
+                  </div>
+                  <div className="hidden sm:block">GEF</div>
+                  <div className="sm:hidden text-xs">GEF</div>
+                </div>
+              </div>
+              
+              {/* Climate Action Network */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 md:p-4 hover:bg-white/20 transition-all duration-300 hover:scale-105 w-full max-w-[120px]">
+                <div className="text-white font-bold text-xs md:text-sm text-center">
+                  <div className="w-6 h-6 md:w-8 md:h-8 mx-auto mb-1 md:mb-2 bg-orange-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">CAN</span>
+                  </div>
+                  <div className="hidden sm:block">Climate Action Network</div>
+                  <div className="sm:hidden text-xs">CAN</div>
+                </div>
+              </div>
+              
+              {/* World Meteorological Organization */}
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 md:p-4 hover:bg-white/20 transition-all duration-300 hover:scale-105 w-full max-w-[120px]">
+                <div className="text-white font-bold text-xs md:text-sm text-center">
+                  <div className="w-6 h-6 md:w-8 md:h-8 mx-auto mb-1 md:mb-2 bg-cyan-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">WMO</span>
+                  </div>
+                  <div className="hidden sm:block">WMO</div>
+                  <div className="sm:hidden text-xs">WMO</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
+            {/* Company Info */}
+            <div className="col-span-1 sm:col-span-2 lg:col-span-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center mb-4 md:mb-6">
+                <img alt="logo" src="/logo.jpg" className="h-8 md:h-10 w-auto mr-0 sm:mr-4 mb-2 sm:mb-0" />
+                <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#2F4F4F]">Disaster Alert System</h3>
+              </div>
+              <p className="text-gray-300 mb-6 md:mb-8 max-w-lg text-sm md:text-base lg:text-lg leading-relaxed">
                 Advanced AI-powered disaster alert system protecting communities worldwide through 
                 real-time monitoring, predictive analytics, and coordinated emergency response.
               </p>
               
               {/* Newsletter */}
-              <div className="mb-8">
-                <h4 className="text-lg font-semibold mb-4">Stay Updated</h4>
-                <div className="flex flex-col sm:flex-row gap-3">
+              <div className="mb-6 md:mb-8">
+                <h4 className="text-base md:text-lg font-semibold mb-3 md:mb-4 text-white">Stay Updated</h4>
+                <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
                 <input
                   type="email"
                     placeholder="Enter your email address"
-                    className="px-4 py-3 rounded-xl bg-gray-800/50 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2F4F4F] focus:border-transparent backdrop-blur-sm"
+                    className="px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl bg-gray-800/50 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2F4F4F] focus:border-transparent backdrop-blur-sm text-sm md:text-base"
                 />
-                  <button className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                  <button className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white px-4 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg text-sm md:text-base">
                   Subscribe
                 </button>
                 </div>
@@ -2188,19 +2447,43 @@ const LandingPage = () => {
 
               {/* Social Links */}
               <div>
-                <h4 className="text-lg font-semibold mb-4">Follow Us</h4>
-                <div className="flex space-x-4">
-                  <a href="#" className="w-10 h-10 bg-[#2F4F4F]/20 hover:bg-[#2F4F4F] rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110">
-                    <img src={fb} alt="Facebook" className="w-5 h-5" />
+                <h4 className="text-base md:text-lg font-semibold mb-3 md:mb-4 text-white">Follow Us</h4>
+                <div className="flex flex-wrap gap-2 md:gap-4">
+                  <a 
+                    href="https://facebook.com/climatewavers" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 md:w-12 md:h-12 bg-white/20 backdrop-blur-sm hover:bg-white/30 border border-white/30 hover:border-white/50 rounded-lg md:rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-xl hover:shadow-white/20"
+                    aria-label="Follow us on Facebook"
+                  >
+                    <img src={fb} alt="Facebook" className="w-4 h-4 md:w-6 md:h-6 filter brightness-0 invert" />
                   </a>
-                  <a href="#" className="w-10 h-10 bg-[#2F4F4F]/20 hover:bg-[#2F4F4F] rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110">
-                    <img src={yt} alt="YouTube" className="w-5 h-5" />
+                  <a 
+                    href="https://youtube.com/@climatewavers" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 md:w-12 md:h-12 bg-white/20 backdrop-blur-sm hover:bg-white/30 border border-white/30 hover:border-white/50 rounded-lg md:rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-xl hover:shadow-white/20"
+                    aria-label="Subscribe to our YouTube channel"
+                  >
+                    <img src={yt} alt="YouTube" className="w-4 h-4 md:w-6 md:h-6 filter brightness-0 invert" />
                   </a>
-                  <a href="#" className="w-10 h-10 bg-[#2F4F4F]/20 hover:bg-[#2F4F4F] rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110">
-                    <img src={exx} alt="X" className="w-5 h-5" />
+                  <a 
+                    href="https://x.com/climatewavers" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 md:w-12 md:h-12 bg-white/20 backdrop-blur-sm hover:bg-white/30 border border-white/30 hover:border-white/50 rounded-lg md:rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-xl hover:shadow-white/20"
+                    aria-label="Follow us on X (Twitter)"
+                  >
+                    <img src={exx} alt="X" className="w-4 h-4 md:w-6 md:h-6 filter brightness-0 invert" />
                   </a>
-                  <a href="#" className="w-10 h-10 bg-[#2F4F4F]/20 hover:bg-[#2F4F4F] rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110">
-                    <img src={linkedIn} alt="LinkedIn" className="w-5 h-5" />
+                  <a 
+                    href="https://linkedin.com/company/climatewavers" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 md:w-12 md:h-12 bg-white/20 backdrop-blur-sm hover:bg-white/30 border border-white/30 hover:border-white/50 rounded-lg md:rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-xl hover:shadow-white/20"
+                    aria-label="Connect with us on LinkedIn"
+                  >
+                    <img src={linkedIn} alt="LinkedIn" className="w-4 h-4 md:w-6 md:h-6 filter brightness-0 invert" />
                   </a>
                 </div>
               </div>
@@ -2208,31 +2491,31 @@ const LandingPage = () => {
 
             {/* Information */}
             <div>
-              <h4 className="text-lg font-semibold mb-4">Information</h4>
+              <h4 className="text-base md:text-lg font-semibold mb-3 md:mb-4 text-white">Information</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Traffic Report</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Transparency Report</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">FAQ</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Privacy Policy</a></li>
+                <li><Link to="/traffic-report" className="text-gray-300 hover:text-[#2F4F4F] transition-colors text-sm md:text-base">Traffic Report</Link></li>
+                <li><Link to="/transparency-report" className="text-gray-300 hover:text-[#2F4F4F] transition-colors text-sm md:text-base">Transparency Report</Link></li>
+                <li><Link to="/faq" className="text-gray-300 hover:text-[#2F4F4F] transition-colors text-sm md:text-base">FAQ</Link></li>
+                <li><Link to="/privacy-policy" className="text-gray-300 hover:text-[#2F4F4F] transition-colors text-sm md:text-base">Privacy Policy</Link></li>
           </ul>
         </div>
 
             {/* Services */}
             <div>
-              <h4 className="text-lg font-semibold mb-4">Services</h4>
+              <h4 className="text-base md:text-lg font-semibold mb-3 md:mb-4 text-white">Services</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">About Us</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Contact Us</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Consulting</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Support</a></li>
+                <li><Link to="/about" className="text-gray-300 hover:text-[#2F4F4F] transition-colors text-sm md:text-base">About Us</Link></li>
+                <li><Link to="/contact" className="text-gray-300 hover:text-[#2F4F4F] transition-colors text-sm md:text-base">Contact Us</Link></li>
+                <li><Link to="/consulting" className="text-gray-300 hover:text-[#2F4F4F] transition-colors text-sm md:text-base">Consulting</Link></li>
+                <li><Link to="/support" className="text-gray-300 hover:text-[#2F4F4F] transition-colors text-sm md:text-base">Support</Link></li>
           </ul>
         </div>
           </div>
 
           {/* Bottom section */}
-          <div className="border-t border-gray-700 mt-12 pt-8">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <p className="text-gray-400 text-sm">
+          <div className="border-t border-gray-700 mt-8 md:mt-12 pt-6 md:pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+              <p className="text-gray-400 text-xs md:text-sm mb-2 md:mb-0">
                 © 2024 Disaster Alert System. All rights reserved.
               </p>
             </div>
@@ -2337,6 +2620,11 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Donation Modal */}
+      {showDonationModal && (
+        <DonationForm onClose={() => setShowDonationModal(false)} />
       )}
     </main>
     </>
