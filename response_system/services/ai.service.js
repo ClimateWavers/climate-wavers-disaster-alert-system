@@ -1,7 +1,7 @@
 
 const config = require("../config/config")
 const postCategories = require("../constants/post_categories")
-const { GoogleGenerativeAI, HarmBlockThreshold, HarmCategory} = require("@google/generative-ai");
+const OpenAI = require("openai");
 const { cleanText } = require("../utils/cleanups");
 const aiConfig = require("../config/ai.config");
 const {formatConversation} = require("../utils/factory");
@@ -10,25 +10,9 @@ const { logBuilder } = require("../lib/log");
 
 class AI{
     constructor(){
-        const safetySettings = [
-            {
-              category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-              threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-            },{
-                category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-                threshold: HarmBlockThreshold.BLOCK_NONE
-            },
-            {
-                category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-                threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-            },
-            {
-                category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-                threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-            }
-          ];
-        this.getSafetySettings = () =>({safetySettings})
-        this.ai = new GoogleGenerativeAI(config.gemini.apiKey)
+        this.openai = new OpenAI({
+            apiKey: config.openai.apiKey
+        });
         this.promptCategories = postCategories
 
         this.usePrePrompt = (prompt, prevConversation, appLogs)=>{
@@ -36,27 +20,36 @@ class AI{
         }
 
         this.exec = async function(prompt, imageUrl = undefined) {
-            const model = this.ai.getGenerativeModel({ model: "gemini-pro", ...this.getSafetySettings() });
-            let image;
-        
-            if (imageUrl) {
-                const response = await fetch(imageUrl);
-                const buffer = await response.buffer();
-                const mimeType = response.headers.get("content-type");
-                image = {
-                    inlineData: {
-                        data: buffer.toString("base64"),
-                        mimeType: mimeType,
-                    },
-                };
+            // Check if API key is available
+            console.log("OpenAI API Key:", config.openai.apiKey ? "Set" : "Not set");
+            if (!config.openai.apiKey) {
+                console.log("OPENAI_API_KEY not configured. AI features disabled.");
+                return "AI service is currently unavailable. Please check configuration.";
             }
-            try{
-                const result = await model.generateContent(!image ? prompt : [prompt, image]);
-                const response = result.response;
-                const text = cleanText(response.text());
+            
+            try {
+                const messages = [
+                    {
+                        role: "user",
+                        content: imageUrl ? [
+                            { type: "text", text: prompt },
+                            { type: "image_url", image_url: { url: imageUrl } }
+                        ] : prompt
+                    }
+                ];
+
+                const completion = await this.openai.chat.completions.create({
+                    model: "gpt-4o-mini",
+                    messages: messages,
+                    max_tokens: 1000,
+                    temperature: 0.7
+                });
+
+                const text = cleanText(completion.choices[0].message.content);
                 return text;
-            }catch(err){
-                console.log(`Generative AI Error: ${err.message} \n${err} `)
+            } catch(err) {
+                console.log(`OpenAI Error: ${err.message} \n${err} `)
+                return "AI service temporarily unavailable. Please try again later.";
             }
         }
     }

@@ -576,3 +576,636 @@ class TreeProjectDonation(models.Model):
     
     def __str__(self):
         return f"Donation to {self.project.name} by {self.donor.username}"
+
+class Campaign(models.Model):
+    """
+    Comprehensive model for all types of climate and environmental campaigns
+    """
+    CAMPAIGN_TYPES = [
+        ('disaster_relief', 'Disaster Relief'),
+        ('tree_planting', 'Tree Planting'),
+        ('renewable_energy', 'Renewable Energy'),
+        ('ocean_cleanup', 'Ocean Cleanup'),
+        ('wildlife_conservation', 'Wildlife Conservation'),
+        ('climate_education', 'Climate Education'),
+        ('carbon_offset', 'Carbon Offset'),
+        ('sustainable_agriculture', 'Sustainable Agriculture'),
+        ('waste_reduction', 'Waste Reduction'),
+        ('water_conservation', 'Water Conservation'),
+        ('air_quality', 'Air Quality Improvement'),
+        ('biodiversity', 'Biodiversity Protection'),
+        ('renewable_transport', 'Renewable Transport'),
+        ('green_building', 'Green Building'),
+        ('environmental_justice', 'Environmental Justice'),
+        ('other', 'Other'),
+    ]
+    
+    CAMPAIGN_STATUS = [
+        ('draft', 'Draft'),
+        ('pending_approval', 'Pending Approval'),
+        ('active', 'Active'),
+        ('paused', 'Paused'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ]
+    
+    URGENCY_LEVELS = [
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+        ('critical', 'Critical'),
+    ]
+    
+    # Basic Information
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    short_description = models.CharField(max_length=500, blank=True, null=True)
+    campaign_type = models.CharField(max_length=50, choices=CAMPAIGN_TYPES)
+    status = models.CharField(max_length=20, choices=CAMPAIGN_STATUS, default='draft')
+    urgency_level = models.CharField(max_length=20, choices=URGENCY_LEVELS, default='medium')
+    
+    # Creator Information
+    creator = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='created_campaigns'
+    )
+    organization_name = models.CharField(max_length=200, blank=True, null=True)
+    organization_description = models.TextField(blank=True, null=True)
+    organization_website = models.URLField(blank=True, null=True)
+    organization_logo = models.CharField(max_length=500, blank=True, null=True)
+    
+    # Location Information
+    country = models.CharField(max_length=100)
+    region = models.CharField(max_length=100, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    address = models.TextField(blank=True, null=True)
+    
+    # Campaign Goals and Metrics
+    target_amount = models.DecimalField(max_digits=12, decimal_places=2, help_text="Target amount in USD")
+    amount_raised = models.DecimalField(max_digits=12, decimal_places=2, default=0, help_text="Amount raised in USD")
+    target_metric = models.CharField(max_length=100, blank=True, null=True, help_text="e.g., '1000 trees planted', '500 kg waste collected'")
+    current_metric = models.DecimalField(max_digits=12, decimal_places=2, default=0, help_text="Current progress metric")
+    metric_unit = models.CharField(max_length=50, blank=True, null=True, help_text="e.g., 'trees', 'kg', 'people helped'")
+    
+    # Timeline
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    # Media
+    cover_image = models.CharField(max_length=500, blank=True, null=True)
+    gallery = models.JSONField(default=list, blank=True)
+    video_url = models.URLField(blank=True, null=True)
+    
+    # AI Generated Fields
+    is_ai_generated = models.BooleanField(default=False)
+    ai_source = models.CharField(max_length=100, blank=True, null=True, help_text="Source of AI generation (e.g., 'disaster_report', 'climate_data')")
+    ai_confidence_score = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True, help_text="AI confidence score 0-1")
+    
+    # Disaster Relief Specific Fields
+    disaster_type = models.CharField(max_length=100, blank=True, null=True)
+    disaster_severity = models.CharField(max_length=50, blank=True, null=True)
+    affected_population = models.PositiveIntegerField(null=True, blank=True)
+    emergency_contact = models.CharField(max_length=200, blank=True, null=True)
+    emergency_phone = models.CharField(max_length=20, blank=True, null=True)
+    
+    # Environmental Impact
+    expected_co2_reduction = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Expected CO2 reduction in tons")
+    environmental_benefits = models.TextField(blank=True, null=True)
+    sustainability_goals = models.JSONField(default=list, blank=True, help_text="List of UN SDGs addressed")
+    
+    # Verification and Trust
+    is_verified = models.BooleanField(default=False)
+    verification_status = models.CharField(
+        max_length=20,
+        choices=[
+            ('pending', 'Pending Review'),
+            ('under_review', 'Under Review'),
+            ('approved', 'Approved'),
+            ('rejected', 'Rejected'),
+            ('needs_more_info', 'Needs More Information'),
+        ],
+        default='pending'
+    )
+    verification_documents = models.JSONField(default=list, blank=True)
+    verification_notes = models.TextField(blank=True, null=True)
+    verification_date = models.DateTimeField(null=True, blank=True)
+    verified_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='verified_campaigns'
+    )
+    rejection_reason = models.TextField(blank=True, null=True)
+    verification_score = models.DecimalField(
+        max_digits=3, 
+        decimal_places=2, 
+        null=True, 
+        blank=True,
+        help_text="Verification confidence score 0-1"
+    )
+    
+    # Contact Information
+    contact_person = models.CharField(max_length=200)
+    contact_email = models.EmailField()
+    contact_phone = models.CharField(max_length=20, blank=True, null=True)
+    
+    # Social Media
+    facebook_url = models.URLField(blank=True, null=True)
+    twitter_url = models.URLField(blank=True, null=True)
+    instagram_url = models.URLField(blank=True, null=True)
+    linkedin_url = models.URLField(blank=True, null=True)
+    
+    # Analytics
+    view_count = models.PositiveIntegerField(default=0)
+    share_count = models.PositiveIntegerField(default=0)
+    donation_count = models.PositiveIntegerField(default=0)
+    
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['campaign_type']),
+            models.Index(fields=['status']),
+            models.Index(fields=['country']),
+            models.Index(fields=['urgency_level']),
+            models.Index(fields=['is_verified']),
+            models.Index(fields=['is_ai_generated']),
+        ]
+    
+    def __str__(self):
+        return f"{self.title} - {self.get_campaign_type_display()}"
+    
+    @property
+    def progress_percentage(self):
+        """Calculate campaign progress percentage"""
+        if self.target_amount == 0:
+            return 0
+        return min((self.amount_raised / self.target_amount) * 100, 100)
+    
+    @property
+    def metric_progress_percentage(self):
+        """Calculate metric progress percentage"""
+        if not self.target_metric or not self.current_metric:
+            return 0
+        try:
+            target_value = float(self.target_metric.split()[0])  # Extract number from "1000 trees"
+            return min((float(self.current_metric) / target_value) * 100, 100)
+        except:
+            return 0
+    
+    @property
+    def days_remaining(self):
+        """Calculate days remaining until end date"""
+        if not self.end_date:
+            return None
+        from django.utils import timezone
+        today = timezone.now().date()
+        return (self.end_date - today).days
+    
+    @property
+    def is_urgent(self):
+        """Check if campaign is urgent based on urgency level and days remaining"""
+        return self.urgency_level in ['high', 'critical'] or (self.days_remaining and self.days_remaining <= 7)
+    
+    def get_absolute_url(self):
+        return f"/campaigns/{self.id}/"
+    
+    def approve_campaign(self, verified_by_user, verification_score=None, notes=None):
+        """Approve a campaign for public display"""
+        from django.utils import timezone
+        
+        self.verification_status = 'approved'
+        self.is_verified = True
+        self.verified_by = verified_by_user
+        self.verification_date = timezone.now()
+        if verification_score:
+            self.verification_score = verification_score
+        if notes:
+            self.verification_notes = notes
+        self.save()
+        
+    def reject_campaign(self, verified_by_user, rejection_reason):
+        """Reject a campaign"""
+        from django.utils import timezone
+        
+        self.verification_status = 'rejected'
+        self.is_verified = False
+        self.verified_by = verified_by_user
+        self.verification_date = timezone.now()
+        self.rejection_reason = rejection_reason
+        self.save()
+        
+    def request_more_info(self, verified_by_user, notes):
+        """Request more information from campaign creator"""
+        from django.utils import timezone
+        
+        self.verification_status = 'needs_more_info'
+        self.verified_by = verified_by_user
+        self.verification_date = timezone.now()
+        self.verification_notes = notes
+        self.save()
+        
+    def start_review(self, verified_by_user):
+        """Start the review process"""
+        self.verification_status = 'under_review'
+        self.verified_by = verified_by_user
+        self.save()
+
+
+class CampaignUpdate(models.Model):
+    """
+    Model for campaign updates and progress reports
+    """
+    campaign = models.ForeignKey(
+        Campaign, 
+        on_delete=models.CASCADE, 
+        related_name='updates'
+    )
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    images = models.JSONField(default=list, blank=True)
+    metric_progress = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Update for {self.campaign.title}: {self.title}"
+
+
+class CampaignDonation(models.Model):
+    """
+    Model for tracking donations to campaigns
+    """
+    campaign = models.ForeignKey(
+        Campaign, 
+        on_delete=models.CASCADE, 
+        related_name='donations'
+    )
+    donor = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='campaign_donations'
+    )
+    amount = models.DecimalField(max_digits=10, decimal_places=2, help_text="Amount in USD")
+    payment_reference = models.CharField(max_length=100, unique=True)
+    payment_status = models.CharField(
+        max_length=20,
+        choices=[
+            ('pending', 'Pending'),
+            ('completed', 'Completed'),
+            ('failed', 'Failed'),
+            ('refunded', 'Refunded'),
+        ],
+        default='pending'
+    )
+    is_anonymous = models.BooleanField(default=False)
+    message = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Donation by {self.donor.username} for {self.campaign.title}"
+
+
+class Disaster(models.Model):
+    """
+    Comprehensive model for disaster management and tracking
+    """
+    DISASTER_TYPES = [
+        ('earthquake', 'Earthquake'),
+        ('flood', 'Flood'),
+        ('wildfire', 'Wildfire'),
+        ('hurricane', 'Hurricane'),
+        ('tornado', 'Tornado'),
+        ('drought', 'Drought'),
+        ('tsunami', 'Tsunami'),
+        ('volcanic_eruption', 'Volcanic Eruption'),
+        ('landslide', 'Landslide'),
+        ('heatwave', 'Heatwave'),
+        ('coldwave', 'Coldwave'),
+        ('storm', 'Storm'),
+        ('cyclone', 'Cyclone'),
+        ('typhoon', 'Typhoon'),
+        ('blizzard', 'Blizzard'),
+        ('avalanche', 'Avalanche'),
+        ('pandemic', 'Pandemic'),
+        ('industrial_accident', 'Industrial Accident'),
+        ('nuclear_accident', 'Nuclear Accident'),
+        ('terrorist_attack', 'Terrorist Attack'),
+        ('civil_unrest', 'Civil Unrest'),
+        ('war', 'War'),
+        ('other', 'Other'),
+    ]
+    
+    SEVERITY_LEVELS = [
+        ('low', 'Low'),
+        ('moderate', 'Moderate'),
+        ('high', 'High'),
+        ('severe', 'Severe'),
+        ('extreme', 'Extreme'),
+        ('catastrophic', 'Catastrophic'),
+    ]
+    
+    STATUS_CHOICES = [
+        ('monitoring', 'Monitoring'),
+        ('alert', 'Alert'),
+        ('warning', 'Warning'),
+        ('ongoing', 'Ongoing'),
+        ('contained', 'Contained'),
+        ('resolved', 'Resolved'),
+        ('investigating', 'Investigating'),
+    ]
+    
+    # Basic Information
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    disaster_type = models.CharField(max_length=50, choices=DISASTER_TYPES)
+    severity = models.CharField(max_length=20, choices=SEVERITY_LEVELS)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='monitoring')
+    
+    # Location Information
+    country = models.CharField(max_length=100)
+    region = models.CharField(max_length=100)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    address = models.TextField(blank=True, null=True)
+    affected_area_radius = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, help_text="Affected area radius in kilometers")
+    
+    # Impact Assessment
+    affected_population = models.PositiveIntegerField(null=True, blank=True)
+    casualties = models.PositiveIntegerField(null=True, blank=True, help_text="Number of deaths")
+    injured = models.PositiveIntegerField(null=True, blank=True)
+    missing = models.PositiveIntegerField(null=True, blank=True)
+    displaced = models.PositiveIntegerField(null=True, blank=True, help_text="Number of displaced people")
+    economic_damage = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True, help_text="Economic damage in USD")
+    
+    # Timeline
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    last_updated = models.DateTimeField(auto_now=True)
+    
+    # Media and Documentation
+    cover_image = models.CharField(max_length=500, blank=True, null=True, help_text="Cover image URL or path")
+    gallery = models.JSONField(default=list, blank=True, help_text="List of image URLs")
+    video_urls = models.JSONField(default=list, blank=True, help_text="List of video URLs")
+    documents = models.JSONField(default=list, blank=True, help_text="List of document URLs")
+    
+    # Official Information
+    official_source = models.CharField(max_length=200, blank=True, null=True, help_text="Official source organization")
+    official_website = models.URLField(blank=True, null=True)
+    emergency_contact = models.CharField(max_length=200, blank=True, null=True)
+    emergency_phone = models.CharField(max_length=20, blank=True, null=True)
+    emergency_email = models.EmailField(blank=True, null=True)
+    
+    # Weather and Environmental Data
+    weather_conditions = models.TextField(blank=True, null=True)
+    temperature = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, help_text="Temperature in Celsius")
+    wind_speed = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, help_text="Wind speed in km/h")
+    humidity = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, help_text="Humidity percentage")
+    precipitation = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, help_text="Precipitation in mm")
+    
+    # Response and Relief
+    response_organizations = models.JSONField(default=list, blank=True, help_text="List of responding organizations")
+    relief_efforts = models.TextField(blank=True, null=True)
+    evacuation_centers = models.JSONField(default=list, blank=True, help_text="List of evacuation centers")
+    emergency_shelters = models.JSONField(default=list, blank=True, help_text="List of emergency shelters")
+    
+    # Related Campaigns and Projects
+    related_campaigns = models.ManyToManyField(
+        'Campaign', 
+        blank=True, 
+        related_name='related_disasters',
+        help_text="Campaigns created in response to this disaster"
+    )
+    
+    # Verification and Trust
+    is_verified = models.BooleanField(default=False)
+    verification_source = models.CharField(max_length=200, blank=True, null=True)
+    verification_date = models.DateTimeField(null=True, blank=True)
+    verified_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='verified_disasters'
+    )
+    
+    # Analytics
+    view_count = models.PositiveIntegerField(default=0)
+    share_count = models.PositiveIntegerField(default=0)
+    alert_count = models.PositiveIntegerField(default=0, help_text="Number of people who received alerts")
+    
+    # AI and Automation
+    is_ai_detected = models.BooleanField(default=False)
+    ai_confidence_score = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True, help_text="AI confidence score 0-1")
+    ai_source = models.CharField(max_length=100, blank=True, null=True, help_text="AI detection source")
+    
+    # Social Media and Communication
+    social_media_hashtags = models.JSONField(default=list, blank=True, help_text="Relevant hashtags")
+    social_media_mentions = models.PositiveIntegerField(default=0)
+    
+    # International Classification
+    disaster_id = models.CharField(max_length=50, unique=True, blank=True, null=True, help_text="International disaster ID")
+    emdat_id = models.CharField(max_length=50, blank=True, null=True, help_text="EM-DAT disaster ID")
+    
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['disaster_type']),
+            models.Index(fields=['severity']),
+            models.Index(fields=['status']),
+            models.Index(fields=['country']),
+            models.Index(fields=['start_date']),
+            models.Index(fields=['is_verified']),
+            models.Index(fields=['latitude', 'longitude']),
+        ]
+    
+    def __str__(self):
+        return f"{self.title} - {self.get_disaster_type_display()} ({self.country})"
+    
+    @property
+    def duration_days(self):
+        """Calculate disaster duration in days"""
+        if not self.end_date:
+            from django.utils import timezone
+            return (timezone.now() - self.start_date).days
+        return (self.end_date - self.start_date).days
+    
+    @property
+    def is_active(self):
+        """Check if disaster is currently active"""
+        return self.status in ['monitoring', 'alert', 'warning', 'ongoing']
+    
+    @property
+    def is_urgent(self):
+        """Check if disaster requires urgent attention"""
+        return self.severity in ['severe', 'extreme', 'catastrophic'] or self.status in ['alert', 'warning', 'ongoing']
+    
+    @property
+    def total_affected(self):
+        """Calculate total affected people"""
+        return (self.casualties or 0) + (self.injured or 0) + (self.missing or 0) + (self.displaced or 0)
+    
+    def get_absolute_url(self):
+        return f"/disasters/{self.id}/"
+    
+    def increment_view_count(self):
+        """Increment view count"""
+        self.view_count += 1
+        self.save(update_fields=['view_count'])
+    
+    def increment_share_count(self):
+        """Increment share count"""
+        self.share_count += 1
+        self.save(update_fields=['share_count'])
+    
+    def increment_alert_count(self):
+        """Increment alert count"""
+        self.alert_count += 1
+        self.save(update_fields=['alert_count'])
+
+
+class DisasterUpdate(models.Model):
+    """
+    Model for disaster updates and progress reports
+    """
+    UPDATE_TYPES = [
+        ('status_change', 'Status Change'),
+        ('casualty_update', 'Casualty Update'),
+        ('response_update', 'Response Update'),
+        ('weather_update', 'Weather Update'),
+        ('evacuation_update', 'Evacuation Update'),
+        ('relief_update', 'Relief Update'),
+        ('recovery_update', 'Recovery Update'),
+        ('other', 'Other'),
+    ]
+    
+    disaster = models.ForeignKey(
+        Disaster, 
+        on_delete=models.CASCADE, 
+        related_name='updates'
+    )
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    update_type = models.CharField(max_length=20, choices=UPDATE_TYPES, default='other')
+    images = models.JSONField(default=list, blank=True)
+    video_urls = models.JSONField(default=list, blank=True)
+    
+    # Updated metrics
+    casualties_update = models.PositiveIntegerField(null=True, blank=True)
+    injured_update = models.PositiveIntegerField(null=True, blank=True)
+    missing_update = models.PositiveIntegerField(null=True, blank=True)
+    displaced_update = models.PositiveIntegerField(null=True, blank=True)
+    
+    # Author information
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='disaster_updates'
+    )
+    author_name = models.CharField(max_length=200, blank=True, null=True)
+    author_title = models.CharField(max_length=100, blank=True, null=True)
+    author_organization = models.CharField(max_length=200, blank=True, null=True)
+    
+    # Verification
+    is_verified = models.BooleanField(default=False)
+    verified_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='verified_disaster_updates'
+    )
+    verification_date = models.DateTimeField(null=True, blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Update for {self.disaster.title}: {self.title}"
+
+
+class DisasterAlert(models.Model):
+    """
+    Model for disaster alerts and notifications
+    """
+    ALERT_TYPES = [
+        ('warning', 'Warning'),
+        ('alert', 'Alert'),
+        ('emergency', 'Emergency'),
+        ('evacuation', 'Evacuation'),
+        ('shelter_in_place', 'Shelter in Place'),
+        ('all_clear', 'All Clear'),
+    ]
+    
+    ALERT_PRIORITIES = [
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+        ('critical', 'Critical'),
+    ]
+    
+    disaster = models.ForeignKey(
+        Disaster,
+        on_delete=models.CASCADE,
+        related_name='alerts'
+    )
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    alert_type = models.CharField(max_length=20, choices=ALERT_TYPES)
+    priority = models.CharField(max_length=10, choices=ALERT_PRIORITIES, default='medium')
+    
+    # Target audience
+    target_country = models.CharField(max_length=100, blank=True, null=True)
+    target_region = models.CharField(max_length=100, blank=True, null=True)
+    target_city = models.CharField(max_length=100, blank=True, null=True)
+    target_radius = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, help_text="Target radius in kilometers")
+    
+    # Delivery
+    delivery_methods = models.JSONField(default=list, blank=True, help_text="List of delivery methods: email, sms, push, web")
+    is_sent = models.BooleanField(default=False)
+    sent_at = models.DateTimeField(null=True, blank=True)
+    recipients_count = models.PositiveIntegerField(default=0)
+    
+    # Expiry
+    expires_at = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='created_disaster_alerts'
+    )
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.alert_type.title()} Alert: {self.title}"
+    
+    @property
+    def is_expired(self):
+        """Check if alert has expired"""
+        if not self.expires_at:
+            return False
+        from django.utils import timezone
+        return timezone.now() > self.expires_at
+

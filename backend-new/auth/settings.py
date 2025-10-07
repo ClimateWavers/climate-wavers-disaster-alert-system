@@ -156,6 +156,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
+# Backend host for media URLs (for production deployment)
+BACKEND_HOST = env("BACKEND_HOST", default="http://127.0.0.1:8000")
+
 WHITENOISE_USE_FINDERS = True
 WHITENOISE_ALLOW_ALL_ORIGINS = True
 WHITENOISE_STATIC_PREFIX = MEDIA_URL
@@ -174,6 +177,14 @@ FEMALE_AVATAR = env("FEMALE_AVATAR")
 
 # Determine if SSL is required (for production)
 REDIS_USE_SSL = env.bool("REDIS_USE_SSL", default=False)
+
+# Celery Configuration
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
 
 # Redis configuration (optional for development)
 try:
