@@ -111,6 +111,6 @@
       "source": "/media/(.*)",
       "destination": "https://climatewavers-backend-w8bw.onrender.com/media/$1"
     },
-    { "source": "/(.*)", "destination": "/" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
