@@ -93,11 +93,11 @@ const TransparencyReport = () => {
             <div className="flex items-center justify-between">
               <Link to="/" className="flex items-center">
                 <img alt="logo" src="/logo.jpg" className="h-8 w-auto mr-3" />
-                <span className="text-xl font-bold text-[#2F4F4F]">Disaster Alert System</span>
+                <span className="text-xl font-bold text-[#067d83]">Disaster Alert System</span>
               </Link>
               <Link 
                 to="/" 
-                className="bg-[#2F4F4F] text-white px-4 py-2 rounded-lg hover:bg-[#1e3a3a] transition-colors"
+                className="bg-[#067d83] text-white px-4 py-2 rounded-lg hover:bg-[#055a5f] transition-colors"
               >
                 Back to Home
               </Link>
@@ -121,7 +121,7 @@ const TransparencyReport = () => {
                   onClick={() => setSelectedYear(year)}
                   className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
                     selectedYear === year
-                      ? 'bg-[#2F4F4F] text-white'
+                      ? 'bg-[#067d83] text-white'
                       : 'bg-white text-gray-700 hover:bg-gray-100'
                   }`}
                 >
@@ -353,7 +353,7 @@ const TransparencyReport = () => {
           </div>
 
           {/* Contact Information */}
-          <div className="bg-[#2F4F4F] text-white rounded-lg p-8">
+          <div className="bg-[#067d83] text-white rounded-lg p-8">
             <h3 className="text-2xl font-bold mb-4">Questions About Our Transparency?</h3>
             <p className="text-gray-200 mb-6">
               If you have questions about our data practices, security measures, or want to exercise your privacy rights, 
@@ -362,13 +362,13 @@ const TransparencyReport = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <Link 
                 to="/contact" 
-                className="bg-white text-[#2F4F4F] px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-center"
+                className="bg-white text-[#067d83] px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-center"
               >
                 Contact Privacy Team
               </Link>
               <a 
                 href="mailto:privacy@disasteralertsystem.com" 
-                className="border border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-[#2F4F4F] transition-colors text-center"
+                className="border border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-[#067d83] transition-colors text-center"
               >
                 Email Privacy Team
               </a>
@@ -390,7 +390,7 @@ const TransparencyReport = () => {
               <div className="col-span-1 md:col-span-2">
                 <div className="flex items-center mb-6">
                   <img alt="logo" src="/logo.jpg" className="h-10 w-auto mr-4" />
-                  <h3 className="text-3xl font-bold text-[#2F4F4F]">Disaster Alert System</h3>
+                  <h3 className="text-3xl font-bold text-[#067d83]">Disaster Alert System</h3>
                 </div>
                 <p className="text-gray-300 mb-8 max-w-lg text-lg leading-relaxed">
                   Advanced AI-powered disaster alert system protecting communities worldwide through 
@@ -401,20 +401,20 @@ const TransparencyReport = () => {
               <div>
                 <h4 className="text-lg font-semibold mb-4">Information</h4>
                 <ul className="space-y-2">
-                  <li><Link to="/traffic-report" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Traffic Report</Link></li>
-                  <li><Link to="/transparency-report" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Transparency Report</Link></li>
-                  <li><Link to="/faq" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">FAQ</Link></li>
-                  <li><Link to="/privacy-policy" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Privacy Policy</Link></li>
+                  <li><Link to="/traffic-report" className="text-gray-300 hover:text-[#067d83] transition-colors">Traffic Report</Link></li>
+                  <li><Link to="/transparency-report" className="text-gray-300 hover:text-[#067d83] transition-colors">Transparency Report</Link></li>
+                  <li><Link to="/faq" className="text-gray-300 hover:text-[#067d83] transition-colors">FAQ</Link></li>
+                  <li><Link to="/privacy-policy" className="text-gray-300 hover:text-[#067d83] transition-colors">Privacy Policy</Link></li>
                 </ul>
               </div>
 
               <div>
                 <h4 className="text-lg font-semibold mb-4">Services</h4>
                 <ul className="space-y-2">
-                  <li><Link to="/about" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">About Us</Link></li>
-                  <li><Link to="/contact" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Contact Us</Link></li>
-                  <li><Link to="/consulting" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Consulting</Link></li>
-                  <li><Link to="/support" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Support</Link></li>
+                  <li><Link to="/about" className="text-gray-300 hover:text-[#067d83] transition-colors">About Us</Link></li>
+                  <li><Link to="/contact" className="text-gray-300 hover:text-[#067d83] transition-colors">Contact Us</Link></li>
+                  <li><Link to="/consulting" className="text-gray-300 hover:text-[#067d83] transition-colors">Consulting</Link></li>
+                  <li><Link to="/support" className="text-gray-300 hover:text-[#067d83] transition-colors">Support</Link></li>
                 </ul>
               </div>
             </div>

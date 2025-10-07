@@ -77,7 +77,7 @@ const Topbar = () => {
       <div className="flex-1 max-w-2xl mx-4 hidden md:flex">
         <button
           onClick={() => setIsSearchOpen(true)}
-          className="w-full h-10 px-4 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F4F4F] focus:border-transparent flex items-center gap-3 text-left text-gray-500 hover:bg-gray-200 transition-colors"
+          className="w-full h-10 px-4 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#067d83] focus:border-transparent flex items-center gap-3 text-left text-gray-500 hover:bg-gray-200 transition-colors"
         >
           <IoSearch size={18} />
           <span>Search posts, users, hashtags...</span>
@@ -85,7 +85,7 @@ const Topbar = () => {
       </div>
       <div className="flex  justify-end self-center">
         <button
-          className="hidden md:flex items-center px-4 py-2 bg-[#2F4F4F] text-white rounded-lg hover:bg-[#1a3a3a] transition-colors font-medium"
+          className="hidden md:flex items-center px-4 py-2 bg-[#067d83] text-white rounded-lg hover:bg-[#055a5f] transition-colors font-medium"
           onClick={() => setIsModalOpen(true)}
         >
           Report Disaster
@@ -109,7 +109,7 @@ const Topbar = () => {
                   <IoNotifications
                     className=" w-12"
                     size={40}
-                    color="#2F4F4F"
+                    color="#067d83"
                   />
                 ) : (
                   <IoNotificationsOutline
@@ -135,7 +135,7 @@ const Topbar = () => {
         <div className="relative" ref={userMenuRef}>
           <button
             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-            className="ml-2 hidden md:flex self-end rounded-full h-12 w-12 overflow-hidden hover:ring-2 hover:ring-[#2F4F4F] transition-all duration-200 relative"
+            className="ml-2 hidden md:flex self-end rounded-full h-12 w-12 overflow-hidden hover:ring-2 hover:ring-[#067d83] transition-all duration-200 relative"
           >
         <img
               src={user?.profile_picture || "/avatar.png"}

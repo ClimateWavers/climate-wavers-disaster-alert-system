@@ -215,7 +215,7 @@ const DonationForm = ({ onClose }) => {
                 onClick={() => setDonationType('one-time')}
                 className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
                   donationType === 'one-time'
-                    ? 'bg-[#2F4F4F] text-white'
+                    ? 'bg-[#067d83] text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -225,7 +225,7 @@ const DonationForm = ({ onClose }) => {
                 onClick={() => setDonationType('monthly')}
                 className={`flex-1 py-3 px-4 text-sm font-medium transition-colors ${
                   donationType === 'monthly'
-                    ? 'bg-[#2F4F4F] text-white'
+                    ? 'bg-[#067d83] text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -243,7 +243,7 @@ const DonationForm = ({ onClose }) => {
                   onClick={() => handleAmountSelect(amount)}
                   className={`py-3 px-4 border rounded-lg font-medium transition-colors ${
                     selectedAmount === amount
-                      ? 'border-[#2F4F4F] bg-[#2F4F4F] text-white'
+                      ? 'border-[#067d83] bg-[#067d83] text-white'
                       : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
                   }`}
                 >
@@ -280,7 +280,7 @@ const DonationForm = ({ onClose }) => {
                 type="text"
                 value={donorName}
                 onChange={(e) => setDonorName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F4F4F] focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#067d83] focus:border-transparent"
                 placeholder="Enter your full name"
                 required
               />
@@ -294,7 +294,7 @@ const DonationForm = ({ onClose }) => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F4F4F] focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#067d83] focus:border-transparent"
                 placeholder="Enter your email"
                 required
               />
@@ -305,7 +305,7 @@ const DonationForm = ({ onClose }) => {
           <div className="mb-6">
             <button
               onClick={() => setShowComments(!showComments)}
-              className="text-[#2F4F4F] text-sm font-medium hover:underline"
+              className="text-[#067d83] text-sm font-medium hover:underline"
             >
               Add Comments
             </button>
@@ -314,7 +314,7 @@ const DonationForm = ({ onClose }) => {
                 value={comments}
                 onChange={(e) => setComments(e.target.value)}
                 placeholder="Add a personal message or dedication..."
-                className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F4F4F] focus:border-transparent"
+                className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#067d83] focus:border-transparent"
                 rows="3"
               />
             )}
@@ -338,7 +338,7 @@ const DonationForm = ({ onClose }) => {
           <button
             onClick={handlePayment}
             disabled={loading}
-            className="w-full bg-[#2F4F4F] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#1e3a3a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-[#067d83] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#055a5f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Processing...' : 'DONATE'}
           </button>

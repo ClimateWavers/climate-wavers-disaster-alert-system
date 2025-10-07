@@ -49,7 +49,7 @@ class Client {
           title: 'Validation Error',
           html: errorMessages.join('<br>'),
           confirmButtonText: 'Try Again',
-          confirmButtonColor: '#2F4F4F'
+          confirmButtonColor: '#067d83'
         });
         return true;
       }
@@ -81,7 +81,7 @@ class Client {
       title: title,
       text: message,
       confirmButtonText: 'Continue',
-      confirmButtonColor: '#2F4F4F'
+      confirmButtonColor: '#067d83'
     }).then((result) => {
       if (result.isConfirmed && callback) {
         callback();
@@ -125,6 +125,8 @@ class Client {
     try {
       let response;
       const backendStatus = import.meta.env.VITE_APP_BACKEND_STATUS === "true";
+      
+      console.log('API Request:', { method, endpoint, backendStatus });
       if (!backendStatus && endpoint.endsWith("login/")) {
         if (
           data.email === dummyUser.email &&
@@ -137,7 +139,17 @@ class Client {
         (endpoint.endsWith("post/") || endpoint.endsWith("comments/"))
       ) {
         response = { data: dummyPost };
-      } else response = await client({...config, method, url: endpoint});
+      } else {
+        try {
+          response = await client({...config, method, url: endpoint});
+        } catch (axiosError) {
+          console.error('Axios request failed:', axiosError);
+          throw new Error(`Request failed: ${axiosError.message || 'Unknown error'}`);
+        }
+      }
+      
+      console.log('API Response:', { response, hasData: !!response?.data });
+      
       if (authCookies) {
         // Set cookies without domain restriction for development
         Cookies.set("accessToken", response.data.access_token);
@@ -158,6 +170,16 @@ class Client {
           autoClose: 200,
         });
       }
+      
+      // Ensure response and response.data exist
+      if (!response) {
+        throw new Error('No response received from server');
+      }
+      
+      if (!response.data) {
+        throw new Error('Invalid response format - no data property');
+      }
+      
       return response.data;
     } catch (error) {
       console.log(error);

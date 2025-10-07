@@ -17,11 +17,11 @@ const TermsOfService = () => {
             <div className="flex items-center justify-between">
               <Link to="/" className="flex items-center">
                 <img alt="logo" src="/logo.jpg" className="h-8 w-auto mr-3" />
-                <span className="text-xl font-bold text-[#2F4F4F]">Disaster Alert System</span>
+                <span className="text-xl font-bold text-[#067d83]">Disaster Alert System</span>
               </Link>
               <Link 
                 to="/" 
-                className="bg-[#2F4F4F] text-white px-4 py-2 rounded-lg hover:bg-[#1e3a3a] transition-colors"
+                className="bg-[#067d83] text-white px-4 py-2 rounded-lg hover:bg-[#055a5f] transition-colors"
               >
                 Back to Home
               </Link>
@@ -184,7 +184,7 @@ const TermsOfService = () => {
               <div className="col-span-1 md:col-span-2">
                 <div className="flex items-center mb-6">
                   <img alt="logo" src="/logo.jpg" className="h-10 w-auto mr-4" />
-                  <h3 className="text-3xl font-bold text-[#2F4F4F]">Disaster Alert System</h3>
+                  <h3 className="text-3xl font-bold text-[#067d83]">Disaster Alert System</h3>
                 </div>
                 <p className="text-gray-300 mb-8 max-w-lg text-lg leading-relaxed">
                   Advanced AI-powered disaster alert system protecting communities worldwide through 
@@ -195,20 +195,20 @@ const TermsOfService = () => {
               <div>
                 <h4 className="text-lg font-semibold mb-4">Information</h4>
                 <ul className="space-y-2">
-                  <li><Link to="/traffic-report" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Traffic Report</Link></li>
-                  <li><Link to="/transparency-report" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Transparency Report</Link></li>
-                  <li><Link to="/faq" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">FAQ</Link></li>
-                  <li><Link to="/privacy-policy" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Privacy Policy</Link></li>
+                  <li><Link to="/traffic-report" className="text-gray-300 hover:text-[#067d83] transition-colors">Traffic Report</Link></li>
+                  <li><Link to="/transparency-report" className="text-gray-300 hover:text-[#067d83] transition-colors">Transparency Report</Link></li>
+                  <li><Link to="/faq" className="text-gray-300 hover:text-[#067d83] transition-colors">FAQ</Link></li>
+                  <li><Link to="/privacy-policy" className="text-gray-300 hover:text-[#067d83] transition-colors">Privacy Policy</Link></li>
                 </ul>
               </div>
 
               <div>
                 <h4 className="text-lg font-semibold mb-4">Services</h4>
                 <ul className="space-y-2">
-                  <li><Link to="/about" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">About Us</Link></li>
-                  <li><Link to="/contact" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Contact Us</Link></li>
-                  <li><Link to="/consulting" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Consulting</Link></li>
-                  <li><Link to="/support" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Support</Link></li>
+                  <li><Link to="/about" className="text-gray-300 hover:text-[#067d83] transition-colors">About Us</Link></li>
+                  <li><Link to="/contact" className="text-gray-300 hover:text-[#067d83] transition-colors">Contact Us</Link></li>
+                  <li><Link to="/consulting" className="text-gray-300 hover:text-[#067d83] transition-colors">Consulting</Link></li>
+                  <li><Link to="/support" className="text-gray-300 hover:text-[#067d83] transition-colors">Support</Link></li>
                 </ul>
               </div>
             </div>

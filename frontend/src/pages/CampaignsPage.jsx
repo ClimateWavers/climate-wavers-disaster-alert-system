@@ -2,18 +2,21 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Campaign from "../components/Campaign";
 import Topbar from "../components/Topbar";
+import Pagination from "../components/Pagination";
 import { getCampaigns } from "../utils/factory";
 import Payment from "../components/Payment";
 import Modal from "../components/Modal";
 import Footer from "../components/FooterBar";
 import { CampaignsPageSEO } from "../components/SEOComponents";
+import { usePagination } from "../hooks/usePagination";
 
 const CampaignsPage = () => {
-  const campaigns = getCampaigns();
+  const allCampaigns = getCampaigns();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [campaign, setCampaign] = useState({});
   const navigate = useNavigate();
   const location = useLocation();
+  const itemsPerPage = 12;
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -21,7 +24,7 @@ const CampaignsPage = () => {
   
     if (campaignId) {
       // Find the campaign by ID and open the modal
-      const selectedCampaign = campaigns.find(
+      const selectedCampaign = allCampaigns.find(
         (campaign) => campaign.id === campaignId
       );
       if (selectedCampaign) {
@@ -31,7 +34,7 @@ const CampaignsPage = () => {
     } else {
       setIsModalOpen(false); // Close modal if no campaignId in the query
     }
-  }, [location.search, campaigns]); // Depend on location.search so it updates when the URL changes
+  }, [location.search, allCampaigns]); // Depend on location.search so it updates when the URL changes
 
   const handleGoBack = () => {
     navigate(-1);
@@ -41,6 +44,15 @@ const CampaignsPage = () => {
     navigate(`?campaignId=${campaign.id}`); // Update the query parameter
   };
   
+
+  // Use pagination hook
+  const {
+    currentPage,
+    totalPages,
+    totalItems,
+    paginatedData,
+    goToPage,
+  } = usePagination(allCampaigns, itemsPerPage);
 
   const filters = [
     "most popular",
@@ -65,7 +77,7 @@ const CampaignsPage = () => {
             className="absolute right-[95%] hidden md:flex h-12 py-2"
           />
         </button>
-        <h1 className="text-center md:ml-0 ml-2 bg-gradient-to-b from-[#2F4F4F] py-2  via-[#4F6F6F] to-[#1F3F3F] bg-clip-text text-transparent md:pt-4 md:text-4xl  text-2xl font-bold">
+        <h1 className="text-center md:ml-0 ml-2 bg-gradient-to-b from-[#067d83] py-2  via-[#4F6F6F] to-[#055a5f] bg-clip-text text-transparent md:pt-4 md:text-4xl  text-2xl font-bold">
           Support Climate Action: Be the Change!
         </h1>
       </div>
@@ -74,7 +86,7 @@ const CampaignsPage = () => {
       </h3>
       <div className="flex text-xl hidden md:flex py-4 font-serif justify-center gap-x-4 ">
         <div className="font-bold  font-montserrat">Filter campaigns:</div>
-        <div className="font-bold  text-[#2F4F4F]">Newest</div>
+        <div className="font-bold  text-[#067d83]">Newest</div>
 
         {filters.map((filter) => (
           <div key={filter} className="capitalize ">
@@ -83,7 +95,7 @@ const CampaignsPage = () => {
         ))}
       </div>
       <div className="grid md:grid-cols-4 gap-2 pt-12 px-8 gap-x-4">
-        {campaigns.map((campaign, index) => (
+        {paginatedData.map((campaign, index) => (
           <div
             key={index}
             className={`w-[100%] p-1 ${
@@ -98,6 +110,20 @@ const CampaignsPage = () => {
           </div>
         ))}
       </div>
+      
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="mt-8 px-8">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={goToPage}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            className="justify-center"
+          />
+        </div>
+      )}
       {isModalOpen && (
         <Modal closeFn={() => setIsModalOpen(false)}>
           <Payment

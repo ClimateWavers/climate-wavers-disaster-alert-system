@@ -194,7 +194,7 @@ const DisasterForm = ({ onDisasterCreated, onCancel }) => {
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#2F4F4F] focus:border-[#2F4F4F] ${
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#067d83] focus:border-[#067d83] ${
                 errors.title ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="Enter disaster title..."
@@ -210,7 +210,7 @@ const DisasterForm = ({ onDisasterCreated, onCancel }) => {
               name="disaster_type"
               value={formData.disaster_type}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F4F4F] focus:border-[#2F4F4F]"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#067d83] focus:border-[#067d83]"
             >
               {disasterTypes.map((type) => (
                 <option key={type.value} value={type.value}>
@@ -230,7 +230,7 @@ const DisasterForm = ({ onDisasterCreated, onCancel }) => {
             value={formData.description}
             onChange={handleChange}
             rows={4}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#2F4F4F] focus:border-[#2F4F4F] ${
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#067d83] focus:border-[#067d83] ${
               errors.description ? 'border-red-500' : 'border-gray-300'
             }`}
             placeholder="Describe the disaster in detail..."
@@ -251,7 +251,7 @@ const DisasterForm = ({ onDisasterCreated, onCancel }) => {
                 name="country"
                 value={formData.country}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#2F4F4F] focus:border-[#2F4F4F] ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#067d83] focus:border-[#067d83] ${
                   errors.country ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Enter country..."
@@ -268,7 +268,7 @@ const DisasterForm = ({ onDisasterCreated, onCancel }) => {
                 name="region"
                 value={formData.region}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#2F4F4F] focus:border-[#2F4F4F] ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#067d83] focus:border-[#067d83] ${
                   errors.region ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="Enter region/state..."
@@ -285,7 +285,7 @@ const DisasterForm = ({ onDisasterCreated, onCancel }) => {
                 name="city"
                 value={formData.city}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F4F4F] focus:border-[#2F4F4F]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#067d83] focus:border-[#067d83]"
                 placeholder="Enter city..."
               />
             </div>
@@ -302,7 +302,7 @@ const DisasterForm = ({ onDisasterCreated, onCancel }) => {
                 value={formData.latitude}
                 onChange={handleChange}
                 step="any"
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#2F4F4F] focus:border-[#2F4F4F] ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#067d83] focus:border-[#067d83] ${
                   errors.latitude ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="e.g., 40.7128"
@@ -320,7 +320,7 @@ const DisasterForm = ({ onDisasterCreated, onCancel }) => {
                 value={formData.longitude}
                 onChange={handleChange}
                 step="any"
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#2F4F4F] focus:border-[#2F4F4F] ${
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#067d83] focus:border-[#067d83] ${
                   errors.longitude ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="e.g., -74.0060"
@@ -343,7 +343,7 @@ const DisasterForm = ({ onDisasterCreated, onCancel }) => {
                 name="casualties"
                 value={formData.casualties}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F4F4F] focus:border-[#2F4F4F]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#067d83] focus:border-[#067d83]"
                 placeholder="0"
               />
             </div>
@@ -357,7 +357,7 @@ const DisasterForm = ({ onDisasterCreated, onCancel }) => {
                 name="injured"
                 value={formData.injured}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F4F4F] focus:border-[#2F4F4F]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#067d83] focus:border-[#067d83]"
                 placeholder="0"
               />
             </div>
@@ -371,7 +371,7 @@ const DisasterForm = ({ onDisasterCreated, onCancel }) => {
                 name="missing"
                 value={formData.missing}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F4F4F] focus:border-[#2F4F4F]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#067d83] focus:border-[#067d83]"
                 placeholder="0"
               />
             </div>
@@ -385,7 +385,7 @@ const DisasterForm = ({ onDisasterCreated, onCancel }) => {
                 name="displaced"
                 value={formData.displaced}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F4F4F] focus:border-[#2F4F4F]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#067d83] focus:border-[#067d83]"
                 placeholder="0"
               />
             </div>
@@ -405,7 +405,7 @@ const DisasterForm = ({ onDisasterCreated, onCancel }) => {
                 name="emergency_contact"
                 value={formData.emergency_contact}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F4F4F] focus:border-[#2F4F4F]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#067d83] focus:border-[#067d83]"
                 placeholder="Emergency services contact..."
               />
             </div>
@@ -419,7 +419,7 @@ const DisasterForm = ({ onDisasterCreated, onCancel }) => {
                 name="emergency_phone"
                 value={formData.emergency_phone}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F4F4F] focus:border-[#2F4F4F]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#067d83] focus:border-[#067d83]"
                 placeholder="+1-800-555-0123"
               />
             </div>
@@ -433,7 +433,7 @@ const DisasterForm = ({ onDisasterCreated, onCancel }) => {
                 name="emergency_email"
                 value={formData.emergency_email}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2F4F4F] focus:border-[#2F4F4F]"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#067d83] focus:border-[#067d83]"
                 placeholder="emergency@example.com"
               />
             </div>
@@ -452,7 +452,7 @@ const DisasterForm = ({ onDisasterCreated, onCancel }) => {
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-2 bg-[#2F4F4F] text-white rounded-lg hover:bg-[#1e3a3a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-2 bg-[#067d83] text-white rounded-lg hover:bg-[#055a5f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Creating...' : 'Create Disaster Report'}
           </button>

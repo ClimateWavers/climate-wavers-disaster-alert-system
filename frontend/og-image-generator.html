@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate Wavers OG Image Generator</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            width: 1200px;
+            height: 630px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container {
+            text-align: center;
+            color: white;
+            z-index: 2;
+            position: relative;
+        }
+        
+        .logo {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .logo img {
+            width: 150px;
+            height: 150px;
+        }
+        
+        h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 0 0 20px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 24px;
+            font-weight: 400;
+            margin: 0 0 30px 0;
+            opacity: 0.9;
+        }
+        
+        .description {
+            font-size: 18px;
+            font-weight: 300;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.4;
+            opacity: 0.8;
+        }
+        
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+            z-index: 1;
+        }
+        
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            clip-path: polygon(0 60%, 100% 40%, 100% 100%, 0% 100%);
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-pattern"></div>
+    <div class="wave"></div>
+    
+    <div class="container">
+        <div class="logo">
+            <img src="/Vector.png" alt="Climate Wavers Logo" />
+        </div>
+        <h1>Climate Wavers</h1>
+        <div class="subtitle">Disaster Alert & Climate Action Platform</div>
+        <div class="description">
+            Join the leading platform for disaster alerts, climate action, and environmental community engagement. 
+            Get real-time disaster warnings and make a positive impact on our planet.
+        </div>
+    </div>
+    
+    <script>
+        // This script can be used to take a screenshot of this page
+        // You can use browser dev tools or a tool like Puppeteer to capture this as an image
+        console.log('Open this page in a browser and take a screenshot at 1200x630 resolution');
+    </script>
+</body>
+</html>

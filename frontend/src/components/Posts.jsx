@@ -413,7 +413,7 @@ const Posts = ({
               >
                 {post?.content?.split(/(\s+)/).map((word, index) =>
                   word.startsWith("#") ? (
-                      <span key={index} className="text-[#2F4F4F] font-semibold hover:text-[#1a3a3a] transition-colors duration-200">
+                      <span key={index} className="text-[#067d83] font-semibold hover:text-[#055a5f] transition-colors duration-200">
                       {word}
                     </span>
                   ) : (
@@ -447,7 +447,7 @@ const Posts = ({
                     <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 group-hover:shadow-lg transition-shadow duration-300">
                       <div className="flex items-center space-x-3">
                         <div className="flex-shrink-0">
-                          <div className="w-12 h-12 bg-[#2F4F4F] rounded-full flex items-center justify-center">
+                          <div className="w-12 h-12 bg-[#067d83] rounded-full flex items-center justify-center">
                             <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.808L4.383 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.383l4-3.808a1 1 0 011.617.808zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.984 3.984 0 00-1.172-2.828 1 1 0 010-1.415z" clipRule="evenodd" />
                             </svg>
@@ -566,7 +566,7 @@ const Posts = ({
       ) : (
         <div className="flex items-center justify-center py-16">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2F4F4F] mx-auto mb-6"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#067d83] mx-auto mb-6"></div>
             <p className="text-gray-600 text-base font-medium">
               {type === "post" ? "Loading posts..." : "Loading..."}
             </p>

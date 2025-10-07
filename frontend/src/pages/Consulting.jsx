@@ -106,11 +106,11 @@ const Consulting = () => {
             <div className="flex items-center justify-between">
               <Link to="/" className="flex items-center">
                 <img alt="logo" src="/logo.jpg" className="h-8 w-auto mr-3" />
-                <span className="text-xl font-bold text-[#2F4F4F]">Disaster Alert System</span>
+                <span className="text-xl font-bold text-[#067d83]">Disaster Alert System</span>
               </Link>
               <Link 
                 to="/" 
-                className="bg-[#2F4F4F] text-white px-4 py-2 rounded-lg hover:bg-[#1e3a3a] transition-colors"
+                className="bg-[#067d83] text-white px-4 py-2 rounded-lg hover:bg-[#055a5f] transition-colors"
               >
                 Back to Home
               </Link>
@@ -119,7 +119,7 @@ const Consulting = () => {
         </header>
 
         {/* Hero Section */}
-        <div className="bg-[#2F4F4F] text-white py-16">
+        <div className="bg-[#067d83] text-white py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-4xl font-bold mb-4">Disaster Preparedness Consulting</h1>
@@ -129,7 +129,7 @@ const Consulting = () => {
               </p>
               <Link 
                 to="/contact" 
-                className="bg-white text-[#2F4F4F] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                className="bg-white text-[#067d83] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
               >
                 Get Started Today
               </Link>
@@ -149,7 +149,7 @@ const Consulting = () => {
                 onClick={() => setSelectedService(service.id)}
                 className={`px-6 py-3 m-2 rounded-lg font-semibold transition-colors ${
                   selectedService === service.id
-                    ? 'bg-[#2F4F4F] text-white'
+                    ? 'bg-[#067d83] text-white'
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
@@ -234,22 +234,22 @@ const Consulting = () => {
           <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">Our Process</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="bg-[#2F4F4F] text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">1</div>
+              <div className="bg-[#067d83] text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">1</div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Assessment</h3>
               <p className="text-gray-600">Comprehensive evaluation of current preparedness and vulnerabilities</p>
             </div>
             <div className="text-center">
-              <div className="bg-[#2F4F4F] text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">2</div>
+              <div className="bg-[#067d83] text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">2</div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Planning</h3>
               <p className="text-gray-600">Custom strategy development based on your specific needs and risks</p>
             </div>
             <div className="text-center">
-              <div className="bg-[#2F4F4F] text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">3</div>
+              <div className="bg-[#067d83] text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">3</div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Implementation</h3>
               <p className="text-gray-600">Guided execution with ongoing support and monitoring</p>
             </div>
             <div className="text-center">
-              <div className="bg-[#2F4F4F] text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">4</div>
+              <div className="bg-[#067d83] text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">4</div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Optimization</h3>
               <p className="text-gray-600">Continuous improvement and system refinement</p>
             </div>
@@ -257,7 +257,7 @@ const Consulting = () => {
         </div>
 
         {/* CTA Section */}
-        <div className="bg-[#2F4F4F] text-white py-16">
+        <div className="bg-[#067d83] text-white py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl font-bold mb-4">Ready to Build Resilience?</h2>
             <p className="text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
@@ -267,13 +267,13 @@ const Consulting = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
                 to="/contact" 
-                className="bg-white text-[#2F4F4F] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                className="bg-white text-[#067d83] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
               >
                 Schedule Consultation
               </Link>
               <a 
                 href="tel:+15551234567" 
-                className="border border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-[#2F4F4F] transition-colors"
+                className="border border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-[#067d83] transition-colors"
               >
                 Call Now: (555) 123-4567
               </a>
@@ -295,7 +295,7 @@ const Consulting = () => {
               <div className="col-span-1 md:col-span-2">
                 <div className="flex items-center mb-6">
                   <img alt="logo" src="/logo.jpg" className="h-10 w-auto mr-4" />
-                  <h3 className="text-3xl font-bold text-[#2F4F4F]">Disaster Alert System</h3>
+                  <h3 className="text-3xl font-bold text-[#067d83]">Disaster Alert System</h3>
                 </div>
                 <p className="text-gray-300 mb-8 max-w-lg text-lg leading-relaxed">
                   Advanced AI-powered disaster alert system protecting communities worldwide through 
@@ -306,20 +306,20 @@ const Consulting = () => {
               <div>
                 <h4 className="text-lg font-semibold mb-4">Information</h4>
                 <ul className="space-y-2">
-                  <li><Link to="/traffic-report" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Traffic Report</Link></li>
-                  <li><Link to="/transparency-report" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Transparency Report</Link></li>
-                  <li><Link to="/faq" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">FAQ</Link></li>
-                  <li><Link to="/privacy-policy" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Privacy Policy</Link></li>
+                  <li><Link to="/traffic-report" className="text-gray-300 hover:text-[#067d83] transition-colors">Traffic Report</Link></li>
+                  <li><Link to="/transparency-report" className="text-gray-300 hover:text-[#067d83] transition-colors">Transparency Report</Link></li>
+                  <li><Link to="/faq" className="text-gray-300 hover:text-[#067d83] transition-colors">FAQ</Link></li>
+                  <li><Link to="/privacy-policy" className="text-gray-300 hover:text-[#067d83] transition-colors">Privacy Policy</Link></li>
                 </ul>
               </div>
 
               <div>
                 <h4 className="text-lg font-semibold mb-4">Services</h4>
                 <ul className="space-y-2">
-                  <li><Link to="/about" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">About Us</Link></li>
-                  <li><Link to="/contact" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Contact Us</Link></li>
-                  <li><Link to="/consulting" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Consulting</Link></li>
-                  <li><Link to="/support" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Support</Link></li>
+                  <li><Link to="/about" className="text-gray-300 hover:text-[#067d83] transition-colors">About Us</Link></li>
+                  <li><Link to="/contact" className="text-gray-300 hover:text-[#067d83] transition-colors">Contact Us</Link></li>
+                  <li><Link to="/consulting" className="text-gray-300 hover:text-[#067d83] transition-colors">Consulting</Link></li>
+                  <li><Link to="/support" className="text-gray-300 hover:text-[#067d83] transition-colors">Support</Link></li>
                 </ul>
               </div>
             </div>

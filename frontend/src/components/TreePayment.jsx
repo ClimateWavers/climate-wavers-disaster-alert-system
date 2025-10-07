@@ -301,7 +301,7 @@ const TreePayment = ({ treeData, onSuccess, onBack }) => {
     <div className="max-w-2xl mx-auto">
       <button
         onClick={onBack}
-        className="mb-6 text-[#2F4F4F] hover:text-[#1F3F3F] font-medium flex items-center"
+        className="mb-6 text-[#067d83] hover:text-[#055a5f] font-medium flex items-center"
       >
         <FaArrowLeft className="mr-2" />
         Back to Tree Selection

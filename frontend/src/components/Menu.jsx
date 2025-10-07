@@ -33,14 +33,14 @@ const Menu = ({ setIsOpen }) => {
 
   const getNavLinkClassName = (isActive) => 
     `flex items-center py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-100 cursor-pointer ${
-      isActive ? 'bg-[#2F4F4F] text-white' : 'text-gray-700 hover:text-[#2F4F4F]'
+      isActive ? 'bg-[#067d83] text-white' : 'text-gray-700 hover:text-[#067d83]'
     }`;
 
   return (
     <div className="flex flex-col w-full h-full">
       {/* Logo */}
       <div className="mb-6 pb-4 border-b border-gray-200">
-        <h1 className="text-xl font-bold text-[#2F4F4F] leading-tight mb-2">Climate Wavers</h1>
+        <h1 className="text-xl font-bold text-[#067d83] leading-tight mb-2">Climate Wavers</h1>
         <p className="text-sm text-gray-600 font-medium">Climate Action Platform</p>
       </div>
       
@@ -132,7 +132,7 @@ const Menu = ({ setIsOpen }) => {
           {({ isActive }) => (
             <div className="w-[200%] flex">
               {isActive ? (
-                <MdCampaign className="mr-3" size={20} color="#2F4F4F" />
+                <MdCampaign className="mr-3" size={20} color="#067d83" />
               ) : (
                 <MdOutlineCampaign className="mr-3" size={20} color="#434343" />
               )}
@@ -171,7 +171,7 @@ const Menu = ({ setIsOpen }) => {
           {({ isActive }) => (
             <>
               {isActive ? (
-                <IoNotifications className="mr-3 w-5 h-5" color="#2F4F4F" />
+                <IoNotifications className="mr-3 w-5 h-5" color="#067d83" />
               ) : (
                 <IoNotificationsOutline className="mr-3 w-5 h-5" color="#434343" />
               )}
@@ -191,7 +191,7 @@ const Menu = ({ setIsOpen }) => {
       {/* Post btn */}
       <button
         // to={"./createpost"}
-        className="text-xl text-center font-semibold bg-[#2F4F4F] text-white shadow-xl self-center shadow-white-300 w-[80%] max-sm:w-[80%] py-4 rounded-3xl mb-4"
+        className="text-xl text-center font-semibold bg-[#067d83] text-white shadow-xl self-center shadow-white-300 w-[80%] max-sm:w-[80%] py-4 rounded-3xl mb-4"
         onClick={() => {
           setIsModalOpen(true);
         }}

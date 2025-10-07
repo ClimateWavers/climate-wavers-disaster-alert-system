@@ -94,7 +94,7 @@ const Footer = () => {
         >
           {({ isActive }) =>
             isActive ? (
-              <MdCampaign className="w-[38px]" size={35} color="#2F4F4F" />
+              <MdCampaign className="w-[38px]" size={35} color="#067d83" />
             ) : (
               <MdOutlineCampaign className="w-[38px]" size={35} color="#434343"/>
             )
@@ -131,7 +131,7 @@ const Footer = () => {
         >
           {({ isActive }) => (
             isActive ? (
-              <IoNotifications className="w-[30px] h-[30px]" size={30} color="#2F4F4F" />
+              <IoNotifications className="w-[30px] h-[30px]" size={30} color="#067d83" />
             ) : (
               <IoNotificationsOutline className="w-[30px] h-[30px]" size={30} color="#434343" />
             )

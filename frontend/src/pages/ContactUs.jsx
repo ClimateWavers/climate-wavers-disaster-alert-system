@@ -53,11 +53,11 @@ const ContactUs = () => {
             <div className="flex items-center justify-between">
               <Link to="/" className="flex items-center">
                 <img alt="logo" src="/logo.jpg" className="h-8 w-auto mr-3" />
-                <span className="text-xl font-bold text-[#2F4F4F]">Disaster Alert System</span>
+                <span className="text-xl font-bold text-[#067d83]">Disaster Alert System</span>
               </Link>
               <Link 
                 to="/" 
-                className="bg-[#2F4F4F] text-white px-4 py-2 rounded-lg hover:bg-[#1e3a3a] transition-colors"
+                className="bg-[#067d83] text-white px-4 py-2 rounded-lg hover:bg-[#055a5f] transition-colors"
               >
                 Back to Home
               </Link>
@@ -78,7 +78,7 @@ const ContactUs = () => {
 
               <div className="space-y-6">
                 <div className="flex items-start">
-                  <div className="bg-[#2F4F4F] p-3 rounded-lg mr-4">
+                  <div className="bg-[#067d83] p-3 rounded-lg mr-4">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
@@ -91,7 +91,7 @@ const ContactUs = () => {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="bg-[#2F4F4F] p-3 rounded-lg mr-4">
+                  <div className="bg-[#067d83] p-3 rounded-lg mr-4">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
@@ -104,7 +104,7 @@ const ContactUs = () => {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="bg-[#2F4F4F] p-3 rounded-lg mr-4">
+                  <div className="bg-[#067d83] p-3 rounded-lg mr-4">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -119,7 +119,7 @@ const ContactUs = () => {
                 </div>
 
                 <div className="flex items-start">
-                  <div className="bg-[#2F4F4F] p-3 rounded-lg mr-4">
+                  <div className="bg-[#067d83] p-3 rounded-lg mr-4">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -156,7 +156,7 @@ const ContactUs = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F4F4F] focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#067d83] focus:border-transparent"
                       placeholder="Your full name"
                     />
                   </div>
@@ -171,7 +171,7 @@ const ContactUs = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F4F4F] focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#067d83] focus:border-transparent"
                       placeholder="your.email@example.com"
                     />
                   </div>
@@ -188,7 +188,7 @@ const ContactUs = () => {
                     value={formData.subject}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F4F4F] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#067d83] focus:border-transparent"
                     placeholder="What is this about?"
                   />
                 </div>
@@ -202,7 +202,7 @@ const ContactUs = () => {
                     name="priority"
                     value={formData.priority}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F4F4F] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#067d83] focus:border-transparent"
                   >
                     <option value="general">General Inquiry</option>
                     <option value="technical">Technical Support</option>
@@ -223,7 +223,7 @@ const ContactUs = () => {
                     onChange={handleChange}
                     required
                     rows={6}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2F4F4F] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#067d83] focus:border-transparent"
                     placeholder="Please describe your inquiry in detail..."
                   />
                 </div>
@@ -231,7 +231,7 @@ const ContactUs = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-[#2F4F4F] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#1e3a3a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#067d83] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#055a5f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? 'Sending...' : 'Send Message'}
                 </button>
@@ -284,7 +284,7 @@ const ContactUs = () => {
               <div className="col-span-1 md:col-span-2">
                 <div className="flex items-center mb-6">
                   <img alt="logo" src="/logo.jpg" className="h-10 w-auto mr-4" />
-                  <h3 className="text-3xl font-bold text-[#2F4F4F]">Disaster Alert System</h3>
+                  <h3 className="text-3xl font-bold text-[#067d83]">Disaster Alert System</h3>
                 </div>
                 <p className="text-gray-300 mb-8 max-w-lg text-lg leading-relaxed">
                   Advanced AI-powered disaster alert system protecting communities worldwide through 
@@ -295,20 +295,20 @@ const ContactUs = () => {
               <div>
                 <h4 className="text-lg font-semibold mb-4">Information</h4>
                 <ul className="space-y-2">
-                  <li><Link to="/traffic-report" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Traffic Report</Link></li>
-                  <li><Link to="/transparency-report" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Transparency Report</Link></li>
-                  <li><Link to="/faq" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">FAQ</Link></li>
-                  <li><Link to="/privacy-policy" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Privacy Policy</Link></li>
+                  <li><Link to="/traffic-report" className="text-gray-300 hover:text-[#067d83] transition-colors">Traffic Report</Link></li>
+                  <li><Link to="/transparency-report" className="text-gray-300 hover:text-[#067d83] transition-colors">Transparency Report</Link></li>
+                  <li><Link to="/faq" className="text-gray-300 hover:text-[#067d83] transition-colors">FAQ</Link></li>
+                  <li><Link to="/privacy-policy" className="text-gray-300 hover:text-[#067d83] transition-colors">Privacy Policy</Link></li>
                 </ul>
               </div>
 
               <div>
                 <h4 className="text-lg font-semibold mb-4">Services</h4>
                 <ul className="space-y-2">
-                  <li><Link to="/about" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">About Us</Link></li>
-                  <li><Link to="/contact" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Contact Us</Link></li>
-                  <li><Link to="/consulting" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Consulting</Link></li>
-                  <li><Link to="/support" className="text-gray-300 hover:text-[#2F4F4F] transition-colors">Support</Link></li>
+                  <li><Link to="/about" className="text-gray-300 hover:text-[#067d83] transition-colors">About Us</Link></li>
+                  <li><Link to="/contact" className="text-gray-300 hover:text-[#067d83] transition-colors">Contact Us</Link></li>
+                  <li><Link to="/consulting" className="text-gray-300 hover:text-[#067d83] transition-colors">Consulting</Link></li>
+                  <li><Link to="/support" className="text-gray-300 hover:text-[#067d83] transition-colors">Support</Link></li>
                 </ul>
               </div>
             </div>

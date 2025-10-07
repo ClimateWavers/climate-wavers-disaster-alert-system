@@ -3,9 +3,11 @@ import DisasterImage from "../components/DisastersImages";
 import Topbar from "../components/Topbar";
 import Menu from "../components/Menu";
 import Footer from "../components/FooterBar";
+import Pagination from "../components/Pagination";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { DisastersPageSEO } from "../components/SEOComponents";
+import { usePagination } from "../hooks/usePagination";
 
 // Use fallback URL if environment variable is not set
 const apiUrl = import.meta.env.VITE_APP_CHATBOT_URL 
@@ -13,12 +15,9 @@ const apiUrl = import.meta.env.VITE_APP_CHATBOT_URL
   : "/api/v1/disasters";
 
 const DisasterPage = () => {
-  const [disasters, setDisasters] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [pageSize, setPageSize] = useState(15);
-  const [page, setPage] = useState(1);
-  const [current, setCurrent] = useState(1);
+  const [allDisasters, setAllDisasters] = useState([]);
   const [loading, setLoading] = useState(true);
+  const itemsPerPage = 15;
 
   useEffect(() => {
     setLoading(true);
@@ -54,11 +53,7 @@ const DisasterPage = () => {
         }
       ];
       
-      setDisasters(mockDisasters);
-      setTotal(mockDisasters.length);
-      setPage(1);
-      setPageSize(15);
-      setCurrent(1);
+      setAllDisasters(mockDisasters);
       setLoading(false);
       return;
     }
@@ -66,11 +61,7 @@ const DisasterPage = () => {
     axios.get(apiUrl)
       .then((res) => {
         const { data } = res;
-        setDisasters(data?.data || []);
-        setTotal(data?.total || 0);
-        setPage(data?.page || 1);
-        setPageSize(data?.pageSize || 15);
-        setCurrent(1);
+        setAllDisasters(data?.data || []);
       })
       .catch((error) => {
         console.error('Error fetching disasters:', error);
@@ -96,13 +87,22 @@ const DisasterPage = () => {
           }
         ];
         
-        setDisasters(mockDisasters);
-        setTotal(mockDisasters.length);
+        setAllDisasters(mockDisasters);
       })
       .finally(() => {
         setLoading(false);
       });
   }, []);
+
+  // Use pagination hook
+  const {
+    currentPage,
+    totalPages,
+    totalItems,
+    paginatedData,
+    goToPage,
+  } = usePagination(allDisasters, itemsPerPage);
+
   return (
     <>
       <DisastersPageSEO />
@@ -118,7 +118,7 @@ const DisasterPage = () => {
         {/* <Mainfeed/> */}
         <div className="md:w-[80vw] w-full px-2  md:items-center">
           <div className="2xl:h-[50vh] md:h-[48vh] h-[45vh] md:mb-28 mb-4 py-2">
-            <DisasterImage disasters={disasters} />
+            <DisasterImage disasters={paginatedData} />
           </div>
           <div className=" flex">
             <input
@@ -126,7 +126,7 @@ const DisasterPage = () => {
               type="text"
               placeholder="🔍 Search disaster keywords"
             />
-            <button className="bg-[#2F4F4F]  text-white font-serif border relative md:w-[20%] w-[25%] rounded-lg">
+            <button className="bg-[#067d83]  text-white font-serif border relative md:w-[20%] w-[25%] rounded-lg">
               Search
             </button>
           </div>
@@ -134,14 +134,28 @@ const DisasterPage = () => {
             <h2 className="font-bold md:mt-8 mt-2 py-4 border-b-2 self-end text-2xl  text-[#434343] leading-4 border-gray-300">
               {loading ? (
                 "Loading disasters..."
-              ) : disasters.length > 0 ? (
-                `Showing ${disasters.length} of ${total} results`
+              ) : paginatedData.length > 0 ? (
+                `Showing ${paginatedData.length} of ${totalItems} results`
               ) : (
                 "No disasters found"
               )}
             </h2>
           </div>
-          <Disasters disasters={disasters} />
+          <Disasters disasters={paginatedData} />
+          
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-8">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={goToPage}
+                totalItems={totalItems}
+                itemsPerPage={itemsPerPage}
+                className="justify-center"
+              />
+            </div>
+          )}
         </div>
       </div>
       <div className="md:hidden">

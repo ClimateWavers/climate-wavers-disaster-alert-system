@@ -10,7 +10,7 @@ const Menu = ({ setIsOpen }) => {
   const location = useLocation();
 
   const activeStyle = {
-    borderLeft: "4px solid #2F4F4F",
+    borderLeft: "4px solid #067d83",
     backgroundColor: "#264653",
     width: "103%",
     color: "white",
@@ -217,7 +217,7 @@ const Menu = ({ setIsOpen }) => {
           {({ isActive }) => (
             <div className="w-[200%] flex">
               {isActive ? (
-                <MdCampaign className="mr-2" size={40} color="#2F4F4F" />
+                <MdCampaign className="mr-2" size={40} color="#067d83" />
               ) : (
                 <MdOutlineCampaign className="mr-2" size={40} color="#434343" />
               )}
@@ -260,8 +260,8 @@ const Menu = ({ setIsOpen }) => {
       <button
         className={
           active
-            ? "text-xl text-center font-semibold blur-md bg-[#2F4F4F] text-white shadow-xl self-center shadow-white-300 w-[80%] max-sm:w-[50%] py-4 rounded-3xl"
-            : "text-xl text-center font-semibold bg-[#2F4F4F] text-white shadow-xl self-center shadow-white-300 w-[80%] max-sm:w-[50%] py-4 rounded-3xl"
+            ? "text-xl text-center font-semibold blur-md bg-[#067d83] text-white shadow-xl self-center shadow-white-300 w-[80%] max-sm:w-[50%] py-4 rounded-3xl"
+            : "text-xl text-center font-semibold bg-[#067d83] text-white shadow-xl self-center shadow-white-300 w-[80%] max-sm:w-[50%] py-4 rounded-3xl"
         }
       >
         Post

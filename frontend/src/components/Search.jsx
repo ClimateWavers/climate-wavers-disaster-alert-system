@@ -1,20 +1,14 @@
-import { useState, useEffect, useRef } from "react";
+// Updated: 2025-01-28 - Fixed undefined results error and excessive API calls
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { client } from "../api";
 import { endpoints } from "../utils/endpoints";
 import { IoSearch, IoClose, IoPerson, IoTime, IoLocation } from "react-icons/io5";
 import { BsPostcard } from "react-icons/bs";
 import { formatDistanceToNow } from "date-fns";
+import { useDebouncedSearch } from "../hooks/useDebouncedSearch";
 
 const Search = ({ isOpen, onClose }) => {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState({
-    posts: [],
-    users: [],
-    hashtags: [],
-    trending: []
-  });
-  const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
   const [recentSearches, setRecentSearches] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
@@ -22,6 +16,72 @@ const Search = ({ isOpen, onClose }) => {
   
   const searchRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Create search function for debounced search hook
+  const searchFunction = useCallback(async (searchQuery) => {
+    try {
+      // Search posts
+      const postsResponse = await client.run("get", `${endpoints?.search}posts/?q=${encodeURIComponent(searchQuery)}`, {}, true);
+      
+      // Search users
+      const usersResponse = await client.run("get", `${endpoints?.search}users/?q=${encodeURIComponent(searchQuery)}`, {}, true);
+      
+      // Search hashtags
+      const hashtagsResponse = await client.run("get", `${endpoints?.search}hashtags/?q=${encodeURIComponent(searchQuery)}`, {}, true);
+      
+      // Get trending topics
+      const trendingResponse = await client.run("get", `${endpoints?.search}trending/?q=${encodeURIComponent(searchQuery)}`, {}, true);
+
+      return {
+        posts: postsResponse?.results || postsResponse || [],
+        users: usersResponse?.results || usersResponse || [],
+        hashtags: hashtagsResponse?.results || hashtagsResponse || [],
+        trending: trendingResponse?.results || trendingResponse || []
+      };
+    } catch (error) {
+      console.error("Search error:", error);
+      
+      // Try global search as fallback
+      try {
+        const globalResponse = await client.run("get", `${endpoints?.search}?q=${encodeURIComponent(searchQuery)}`, {}, true);
+        
+        return {
+          posts: globalResponse?.posts || [],
+          users: globalResponse?.users || [],
+          hashtags: globalResponse?.hashtags || [],
+          trending: globalResponse?.trending || []
+        };
+      } catch (fallbackError) {
+        console.error("Search fallback error:", fallbackError);
+        return {
+          posts: [],
+          users: [],
+          hashtags: [],
+          trending: []
+        };
+      }
+    }
+  }, []); // Remove recentSearches dependency to prevent recreation
+
+  // Use debounced search hook
+  const {
+    searchTerm: query,
+    results,
+    isSearching: loading,
+    updateSearchTerm: setQuery,
+    clearSearch,
+  } = useDebouncedSearch(searchFunction, 800);
+
+  // Handle recent searches separately to avoid breaking debouncing
+  useEffect(() => {
+    if (query.trim() && query.length > 2) {
+      setRecentSearches(prevSearches => {
+        const newRecentSearches = [query, ...prevSearches.filter(s => s !== query)].slice(0, 5);
+        localStorage.setItem('recentSearches', JSON.stringify(newRecentSearches));
+        return newRecentSearches;
+      });
+    }
+  }, [query]);
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -38,87 +98,18 @@ const Search = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  // Handle search
-  const handleSearch = async (searchQuery = query) => {
-    if (!searchQuery.trim()) return;
-
-    setLoading(true);
-        try {
-          // Save to recent searches
-          const newRecentSearches = [searchQuery, ...recentSearches.filter(s => s !== searchQuery)].slice(0, 5);
-          setRecentSearches(newRecentSearches);
-          localStorage.setItem('recentSearches', JSON.stringify(newRecentSearches));
-
-          // Search posts
-          const postsResponse = await client.run("get", `${endpoints?.search}posts/?q=${encodeURIComponent(searchQuery)}`, {}, true);
-          
-          // Search users
-          const usersResponse = await client.run("get", `${endpoints?.search}users/?q=${encodeURIComponent(searchQuery)}`, {}, true);
-          
-          // Search hashtags
-          const hashtagsResponse = await client.run("get", `${endpoints?.search}hashtags/?q=${encodeURIComponent(searchQuery)}`, {}, true);
-          
-          // Get trending topics
-          const trendingResponse = await client.run("get", `${endpoints?.search}trending/?q=${encodeURIComponent(searchQuery)}`, {}, true);
-
-          setResults({
-            posts: postsResponse?.results || postsResponse || [],
-            users: usersResponse?.results || usersResponse || [],
-            hashtags: hashtagsResponse?.results || hashtagsResponse || [],
-            trending: trendingResponse?.results || trendingResponse || []
-          });
-        } catch (error) {
-          console.error("Search error:", error);
-          
-          // Try global search as fallback
-          try {
-            const globalResponse = await client.run("get", `${endpoints?.search}?q=${encodeURIComponent(searchQuery)}`, {}, true);
-            
-            setResults({
-              posts: globalResponse?.posts || [],
-              users: globalResponse?.users || [],
-              hashtags: globalResponse?.hashtags || [],
-              trending: globalResponse?.trending || []
-            });
-          } catch (fallbackError) {
-            console.error("Search fallback error:", fallbackError);
-            setResults({
-              posts: [],
-              users: [],
-              hashtags: [],
-              trending: []
-            });
-          }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Handle input change with debouncing
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (query.trim()) {
-        handleSearch(query);
-      } else {
-        setResults({
-          posts: [],
-          users: [],
-          hashtags: [],
-          trending: []
-        });
-      }
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [query]);
-
   // Get suggestions based on query
   useEffect(() => {
     if (query.trim() && query.length > 1) {
+      const safeResults = {
+        trending: results?.trending || [],
+        hashtags: results?.hashtags || []
+      };
+      
       const filteredSuggestions = [
         ...recentSearches.filter(s => s.toLowerCase().includes(query.toLowerCase())),
-        ...results.trending.slice(0, 3).map(t => t.name || t.title),
-        ...results.hashtags.slice(0, 3).map(h => h.name || h.tag)
+        ...safeResults.trending.slice(0, 3).map(t => t.name || t.title),
+        ...safeResults.hashtags.slice(0, 3).map(h => h.name || h.tag)
       ].slice(0, 5);
       
       setSuggestions(filteredSuggestions);
@@ -132,18 +123,6 @@ const Search = ({ isOpen, onClose }) => {
   const handleSuggestionClick = (suggestion) => {
     setQuery(suggestion);
     setShowSuggestions(false);
-    handleSearch(suggestion);
-  };
-
-  const clearSearch = () => {
-    setQuery("");
-    setResults({
-      posts: [],
-      users: [],
-      hashtags: [],
-      trending: []
-    });
-    setShowSuggestions(false);
   };
 
   const clearRecentSearches = () => {
@@ -152,21 +131,29 @@ const Search = ({ isOpen, onClose }) => {
   };
 
   const filteredResults = () => {
+    // Ensure results has the expected structure
+    const safeResults = {
+      posts: results?.posts || [],
+      users: results?.users || [],
+      hashtags: results?.hashtags || [],
+      trending: results?.trending || []
+    };
+
     switch (activeTab) {
       case "posts":
-        return results.posts;
+        return safeResults.posts;
       case "users":
-        return results.users;
+        return safeResults.users;
       case "hashtags":
-        return results.hashtags;
+        return safeResults.hashtags;
       case "trending":
-        return results.trending;
+        return safeResults.trending;
       default:
         return {
-          posts: results.posts.slice(0, 3),
-          users: results.users.slice(0, 3),
-          hashtags: results.hashtags.slice(0, 3),
-          trending: results.trending.slice(0, 3)
+          posts: safeResults.posts.slice(0, 3),
+          users: safeResults.users.slice(0, 3),
+          hashtags: safeResults.hashtags.slice(0, 3),
+          trending: safeResults.trending.slice(0, 3)
         };
     }
   };
@@ -190,7 +177,7 @@ const Search = ({ isOpen, onClose }) => {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search posts, users, hashtags..."
-                className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#067d83] focus:border-transparent"
               />
               {query && (
                 <button
@@ -217,7 +204,7 @@ const Search = ({ isOpen, onClose }) => {
                 onClick={() => setActiveTab(tab)}
                 className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
                   activeTab === tab
-                    ? "bg-teal-500 text-white"
+                    ? "bg-[#067d83] text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
@@ -231,7 +218,7 @@ const Search = ({ isOpen, onClose }) => {
         <div className="p-4 max-h-96 overflow-y-auto">
           {loading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#067d83]"></div>
               <span className="ml-3 text-gray-600">Searching...</span>
             </div>
           ) : query.trim() ? (
@@ -273,66 +260,74 @@ const Search = ({ isOpen, onClose }) => {
 
 // Search Results Component
 const SearchResults = ({ results, activeTab, query }) => {
+  // Ensure results has the expected structure
+  const safeResults = {
+    posts: results?.posts || [],
+    users: results?.users || [],
+    hashtags: results?.hashtags || [],
+    trending: results?.trending || []
+  };
+
   if (activeTab === "all") {
     return (
       <div className="space-y-6">
-        {results.posts.length > 0 && (
+        {safeResults.posts.length > 0 && (
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <BsPostcard className="text-teal-500" />
-              Posts ({results.posts.length})
+              <BsPostcard className="text-[#067d83]" />
+              Posts ({safeResults.posts.length})
             </h3>
             <div className="space-y-3">
-              {results.posts.map((post) => (
+              {safeResults.posts.map((post) => (
                 <PostResult key={post.id} post={post} />
               ))}
             </div>
           </div>
         )}
 
-        {results.users.length > 0 && (
+        {safeResults.users.length > 0 && (
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <IoPerson className="text-teal-500" />
-              Users ({results.users.length})
+              <IoPerson className="text-[#067d83]" />
+              Users ({safeResults.users.length})
             </h3>
             <div className="space-y-3">
-              {results.users.map((user) => (
+              {safeResults.users.map((user) => (
                 <UserResult key={user.id} user={user} />
               ))}
             </div>
           </div>
         )}
 
-        {results.hashtags.length > 0 && (
+        {safeResults.hashtags.length > 0 && (
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <span className="text-teal-500 font-bold">#</span>
-              Hashtags ({results.hashtags.length})
+              <span className="text-[#067d83] font-bold">#</span>
+              Hashtags ({safeResults.hashtags.length})
             </h3>
             <div className="space-y-3">
-              {results.hashtags.map((hashtag) => (
+              {safeResults.hashtags.map((hashtag) => (
                 <HashtagResult key={hashtag.id} hashtag={hashtag} />
               ))}
             </div>
           </div>
         )}
 
-        {results.trending.length > 0 && (
+        {safeResults.trending.length > 0 && (
           <div>
             <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <IoTime className="text-teal-500" />
-              Trending ({results.trending.length})
+              <IoTime className="text-[#067d83]" />
+              Trending ({safeResults.trending.length})
             </h3>
             <div className="space-y-3">
-              {results.trending.map((trend) => (
+              {safeResults.trending.map((trend) => (
                 <TrendingResult key={trend.id} trend={trend} />
               ))}
             </div>
           </div>
         )}
 
-        {Object.values(results).every(arr => arr.length === 0) && (
+        {Object.values(safeResults).every(arr => arr.length === 0) && (
           <div className="text-center py-8">
             <p className="text-gray-500">No results found for "{query}"</p>
           </div>
@@ -422,8 +417,8 @@ const UserResult = ({ user }) => (
 const HashtagResult = ({ hashtag }) => (
   <Link to={`/app/hashtag/${hashtag.name || hashtag.tag}`} className="block p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
     <div className="flex items-center gap-3">
-      <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
-        <span className="text-teal-600 font-bold text-lg">#</span>
+      <div className="w-10 h-10 bg-[#067d83]/10 rounded-full flex items-center justify-center">
+        <span className="text-[#067d83] font-bold text-lg">#</span>
       </div>
       <div className="flex-1">
         <h4 className="font-medium text-gray-900">#{hashtag.name || hashtag.tag}</h4>

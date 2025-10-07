@@ -13,701 +13,8 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { LandingPageSEO } from "../components/SEOComponents";
 import DonationForm from "../components/DonationForm";
+import LeafletMap from "../components/LeafletMap";
 
-// Mock Google Maps component with detailed world map
-const MockGoogleMap = ({ disasters, onDisasterClick }) => {
-  const [selectedDisaster, setSelectedDisaster] = useState(null);
-
-  return (
-    <div className="relative w-full h-full min-h-[300px] sm:min-h-[400px] md:min-h-[500px] lg:min-h-[600px] xl:min-h-[700px] bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 overflow-hidden rounded-2xl shadow-2xl border border-blue-700">
-      {/* Global Real-Time Satellite Map Background */}
-      <div className="absolute inset-0" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='1200' height='800' viewBox='0 0 1200 800' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='global-satellite' patternUnits='userSpaceOnUse' width='1200' height='800'%3E%3Crect width='1200' height='800' fill='%23002244'/%3E%3Cpath d='M0 50h1200M0 100h1200M0 150h1200M0 200h1200M0 250h1200M0 300h1200M0 350h1200M0 400h1200M0 450h1200M0 500h1200M0 550h1200M0 600h1200M0 650h1200M0 700h1200M0 750h1200M50 0v800M100 0v800M150 0v800M200 0v800M250 0v800M300 0v800M350 0v800M400 0v800M450 0v800M500 0v800M550 0v800M600 0v800M650 0v800M700 0v800M750 0v800M800 0v800M850 0v800M900 0v800M950 0v800M1000 0v800M1050 0v800M1100 0v800M1150 0v800' stroke='%23ffffff' stroke-width='0.3' opacity='0.08'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='1200' height='800' fill='url(%23global-satellite)'/%3E%3C/svg%3E")`,
-        backgroundSize: 'cover'
-      }}>
-        {/* Ocean Background - Matching Reference Image */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-800 via-blue-700 to-blue-900"></div>
-        
-        {/* NORTH AMERICA - Enhanced Satellite View */}
-        <div className="absolute top-[15%] left-[10%] w-[30%] h-[45%] opacity-95 rounded-lg shadow-lg" style={{
-          background: `
-            radial-gradient(ellipse at 25% 15%, rgba(34, 139, 34, 0.95) 0%, rgba(0, 100, 0, 0.85) 25%, rgba(0, 80, 0, 0.7) 50%, rgba(0, 60, 0, 0.5) 75%, transparent 100%),
-            radial-gradient(ellipse at 70% 60%, rgba(139, 69, 19, 0.9) 0%, rgba(160, 82, 45, 0.7) 35%, rgba(205, 133, 63, 0.5) 65%, transparent 100%),
-            radial-gradient(ellipse at 15% 80%, rgba(255, 140, 0, 0.8) 0%, rgba(255, 215, 0, 0.6) 45%, rgba(255, 255, 0, 0.4) 75%, transparent 100%),
-            radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.3) 0%, rgba(240, 240, 240, 0.2) 50%, transparent 100%)
-          `,
-          filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))'
-        }}></div>
-        
-        {/* USA States - Clear Boundaries */}
-        <div className="absolute top-[20%] left-[15%] w-[25%] h-[35%] opacity-90" style={{
-          background: `
-            linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
-            linear-gradient(0deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
-            radial-gradient(ellipse at 30% 20%, rgba(34, 139, 34, 0.8) 0%, rgba(0, 100, 0, 0.6) 50%, transparent 100%)
-          `,
-          backgroundSize: '20px 20px'
-        }}></div>
-        
-        {/* SOUTH AMERICA - Clear Continent Shape */}
-        <div className="absolute top-[45%] left-[15%] w-[18%] h-[40%] opacity-98" style={{
-          background: `
-            radial-gradient(ellipse at center, rgba(0, 128, 0, 0.95) 0%, rgba(34, 139, 34, 0.9) 20%, rgba(0, 100, 0, 0.7) 50%, rgba(0, 80, 0, 0.5) 80%, transparent 100%),
-            radial-gradient(ellipse at 60% 20%, rgba(128, 128, 128, 0.9) 0%, rgba(105, 105, 105, 0.7) 40%, rgba(80, 80, 80, 0.5) 70%, transparent 100%)
-          `
-        }}></div>
-        
-        {/* Brazil - Clear Country Shape */}
-        <div className="absolute top-[50%] left-[18%] w-[12%] h-[30%] opacity-95" style={{
-          background: `
-            linear-gradient(90deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
-            linear-gradient(0deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
-            radial-gradient(ellipse at center, rgba(0, 128, 0, 0.9) 0%, rgba(34, 139, 34, 0.7) 60%, transparent 100%)
-          `,
-          backgroundSize: '15px 15px'
-        }}></div>
-        
-        {/* EUROPE - Enhanced Satellite View */}
-        <div className="absolute top-[20%] left-[40%] w-[25%] h-[30%] opacity-95 rounded-lg shadow-lg" style={{
-          background: `
-            radial-gradient(ellipse at center, rgba(34, 139, 34, 0.95) 0%, rgba(0, 100, 0, 0.8) 35%, rgba(0, 80, 0, 0.6) 65%, transparent 100%),
-            radial-gradient(ellipse at 30% 70%, rgba(128, 128, 128, 0.9) 0%, rgba(105, 105, 105, 0.7) 45%, rgba(80, 80, 80, 0.5) 75%, transparent 100%),
-            radial-gradient(ellipse at 60% 20%, rgba(255, 255, 255, 0.4) 0%, rgba(240, 240, 240, 0.3) 50%, transparent 100%)
-          `,
-          filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))'
-        }}></div>
-        
-        {/* European Countries - Clear Boundaries */}
-        <div className="absolute top-[25%] left-[42%] w-[20%] h-[25%] opacity-90" style={{
-          background: `
-            linear-gradient(90deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
-            linear-gradient(0deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
-            radial-gradient(ellipse at center, rgba(34, 139, 34, 0.8) 0%, rgba(0, 100, 0, 0.6) 60%, transparent 100%)
-          `,
-          backgroundSize: '12px 12px'
-        }}></div>
-        
-        {/* AFRICA - Enhanced Satellite View */}
-        <div className="absolute top-[35%] left-[45%] w-[30%] h-[45%] opacity-95 rounded-lg shadow-lg" style={{
-          background: `
-            radial-gradient(ellipse at 30% 20%, rgba(255, 140, 0, 0.95) 0%, rgba(255, 215, 0, 0.8) 30%, rgba(255, 255, 0, 0.6) 60%, transparent 100%),
-            radial-gradient(ellipse at 70% 60%, rgba(34, 139, 34, 0.95) 0%, rgba(0, 100, 0, 0.8) 35%, rgba(0, 80, 0, 0.6) 65%, transparent 100%),
-            radial-gradient(ellipse at 50% 80%, rgba(139, 69, 19, 0.9) 0%, rgba(160, 82, 45, 0.7) 45%, rgba(205, 133, 63, 0.5) 75%, transparent 100%),
-            radial-gradient(ellipse at 20% 50%, rgba(255, 255, 255, 0.3) 0%, rgba(240, 240, 240, 0.2) 50%, transparent 100%)
-          `,
-          filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))'
-        }}></div>
-        
-        {/* African Countries - Clear Boundaries */}
-        <div className="absolute top-[40%] left-[48%] w-[25%] h-[35%] opacity-90" style={{
-          background: `
-            linear-gradient(90deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
-            linear-gradient(0deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
-            radial-gradient(ellipse at 30% 20%, rgba(255, 140, 0, 0.8) 0%, rgba(255, 215, 0, 0.6) 50%, transparent 100%)
-          `,
-          backgroundSize: '18px 18px'
-        }}></div>
-        
-        {/* ASIA - Enhanced Satellite View */}
-        <div className="absolute top-[20%] left-[60%] w-[35%] h-[50%] opacity-95 rounded-lg shadow-lg" style={{
-          background: `
-            radial-gradient(ellipse at 40% 15%, rgba(255, 255, 255, 0.98) 0%, rgba(240, 240, 240, 0.9) 25%, rgba(220, 220, 220, 0.7) 50%, transparent 100%),
-            radial-gradient(ellipse at 60% 50%, rgba(34, 139, 34, 0.95) 0%, rgba(0, 100, 0, 0.8) 35%, rgba(0, 80, 0, 0.6) 65%, transparent 100%),
-            radial-gradient(ellipse at 20% 70%, rgba(255, 140, 0, 0.9) 0%, rgba(255, 215, 0, 0.7) 40%, rgba(255, 255, 0, 0.5) 70%, transparent 100%),
-            radial-gradient(ellipse at 80% 30%, rgba(139, 69, 19, 0.6) 0%, rgba(160, 82, 45, 0.4) 50%, transparent 100%)
-          `,
-          filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))'
-        }}></div>
-        
-        {/* Asian Countries - Clear Boundaries */}
-        <div className="absolute top-[25%] left-[65%] w-[25%] h-[40%] opacity-90" style={{
-          background: `
-            linear-gradient(90deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
-            linear-gradient(0deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
-            radial-gradient(ellipse at 40% 15%, rgba(255, 255, 255, 0.9) 0%, rgba(240, 240, 240, 0.7) 50%, transparent 100%)
-          `,
-          backgroundSize: '16px 16px'
-        }}></div>
-        
-        {/* AUSTRALIA - Enhanced Satellite View */}
-        <div className="absolute top-[65%] left-[65%] w-[25%] h-[30%] opacity-95 rounded-lg shadow-lg" style={{
-          background: `
-            radial-gradient(ellipse at center, rgba(255, 140, 0, 0.95) 0%, rgba(255, 215, 0, 0.8) 30%, rgba(255, 255, 0, 0.6) 60%, transparent 100%),
-            radial-gradient(ellipse at 30% 30%, rgba(34, 139, 34, 0.9) 0%, rgba(0, 100, 0, 0.7) 45%, rgba(0, 80, 0, 0.5) 75%, transparent 100%),
-            radial-gradient(ellipse at 70% 70%, rgba(139, 69, 19, 0.7) 0%, rgba(160, 82, 45, 0.5) 50%, transparent 100%),
-            radial-gradient(ellipse at 50% 20%, rgba(255, 255, 255, 0.4) 0%, rgba(240, 240, 240, 0.3) 50%, transparent 100%)
-          `,
-          filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))'
-        }}></div>
-        
-        {/* Australian States - Clear Boundaries */}
-        <div className="absolute top-[70%] left-[68%] w-[18%] h-[20%] opacity-90" style={{
-          background: `
-            linear-gradient(90deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
-            linear-gradient(0deg, rgba(0, 0, 0, 0.2) 1px, transparent 1px),
-            radial-gradient(ellipse at center, rgba(255, 140, 0, 0.8) 0%, rgba(255, 215, 0, 0.6) 60%, transparent 100%)
-          `,
-          backgroundSize: '14px 14px'
-        }}></div>
-        
-        {/* ANTARCTICA - Enhanced Ice Cap */}
-        <div className="absolute top-[5%] left-[35%] w-[35%] h-[20%] opacity-95 rounded-lg shadow-lg" style={{
-          background: `
-            radial-gradient(ellipse at center, rgba(255, 255, 255, 0.99) 0%, rgba(240, 240, 240, 0.95) 20%, rgba(220, 220, 220, 0.8) 45%, rgba(200, 200, 200, 0.6) 70%, transparent 100%),
-            radial-gradient(ellipse at 30% 30%, rgba(230, 230, 230, 0.8) 0%, rgba(210, 210, 210, 0.6) 50%, transparent 100%),
-            radial-gradient(ellipse at 70% 70%, rgba(250, 250, 250, 0.6) 0%, rgba(240, 240, 240, 0.4) 50%, transparent 100%)
-          `,
-          filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))'
-        }}></div>
-        
-        {/* Enhanced Global Geographic Coordinate Grid - Latitude Lines */}
-        <div className="absolute top-[10%] left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-white to-transparent opacity-70" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.8'/%3E%3C/svg%3E")`,
-          backgroundSize: '20px 1px',
-          filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3))'
-        }}></div>
-        <div className="absolute top-[20%] left-0 w-full h-0.5 bg-white opacity-60" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
-          backgroundSize: '20px 1px'
-        }}></div>
-        <div className="absolute top-[30%] left-0 w-full h-0.5 bg-white opacity-60" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
-          backgroundSize: '20px 1px'
-        }}></div>
-        <div className="absolute top-[40%] left-0 w-full h-0.5 bg-white opacity-60" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
-          backgroundSize: '20px 1px'
-        }}></div>
-        <div className="absolute top-[50%] left-0 w-full h-0.5 bg-white opacity-60" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
-          backgroundSize: '20px 1px'
-        }}></div>
-        <div className="absolute top-[60%] left-0 w-full h-0.5 bg-white opacity-60" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
-          backgroundSize: '20px 1px'
-        }}></div>
-        <div className="absolute top-[70%] left-0 w-full h-0.5 bg-white opacity-60" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
-          backgroundSize: '20px 1px'
-        }}></div>
-        <div className="absolute top-[80%] left-0 w-full h-0.5 bg-white opacity-60" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
-          backgroundSize: '20px 1px'
-        }}></div>
-        <div className="absolute top-[90%] left-0 w-full h-0.5 bg-white opacity-60" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='1' viewBox='0 0 20 1' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0.5h5M10 0.5h5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
-          backgroundSize: '20px 1px'
-        }}></div>
-        
-        {/* Global Longitude Grid Lines */}
-        <div className="absolute top-0 left-[10%] w-0.5 h-full bg-white opacity-60" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
-          backgroundSize: '1px 20px'
-        }}></div>
-        <div className="absolute top-0 left-[20%] w-0.5 h-full bg-white opacity-60" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
-          backgroundSize: '1px 20px'
-        }}></div>
-        <div className="absolute top-0 left-[30%] w-0.5 h-full bg-white opacity-60" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
-          backgroundSize: '1px 20px'
-        }}></div>
-        <div className="absolute top-0 left-[40%] w-0.5 h-full bg-white opacity-60" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
-          backgroundSize: '1px 20px'
-        }}></div>
-        <div className="absolute top-0 left-[50%] w-0.5 h-full bg-white opacity-60" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
-          backgroundSize: '1px 20px'
-        }}></div>
-        <div className="absolute top-0 left-[60%] w-0.5 h-full bg-white opacity-60" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
-          backgroundSize: '1px 20px'
-        }}></div>
-        <div className="absolute top-0 left-[70%] w-0.5 h-full bg-white opacity-60" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
-          backgroundSize: '1px 20px'
-        }}></div>
-        <div className="absolute top-0 left-[80%] w-0.5 h-full bg-white opacity-60" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
-          backgroundSize: '1px 20px'
-        }}></div>
-        <div className="absolute top-0 left-[90%] w-0.5 h-full bg-white opacity-60" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='1' height='20' viewBox='0 0 1 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.5 0v5M0.5 10v5' stroke='%23ffffff' stroke-width='0.5' opacity='0.6'/%3E%3C/svg%3E")`,
-          backgroundSize: '1px 20px'
-        }}></div>
-        
-        {/* Enhanced Global Coordinate Labels */}
-        <div className="absolute top-[10%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">80N</div>
-        <div className="absolute top-[20%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">60N</div>
-        <div className="absolute top-[30%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">40N</div>
-        <div className="absolute top-[40%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">20N</div>
-        <div className="absolute top-[50%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">0°</div>
-        <div className="absolute top-[60%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">20S</div>
-        <div className="absolute top-[70%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">40S</div>
-        <div className="absolute top-[80%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">60S</div>
-        <div className="absolute top-[90%] left-2 text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">80S</div>
-        
-        {/* Enhanced Longitude Labels */}
-        <div className="absolute top-2 left-[10%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">180W</div>
-        <div className="absolute top-2 left-[20%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">140W</div>
-        <div className="absolute top-2 left-[30%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">100W</div>
-        <div className="absolute top-2 left-[40%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">60W</div>
-        <div className="absolute top-2 left-[50%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">20W</div>
-        <div className="absolute top-2 left-[60%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">20E</div>
-        <div className="absolute top-2 left-[70%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">60E</div>
-        <div className="absolute top-2 left-[80%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">100E</div>
-        <div className="absolute top-2 left-[90%] text-xs text-cyan-300 font-bold bg-black/60 px-1 py-0.5 rounded shadow-lg backdrop-blur-sm">140E</div>
-        
-        {/* Realistic Satellite Terrain Patterns */}
-        {/* Himalayan Mountain Range */}
-        <div className="absolute top-[15%] left-[45%] w-[40%] h-[20%] opacity-90" style={{
-          background: `radial-gradient(ellipse at center, rgba(128, 128, 128, 0.8) 0%, rgba(105, 105, 105, 0.6) 50%, transparent 100%)`
-        }}></div>
-        
-        {/* Indian Subcontinent - Mixed Terrain */}
-        <div className="absolute top-[25%] left-[40%] w-[35%] h-[45%] opacity-85" style={{
-          background: `
-            radial-gradient(ellipse at 30% 20%, rgba(34, 139, 34, 0.7) 0%, transparent 60%),
-            radial-gradient(ellipse at 70% 60%, rgba(255, 215, 0, 0.6) 0%, transparent 70%),
-            radial-gradient(ellipse at 20% 80%, rgba(160, 82, 45, 0.5) 0%, transparent 50%)
-          `
-        }}></div>
-        
-        {/* Ganges Delta - Bangladesh */}
-        <div className="absolute top-[35%] left-[50%] w-[20%] h-[25%] opacity-90" style={{
-          background: `radial-gradient(ellipse at center, rgba(0, 100, 0, 0.8) 0%, rgba(34, 139, 34, 0.6) 50%, transparent 100%)`
-        }}></div>
-        
-        {/* Tibetan Plateau */}
-        <div className="absolute top-[10%] left-[65%] w-[25%] h-[30%] opacity-80" style={{
-          background: `radial-gradient(ellipse at center, rgba(255, 215, 0, 0.7) 0%, rgba(218, 165, 32, 0.5) 50%, transparent 100%)`
-        }}></div>
-        
-        {/* Thar Desert */}
-        <div className="absolute top-[60%] left-[35%] w-[25%] h-[20%] opacity-75" style={{
-          background: `radial-gradient(ellipse at center, rgba(255, 140, 0, 0.6) 0%, rgba(255, 215, 0, 0.4) 50%, transparent 100%)`
-        }}></div>
-        
-        {/* Southeast Asian Forests */}
-        <div className="absolute top-[40%] left-[60%] w-[20%] h-[30%] opacity-85" style={{
-          background: `radial-gradient(ellipse at center, rgba(0, 128, 0, 0.8) 0%, rgba(34, 139, 34, 0.6) 50%, transparent 100%)`
-        }}></div>
-        
-        {/* Yellow Rectangular Frames - Exactly Like Your Image */}
-        {/* Outer Frame - Large Rectangle */}
-        <div className="absolute top-[5%] left-[10%] w-[80%] h-[90%] border-2 border-yellow-400">
-          {/* Corner Markers - Small Yellow Squares */}
-          <div className="absolute -top-1 -left-1 w-2 h-2 bg-yellow-400"></div>
-          <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400"></div>
-          <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-yellow-400"></div>
-          <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-yellow-400"></div>
-          {/* Midpoint Markers - Small Yellow Squares */}
-          <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-yellow-400"></div>
-          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-yellow-400"></div>
-          <div className="absolute top-1/2 -left-1 transform -translate-y-1/2 w-2 h-2 bg-yellow-400"></div>
-          <div className="absolute top-1/2 -right-1 transform -translate-y-1/2 w-2 h-2 bg-yellow-400"></div>
-        </div>
-        
-        {/* Inner Frame - Smaller Rectangle Over Bay of Bengal */}
-        <div className="absolute top-[30%] left-[50%] w-[30%] h-[45%] border-2 border-yellow-400">
-          {/* Corner Markers - Small Yellow Squares */}
-          <div className="absolute -top-1 -left-1 w-2 h-2 bg-yellow-400"></div>
-          <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400"></div>
-          <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-yellow-400"></div>
-          <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-yellow-400"></div>
-          {/* Midpoint Markers - Small Yellow Squares */}
-          <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-yellow-400"></div>
-          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-yellow-400"></div>
-          <div className="absolute top-1/2 -left-1 transform -translate-y-1/2 w-2 h-2 bg-yellow-400"></div>
-          <div className="absolute top-1/2 -right-1 transform -translate-y-1/2 w-2 h-2 bg-yellow-400"></div>
-        </div>
-        
-        {/* Numbered Markers - Exactly Like Your Image */}
-        <div className="absolute top-[38%] left-[58%] w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-black font-bold text-sm shadow-lg border-2 border-yellow-300">
-          1
-        </div>
-        <div className="absolute top-[48%] left-[60%] w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-black font-bold text-sm shadow-lg border-2 border-yellow-300">
-          2
-        </div>
-        
-        {/* CONTINENT LABELS - Matching Reference Image */}
-        <div className="absolute top-[20%] left-[15%] text-sm font-bold text-green-400 bg-black/50 px-2 py-1 rounded">NORTH AMERICA</div>
-        <div className="absolute top-[25%] left-[45%] text-sm font-bold text-green-400 bg-black/50 px-2 py-1 rounded">EUROPE</div>
-        <div className="absolute top-[40%] left-[50%] text-sm font-bold text-green-400 bg-black/50 px-2 py-1 rounded">AFRICA</div>
-        <div className="absolute top-[25%] left-[70%] text-sm font-bold text-green-400 bg-black/50 px-2 py-1 rounded">ASIA</div>
-        <div className="absolute top-[70%] left-[75%] text-sm font-bold text-green-400 bg-black/50 px-2 py-1 rounded">AUSTRALIA</div>
-        <div className="absolute top-[60%] left-[20%] text-sm font-bold text-green-400 bg-black/50 px-2 py-1 rounded">SOUTH AMERICA</div>
-        
-        {/* COUNTRY LABELS - Matching Reference Image */}
-        <div className="absolute top-[25%] left-[20%] text-xs font-bold text-yellow-300">USA</div>
-        <div className="absolute top-[20%] left-[15%] text-xs font-bold text-yellow-300">CANADA</div>
-        <div className="absolute top-[28%] left-[47%] text-xs font-bold text-yellow-300">SPAIN</div>
-        <div className="absolute top-[25%] left-[45%] text-xs font-bold text-yellow-300">UK</div>
-        <div className="absolute top-[35%] left-[50%] text-xs font-bold text-yellow-300">EGYPT</div>
-        <div className="absolute top-[45%] left-[48%] text-xs font-bold text-yellow-300">NIGERIA</div>
-        <div className="absolute top-[55%] left-[50%] text-xs font-bold text-yellow-300">SOUTH AFRICA</div>
-        <div className="absolute top-[32%] left-[70%] text-xs font-bold text-yellow-300">CHINA</div>
-        <div className="absolute top-[40%] left-[65%] text-xs font-bold text-yellow-300">INDIA</div>
-        <div className="absolute top-[65%] left-[20%] text-xs font-bold text-yellow-300">BRAZIL</div>
-        <div className="absolute top-[70%] left-[18%] text-xs font-bold text-yellow-300">ARGENTINA</div>
-        <div className="absolute top-[75%] left-[15%] text-xs font-bold text-yellow-300">CHILE</div>
-        
-        {/* CITY MARKERS - Matching Reference Image */}
-        <div className="absolute top-[25%] left-[20%] w-1.5 h-1.5 bg-yellow-400 rounded-full shadow-lg"></div>
-        <div className="absolute top-[25%] left-[20%] text-yellow-300 text-xs font-bold ml-2 mt-1">Los Angeles</div>
-        
-        <div className="absolute top-[25%] left-[45%] w-1.5 h-1.5 bg-yellow-400 rounded-full shadow-lg"></div>
-        <div className="absolute top-[25%] left-[45%] text-yellow-300 text-xs font-bold ml-2 mt-1">London</div>
-        
-        <div className="absolute top-[28%] left-[47%] w-1.5 h-1.5 bg-yellow-400 rounded-full shadow-lg"></div>
-        <div className="absolute top-[28%] left-[47%] text-yellow-300 text-xs font-bold ml-2 mt-1">Paris</div>
-        
-        <div className="absolute top-[35%] left-[50%] w-1.5 h-1.5 bg-yellow-400 rounded-full shadow-lg"></div>
-        <div className="absolute top-[35%] left-[50%] text-yellow-300 text-xs font-bold ml-2 mt-1">Cairo</div>
-        
-        <div className="absolute top-[30%] left-[75%] w-1.5 h-1.5 bg-yellow-400 rounded-full shadow-lg"></div>
-        <div className="absolute top-[30%] left-[75%] text-yellow-300 text-xs font-bold ml-2 mt-1">Tokyo</div>
-        
-        <div className="absolute top-[32%] left-[70%] w-1.5 h-1.5 bg-yellow-400 rounded-full shadow-lg"></div>
-        <div className="absolute top-[32%] left-[70%] text-yellow-300 text-xs font-bold ml-2 mt-1">Beijing</div>
-        
-        <div className="absolute top-[40%] left-[65%] w-1.5 h-1.5 bg-yellow-400 rounded-full shadow-lg"></div>
-        <div className="absolute top-[40%] left-[65%] text-yellow-300 text-xs font-bold ml-2 mt-1">Mumbai</div>
-        
-        {/* South America Countries */}
-        <div className="absolute top-[55%] left-[20%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">BRAZIL</div>
-        <div className="absolute top-[50%] left-[25%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">ARGENTINA</div>
-        <div className="absolute top-[60%] left-[22%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">CHILE</div>
-        
-        {/* European Countries */}
-        <div className="absolute top-[30%] left-[45%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">UK</div>
-        <div className="absolute top-[35%] left-[48%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">FRANCE</div>
-        <div className="absolute top-[32%] left-[50%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">GERMANY</div>
-        <div className="absolute top-[40%] left-[47%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">SPAIN</div>
-        
-        {/* African Countries */}
-        <div className="absolute top-[50%] left-[55%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">EGYPT</div>
-        <div className="absolute top-[55%] left-[52%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">NIGERIA</div>
-        <div className="absolute top-[60%] left-[50%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">SOUTH AFRICA</div>
-        <div className="absolute top-[45%] left-[48%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">LIBYA</div>
-        
-        {/* Asian Countries */}
-        <div className="absolute top-[40%] left-[70%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">CHINA</div>
-        <div className="absolute top-[35%] left-[75%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">JAPAN</div>
-        <div className="absolute top-[45%] left-[68%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">INDIA</div>
-        <div className="absolute top-[50%] left-[72%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">THAILAND</div>
-        <div className="absolute top-[55%] left-[70%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">INDONESIA</div>
-        
-        {/* Australian States */}
-        <div className="absolute top-[75%] left-[70%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">NSW</div>
-        <div className="absolute top-[72%] left-[75%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">VIC</div>
-        <div className="absolute top-[78%] left-[68%] text-xs sm:text-sm font-semibold text-white bg-green-600/80 px-1 sm:px-2 py-0.5 sm:py-1 rounded backdrop-blur-sm">QLD</div>
-        
-        {/* MAJOR GLOBAL CITIES - Responsive */}
-        {/* North America */}
-        <div className="absolute top-[30%] left-[20%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
-        <div className="absolute top-[35%] left-[23%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">New York</div>
-        
-        <div className="absolute top-[35%] left-[15%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
-        <div className="absolute top-[40%] left-[18%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">Los Angeles</div>
-        
-        {/* Europe */}
-        <div className="absolute top-[30%] left-[48%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
-        <div className="absolute top-[35%] left-[51%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">London</div>
-        
-        <div className="absolute top-[35%] left-[50%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
-        <div className="absolute top-[40%] left-[53%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">Paris</div>
-        
-        {/* Asia */}
-        <div className="absolute top-[40%] left-[75%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
-        <div className="absolute top-[45%] left-[78%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">Tokyo</div>
-        
-        <div className="absolute top-[45%] left-[70%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
-        <div className="absolute top-[50%] left-[73%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">Beijing</div>
-        
-        <div className="absolute top-[50%] left-[68%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
-        <div className="absolute top-[55%] left-[71%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">Mumbai</div>
-        
-        {/* Africa */}
-        <div className="absolute top-[55%] left-[55%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
-        <div className="absolute top-[60%] left-[58%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">Cairo</div>
-        
-        {/* Australia */}
-        <div className="absolute top-[75%] left-[75%] w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full shadow-lg border border-yellow-300 hover:scale-125 transition-transform duration-200"></div>
-        <div className="absolute top-[80%] left-[78%] text-xs sm:text-sm text-yellow-200 font-bold bg-black/70 px-1 py-0.5 rounded backdrop-blur-sm">Sydney</div>
-        
-        {/* GLOBAL OCEANS - Real Satellite Water */}
-        {/* Pacific Ocean - West Coast */}
-        <div className="absolute top-[20%] left-[5%] w-[15%] h-[60%] opacity-98" style={{
-          background: `
-            radial-gradient(ellipse at center, rgba(0, 50, 150, 0.95) 0%, rgba(0, 25, 100, 0.9) 30%, rgba(0, 10, 80, 0.8) 60%, rgba(0, 5, 60, 0.7) 80%, transparent 100%)
-          `
-        }}></div>
-        
-        {/* Atlantic Ocean */}
-        <div className="absolute top-[25%] left-[35%] w-[15%] h-[50%] opacity-98" style={{
-          background: `
-            radial-gradient(ellipse at center, rgba(0, 50, 150, 0.95) 0%, rgba(0, 25, 100, 0.9) 30%, rgba(0, 10, 80, 0.8) 60%, rgba(0, 5, 60, 0.7) 80%, transparent 100%)
-          `
-        }}></div>
-        
-        {/* Indian Ocean */}
-        <div className="absolute top-[40%] left-[75%] w-[25%] h-[40%] opacity-98" style={{
-          background: `
-            radial-gradient(ellipse at center, rgba(0, 50, 150, 0.95) 0%, rgba(0, 25, 100, 0.9) 30%, rgba(0, 10, 80, 0.8) 60%, rgba(0, 5, 60, 0.7) 80%, transparent 100%)
-          `
-        }}></div>
-        
-        {/* Arctic Ocean */}
-        <div className="absolute top-[5%] left-[20%] w-[60%] h-[15%] opacity-98" style={{
-          background: `
-            radial-gradient(ellipse at center, rgba(0, 50, 150, 0.95) 0%, rgba(0, 25, 100, 0.9) 30%, rgba(0, 10, 80, 0.8) 60%, rgba(0, 5, 60, 0.7) 80%, transparent 100%)
-          `
-        }}></div>
-        
-        {/* Southern Ocean */}
-        <div className="absolute top-[85%] left-0 w-full h-[15%] opacity-98" style={{
-          background: `
-            radial-gradient(ellipse at center, rgba(0, 50, 150, 0.95) 0%, rgba(0, 25, 100, 0.9) 30%, rgba(0, 10, 80, 0.8) 60%, rgba(0, 5, 60, 0.7) 80%, transparent 100%)
-          `
-        }}></div>
-        
-        {/* GLOBAL SATELLITE CLOUD COVER */}
-        <div className="absolute top-[15%] left-[20%] w-[25%] h-[12%] opacity-60" style={{
-          background: `
-            radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, 0.8) 0%, rgba(240, 240, 240, 0.6) 30%, rgba(220, 220, 220, 0.4) 60%, transparent 100%),
-            radial-gradient(ellipse at 70% 70%, rgba(255, 255, 255, 0.6) 0%, rgba(240, 240, 240, 0.4) 40%, transparent 80%)
-          `
-        }}></div>
-        <div className="absolute top-[35%] left-[45%] w-[20%] h-[10%] opacity-55" style={{
-          background: `
-            radial-gradient(ellipse at center, rgba(255, 255, 255, 0.7) 0%, rgba(240, 240, 240, 0.5) 40%, rgba(220, 220, 220, 0.3) 70%, transparent 100%)
-          `
-        }}></div>
-        <div className="absolute top-[55%] left-[65%] w-[18%] h-[8%] opacity-50" style={{
-          background: `
-            radial-gradient(ellipse at center, rgba(255, 255, 255, 0.6) 0%, rgba(240, 240, 240, 0.4) 50%, transparent 100%)
-          `
-        }}></div>
-        <div className="absolute top-[25%] left-[70%] w-[15%] h-[6%] opacity-45" style={{
-          background: `
-            radial-gradient(ellipse at center, rgba(255, 255, 255, 0.5) 0%, rgba(240, 240, 240, 0.3) 60%, transparent 100%)
-          `
-        }}></div>
-        <div className="absolute top-[45%] left-[15%] w-[12%] h-[7%] opacity-40" style={{
-          background: `
-            radial-gradient(ellipse at center, rgba(255, 255, 255, 0.4) 0%, rgba(240, 240, 240, 0.2) 70%, transparent 100%)
-          `
-        }}></div>
-        
-        {/* Satellite Image Texture and Noise */}
-        <div className="absolute inset-0 opacity-15" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='8' height='8' viewBox='0 0 8 8' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='1' height='1' fill='%23ffffff' opacity='0.05'/%3E%3Crect x='3' y='3' width='1' height='1' fill='%23ffffff' opacity='0.05'/%3E%3Crect x='6' y='6' width='1' height='1' fill='%23ffffff' opacity='0.05'/%3E%3C/svg%3E")`,
-          backgroundSize: '8px 8px'
-        }}></div>
-        
-        {/* Satellite Image Grain */}
-        <div className="absolute inset-0 opacity-8" style={{
-          background: `
-            radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
-            radial-gradient(circle at 40% 60%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
-            radial-gradient(circle at 60% 40%, rgba(255, 255, 255, 0.02) 0%, transparent 50%)
-          `
-        }}></div>
-      </div>
-
-      {/* Professional Emergency Alert Markers */}
-      {disasters.map((disaster, index) => (
-        <div
-          key={disaster.id}
-          className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
-          style={{
-            left: `${(disaster.coordinates.lng + 180) / 360 * 100}%`,
-            top: `${(90 - disaster.coordinates.lat) / 180 * 100}%`
-          }}
-          onClick={() => {
-            setSelectedDisaster(disaster);
-            onDisasterClick(disaster);
-          }}
-        >
-                {/* Enhanced Professional Alert Marker */}
-                <div className="relative group">
-                  <div className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full border-3 sm:border-4 border-white shadow-2xl flex items-center justify-center text-white font-bold text-sm sm:text-base md:text-lg hover:scale-110 transition-all duration-300 ${
-                    disaster.severity === 'CRITICAL' ? 'bg-gradient-to-br from-red-500 via-red-600 to-red-700' :
-                    disaster.severity === 'HIGH' ? 'bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700' :
-                    disaster.severity === 'MEDIUM' ? 'bg-gradient-to-br from-yellow-500 via-yellow-600 to-yellow-700' : 'bg-gradient-to-br from-green-500 via-green-600 to-green-700'
-                  }`} style={{
-                    filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4))'
-                  }}>
-                    {String.fromCharCode(65 + index)} {/* A, B, C, D, etc. */}
-                  </div>
-            
-            {/* Enhanced Central Alert Dot */}
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full shadow-lg border border-gray-300"></div>
-            
-            {/* Enhanced Professional Ripple Effects */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className={`absolute w-20 h-20 border-3 rounded-full animate-ping ${
-                disaster.severity === 'CRITICAL' ? 'border-red-500' :
-                disaster.severity === 'HIGH' ? 'border-orange-500' :
-                disaster.severity === 'MEDIUM' ? 'border-yellow-500' : 'border-green-500'
-              } opacity-80`} style={{
-                filter: 'drop-shadow(0 0 8px rgba(255, 0, 0, 0.3))'
-              }}></div>
-              <div className={`absolute w-28 h-28 border-3 rounded-full animate-ping ${
-                disaster.severity === 'CRITICAL' ? 'border-red-400' :
-                disaster.severity === 'HIGH' ? 'border-orange-400' :
-                disaster.severity === 'MEDIUM' ? 'border-yellow-400' : 'border-green-400'
-              } opacity-60`} style={{animationDelay: '0.3s', filter: 'drop-shadow(0 0 6px rgba(255, 0, 0, 0.2))'}}></div>
-              <div className={`absolute w-36 h-36 border-3 rounded-full animate-ping ${
-                disaster.severity === 'CRITICAL' ? 'border-red-300' :
-                disaster.severity === 'HIGH' ? 'border-orange-300' :
-                disaster.severity === 'MEDIUM' ? 'border-yellow-300' : 'border-green-300'
-              } opacity-40`} style={{animationDelay: '0.6s', filter: 'drop-shadow(0 0 4px rgba(255, 0, 0, 0.1))'}}></div>
-            </div>
-          </div>
-
-          {/* Enhanced Hover Tooltip */}
-          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-            <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white text-xs px-3 py-2 rounded-lg shadow-2xl whitespace-nowrap border border-gray-700 backdrop-blur-sm">
-              <div className="font-bold">{disaster.type.toUpperCase()}</div>
-              <div className="text-gray-300">{disaster.location}</div>
-              <div className={`text-xs font-semibold ${
-                disaster.severity === 'CRITICAL' ? 'text-red-400' :
-                disaster.severity === 'HIGH' ? 'text-orange-400' :
-                disaster.severity === 'MEDIUM' ? 'text-yellow-400' : 'text-green-400'
-              }`}>
-                {disaster.severity}
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
-
-      {/* Emergency Alert System Header - Mobile Responsive */}
-      <div className="absolute top-2 left-2 right-2 sm:top-4 sm:left-4 sm:right-4 bg-gradient-to-r from-red-50 to-pink-50 backdrop-blur-sm rounded-xl shadow-2xl p-3 sm:p-4 border-2 border-red-200 hover:shadow-3xl transition-all duration-300">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-red-500 rounded-lg flex items-center justify-center">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-    </svg>
-            </div>
-            <div>
-              <h2 className="text-sm sm:text-xl font-bold text-red-800">Emergency Alert System</h2>
-              <p className="text-xs sm:text-sm text-red-700 hidden sm:block">Live disaster monitoring and emergency response coordination</p>
-            </div>
-          </div>
-          <div className="text-left sm:text-right">
-            <div className="text-xs sm:text-sm font-semibold text-red-800">Status: <span className="text-red-600">ACTIVE ALERTS</span></div>
-            <div className="text-xs text-red-700">Last Updated: {new Date().toLocaleTimeString()}</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Emergency Controls Panel - Mobile Responsive */}
-      <div className="absolute top-16 sm:top-20 left-2 sm:left-4 bg-white backdrop-blur-sm rounded-xl shadow-2xl p-3 sm:p-4 border-2 border-red-200 hover:shadow-3xl transition-all duration-300">
-        <div className="text-xs sm:text-sm font-bold text-red-800 mb-2 sm:mb-3">EMERGENCY CONTROLS</div>
-        <div className="space-y-1 sm:space-y-2">
-          <button className="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 bg-pink-100 hover:bg-pink-200 rounded-lg transition-colors duration-200">
-            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-            </svg>
-            <span className="text-xs sm:text-sm font-semibold text-red-800">MEASURE DISTANCE</span>
-          </button>
-          <button className="w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 bg-pink-100 hover:bg-pink-200 rounded-lg transition-colors duration-200">
-            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
-            </svg>
-            <span className="text-xs sm:text-sm font-semibold text-red-800">REFRESH ALERTS</span>
-          </button>
-            </div>
-          </div>
-
-      {/* Alert Severity Levels Legend - Mobile Responsive */}
-      <div className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-auto bg-white backdrop-blur-sm rounded-xl shadow-2xl p-3 sm:p-4 border-2 border-red-200 hover:shadow-3xl transition-all duration-300">
-        <div className="text-xs sm:text-sm font-bold text-red-800 mb-2 sm:mb-3">ALERT SEVERITY LEVELS</div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full shadow-sm border-2 border-red-600"></div>
-            <span className="text-xs sm:text-sm font-semibold text-red-800">CRITICAL - IMMEDIATE EVACUATION</span>
-            </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-orange-500 rounded-full shadow-sm border-2 border-orange-600"></div>
-            <span className="text-xs sm:text-sm font-semibold text-red-800">HIGH - URGENT ATTENTION</span>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-yellow-500 rounded-full shadow-sm border-2 border-yellow-600"></div>
-            <span className="text-xs sm:text-sm font-semibold text-red-800">MEDIUM - MONITOR CLOSELY</span>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full shadow-sm border-2 border-green-600"></div>
-            <span className="text-xs sm:text-sm font-semibold text-red-800">LOW - ROUTINE MONITORING</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Professional Emergency Alert Info Panel - Mobile Responsive */}
-      {selectedDisaster && (
-        <div className="absolute bottom-2 left-2 right-2 sm:bottom-4 sm:left-4 sm:right-4 bg-white backdrop-blur-sm rounded-xl shadow-2xl p-3 sm:p-4 border-2 border-red-200 hover:shadow-3xl transition-all duration-300">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm ${
-                  selectedDisaster.severity === 'CRITICAL' ? 'bg-gradient-to-br from-red-500 to-red-600' :
-                  selectedDisaster.severity === 'HIGH' ? 'bg-gradient-to-br from-orange-500 to-orange-600' :
-                  selectedDisaster.severity === 'MEDIUM' ? 'bg-gradient-to-br from-yellow-500 to-yellow-600' : 'bg-gradient-to-br from-green-500 to-green-600'
-                }`}>
-                  {selectedDisaster.type.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <h3 className="font-bold text-red-800 text-sm sm:text-lg">{selectedDisaster.type.toUpperCase()}</h3>
-                  <p className="text-red-700 text-xs sm:text-sm font-semibold">{selectedDisaster.location}</p>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                <div className="bg-red-50 rounded-lg p-2 sm:p-3 border border-red-200">
-                  <div className="text-xs text-red-600 mb-1 font-semibold">Severity Level</div>
-                  <div className={`font-bold text-xs sm:text-sm ${
-                    selectedDisaster.severity === 'CRITICAL' ? 'text-red-600' :
-                    selectedDisaster.severity === 'HIGH' ? 'text-orange-600' :
-                    selectedDisaster.severity === 'MEDIUM' ? 'text-yellow-600' : 'text-green-600'
-                  }`}>
-                    {selectedDisaster.severity}
-                  </div>
-                </div>
-                <div className="bg-red-50 rounded-lg p-2 sm:p-3 border border-red-200">
-                  <div className="text-xs text-red-600 mb-1 font-semibold">Status</div>
-                  <div className="font-bold text-xs sm:text-sm text-blue-600">{selectedDisaster.status}</div>
-                </div>
-                <div className="bg-red-50 rounded-lg p-2 sm:p-3 border border-red-200">
-                  <div className="text-xs text-red-600 mb-1 font-semibold">Timestamp</div>
-                  <div className="font-semibold text-xs sm:text-sm text-red-800">{new Date(selectedDisaster.timestamp).toLocaleString()}</div>
-                </div>
-                <div className="bg-red-50 rounded-lg p-2 sm:p-3 border border-red-200">
-                  <div className="text-xs text-red-600 mb-1 font-semibold">Country</div>
-                  <div className="font-semibold text-xs sm:text-sm text-red-800">{selectedDisaster.country}</div>
-                </div>
-              </div>
-            </div>
-            
-            <button
-              onClick={() => setSelectedDisaster(null)}
-              className="text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg p-1 sm:p-2 transition-all duration-200 hover:scale-110"
-            >
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      )}
-          </div>
-        );
-};
 
 // Alert system marker colors
 const getAlertColor = (severity) => {
@@ -842,8 +149,8 @@ const LandingPage = () => {
       {
         label: 'Alerts Sent',
         data: [8420, 9750, 12680, 14520, 16340, 17890, 19450, 18720, 19120, 16080, 11340, 9180],
-        backgroundColor: '#2F4F4F',
-        borderColor: '#1F3F3F',
+        backgroundColor: '#067d83',
+        borderColor: '#055a5f',
         borderWidth: 2,
         borderRadius: 8,
         borderSkipped: false,
@@ -861,15 +168,15 @@ const LandingPage = () => {
           '#EF4444', // Red for tornado
           '#3B82F6', // Blue for earthquake
           '#8B5CF6', // Purple for hurricane
-          '#2F4F4F', // Teal for flood
-          '#10B981'  // Green for wildfire
+          '#067d83', // Climate green for flood
+          '#0a9ca3'  // Light climate green for wildfire
         ],
         borderColor: [
           '#DC2626',
           '#2563EB',
           '#7C3AED',
-          '#1F3F3F',
-          '#059669'
+          '#055a5f',
+          '#0a9ca3'
         ],
         borderWidth: 2,
         borderRadius: 8,
@@ -883,15 +190,15 @@ const LandingPage = () => {
       {
         data: [45, 28, 18, 9],
         backgroundColor: [
-          '#2F4F4F',
+          '#067d83',
           '#3B82F6',
-          '#10B981',
+          '#0a9ca3',
           '#8B5CF6'
         ],
         borderColor: [
-          '#1F3F3F',
+          '#055a5f',
           '#2563EB',
-          '#059669',
+          '#0a9ca3',
           '#7C3AED'
         ],
         borderWidth: 2,
@@ -905,7 +212,7 @@ const LandingPage = () => {
       {
         data: [35, 25, 18, 12, 7, 3],
         backgroundColor: [
-          '#2F4F4F',
+          '#067d83',
           '#3B82F6',
           '#F59E0B',
           '#8B5CF6',
@@ -913,7 +220,7 @@ const LandingPage = () => {
           '#6B7280'
         ],
         borderColor: [
-          '#1F3F3F',
+          '#055a5f',
           '#2563EB',
           '#D97706',
           '#7C3AED',
@@ -931,13 +238,13 @@ const LandingPage = () => {
       {
         label: 'Accuracy Rate (%)',
         data: [94.2, 95.1, 96.3, 97.1, 97.8, 98.1, 98.3, 98.5],
-        borderColor: '#2F4F4F',
+        borderColor: '#067d83',
         backgroundColor: 'rgba(47, 79, 79, 0.1)',
         borderWidth: 3,
         fill: true,
         tension: 0.4,
-        pointBackgroundColor: '#2F4F4F',
-        pointBorderColor: '#1F3F3F',
+        pointBackgroundColor: '#067d83',
+        pointBorderColor: '#055a5f',
         pointBorderWidth: 2,
         pointRadius: 6,
       }
@@ -963,7 +270,7 @@ const LandingPage = () => {
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
         titleColor: 'white',
         bodyColor: 'white',
-        borderColor: '#2F4F4F',
+        borderColor: '#067d83',
         borderWidth: 1,
         cornerRadius: 8,
         displayColors: true,
@@ -1015,7 +322,7 @@ const LandingPage = () => {
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
         titleColor: 'white',
         bodyColor: 'white',
-        borderColor: '#2F4F4F',
+        borderColor: '#067d83',
         borderWidth: 1,
         cornerRadius: 8,
       }
@@ -1263,7 +570,7 @@ const LandingPage = () => {
   return (
     <>
       <LandingPageSEO />
-      <style jsx>{`
+      <style>{`
         @keyframes ambulance-flash {
           0%, 100% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
@@ -1336,9 +643,9 @@ const LandingPage = () => {
             
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-8">
-                <Link to="/" className={`${isScrolled ? 'text-[#2F4F4F] hover:text-[#1F3F3F]' : 'text-white hover:text-[#4F6F6F]'} px-3 py-2 text-sm font-medium transition-colors`}>Home</Link>
-                <Link to="/about" className={`${isScrolled ? 'text-[#2F4F4F] hover:text-[#1F3F3F]' : 'text-white hover:text-[#4F6F6F]'} px-3 py-2 text-sm font-medium transition-colors`}>About</Link>
-                <Link to="/impact" className={`${isScrolled ? 'text-[#2F4F4F] hover:text-[#1F3F3F]' : 'text-white hover:text-[#4F6F6F]'} px-3 py-2 text-sm font-medium transition-colors`}>Impact</Link>
+                <Link to="/" className={`${isScrolled ? 'text-[#067d83] hover:text-[#055a5f]' : 'text-white hover:text-[#4F6F6F]'} px-3 py-2 text-sm font-medium transition-colors`}>Home</Link>
+                <Link to="/about" className={`${isScrolled ? 'text-[#067d83] hover:text-[#055a5f]' : 'text-white hover:text-[#4F6F6F]'} px-3 py-2 text-sm font-medium transition-colors`}>About</Link>
+                <Link to="/impact" className={`${isScrolled ? 'text-[#067d83] hover:text-[#055a5f]' : 'text-white hover:text-[#4F6F6F]'} px-3 py-2 text-sm font-medium transition-colors`}>Impact</Link>
               </div>
             </div>
 
@@ -1396,7 +703,7 @@ const LandingPage = () => {
               {/* Donate Button */}
               <button 
                 onClick={() => setShowDonationModal(true)}
-                className="hidden md:flex items-center px-3 py-1.5 bg-[#2F4F4F] text-white rounded-md hover:bg-[#1e3a3a] transition-colors text-sm font-medium"
+                className="hidden md:flex items-center px-3 py-1.5 bg-[#067d83] text-white rounded-md hover:bg-[#055a5f] transition-colors text-sm font-medium"
               >
                 <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
@@ -1407,7 +714,7 @@ const LandingPage = () => {
               {/* Plant Tree Button */}
               <a 
                 href="/app/plant-tree"
-                className="hidden md:flex items-center px-3 py-1.5 bg-[#2F4F4F] text-white rounded-md hover:bg-[#1e3a3a] transition-colors text-sm font-medium"
+                className="hidden md:flex items-center px-3 py-1.5 bg-[#067d83] text-white rounded-md hover:bg-[#055a5f] transition-colors text-sm font-medium"
               >
                 <svg className="w-3 h-3 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 2L8 4h2l2-2h-2zm-2 4L6 8h2l2-2h-2zm4 0L14 8h-2l-2-2h2zm-2 4L10 12h2l2-2h-2zm4 0L18 12h-2l-2-2h2zm-8 4L6 16h2l2-2h-2zm4 0L10 16h2l2-2h-2zm4 0L18 16h-2l-2-2h2z" clipRule="evenodd" />
@@ -1415,10 +722,10 @@ const LandingPage = () => {
                 Plant Tree
               </a>
 
-              <a href="/login" className={`hidden md:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md transition-colors ${isScrolled ? 'text-[#2F4F4F] hover:text-[#1F3F3F]' : 'text-white hover:text-[#4F6F6F]'}`}>
+              <a href="/login" className={`hidden md:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md transition-colors ${isScrolled ? 'text-[#067d83] hover:text-[#055a5f]' : 'text-white hover:text-[#4F6F6F]'}`}>
                 Sign In
               </a>
-              <a href="/signup" className="hidden md:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#2F4F4F] hover:bg-[#1F3F3F] transition-colors">
+              <a href="/signup" className="hidden md:inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#067d83] hover:bg-[#055a5f] transition-colors">
                 Get Started
               </a>
               <button 
@@ -1444,7 +751,7 @@ const LandingPage = () => {
           {/* Menu Panel */}
           <div className="absolute top-0 right-0 w-80 h-full bg-white shadow-2xl">
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-[#2F4F4F]">Menu</h2>
+              <h2 className="text-lg font-semibold text-[#067d83]">Menu</h2>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
@@ -1459,21 +766,21 @@ const LandingPage = () => {
             <div className="p-4 space-y-2">
               <Link 
                 to="/" 
-                className="block px-4 py-3 text-[#2F4F4F] hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                className="block px-4 py-3 text-[#067d83] hover:bg-gray-100 rounded-lg transition-colors duration-200"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Home
               </Link>
               <Link 
                 to="/about" 
-                className="block px-4 py-3 text-[#2F4F4F] hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                className="block px-4 py-3 text-[#067d83] hover:bg-gray-100 rounded-lg transition-colors duration-200"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 About
               </Link>
               <Link 
                 to="/impact" 
-                className="block px-4 py-3 text-[#2F4F4F] hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                className="block px-4 py-3 text-[#067d83] hover:bg-gray-100 rounded-lg transition-colors duration-200"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Impact
@@ -1485,7 +792,7 @@ const LandingPage = () => {
                   setShowDonationModal(true);
                   setIsMobileMenuOpen(false);
                 }}
-                className="w-full flex items-center justify-center px-4 py-2 bg-[#2F4F4F] text-white rounded-lg hover:bg-[#1e3a3a] transition-colors duration-200 mt-4 text-sm font-medium"
+                className="w-full flex items-center justify-center px-4 py-2 bg-[#067d83] text-white rounded-lg hover:bg-[#055a5f] transition-colors duration-200 mt-4 text-sm font-medium"
               >
                 <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
@@ -1496,7 +803,7 @@ const LandingPage = () => {
               {/* Plant Tree Button for Mobile */}
               <Link 
                 to="/app/plant-tree"
-                className="w-full flex items-center justify-center px-4 py-2 bg-[#2F4F4F] text-white rounded-lg hover:bg-[#1e3a3a] transition-colors duration-200 text-sm font-medium"
+                className="w-full flex items-center justify-center px-4 py-2 bg-[#067d83] text-white rounded-lg hover:bg-[#055a5f] transition-colors duration-200 text-sm font-medium"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -1523,14 +830,14 @@ const LandingPage = () => {
               <div className="pt-4 border-t border-gray-200 space-y-2">
                 <a 
                   href="/login" 
-                  className="block px-4 py-3 text-[#2F4F4F] hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                  className="block px-4 py-3 text-[#067d83] hover:bg-gray-100 rounded-lg transition-colors duration-200"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Sign In
                 </a>
                 <a 
                   href="/signup" 
-                  className="block px-4 py-3 bg-[#2F4F4F] text-white rounded-lg hover:bg-[#1F3F3F] transition-colors duration-200 text-center"
+                  className="block px-4 py-3 bg-[#067d83] text-white rounded-lg hover:bg-[#055a5f] transition-colors duration-200 text-center"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Get Started
@@ -1565,9 +872,9 @@ const LandingPage = () => {
         </div>
 
         {/* Floating elements */}
-        <div className="absolute top-20 left-10 w-20 h-20 bg-[#2F4F4F]/20 rounded-full blur-xl animate-pulse"></div>
+        <div className="absolute top-20 left-10 w-20 h-20 bg-[#067d83]/20 rounded-full blur-xl animate-pulse"></div>
         <div className="absolute bottom-20 right-10 w-32 h-32 bg-blue-500/20 rounded-full blur-xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-[#2F4F4F]/30 rounded-full blur-lg animate-bounce"></div>
+        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-[#067d83]/30 rounded-full blur-lg animate-bounce"></div>
 
         {/* Navigation Arrows - Hidden on mobile */}
         <button
@@ -1595,7 +902,7 @@ const LandingPage = () => {
             <div className="transition-all duration-1000 ease-in-out">
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-8 leading-tight">
                 <span className="block">{heroSlides[currentSlide].title}</span>
-                <span className="block bg-gradient-to-r from-[#2F4F4F] via-[#4F6F6F] to-[#2F4F4F] bg-clip-text text-transparent">
+                <span className="block bg-gradient-to-r from-[#067d83] via-[#4F6F6F] to-[#067d83] bg-clip-text text-transparent">
                   {heroSlides[currentSlide].subtitle}
                 </span>
             </h1>
@@ -1606,13 +913,13 @@ const LandingPage = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-              <a href="/signup" className="group bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white px-6 py-2 rounded-full text-base font-semibold transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-[#2F4F4F]/25 flex items-center">
+              <a href="/signup" className="group bg-[#067d83] hover:bg-[#055a5f] text-white px-6 py-2 rounded-full text-base font-semibold transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-[#067d83]/25 flex items-center">
                 <span>Get Started Free</span>
                 <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </a>
-              <a href="/login" className="group border-2 border-white/30 text-white hover:bg-white hover:text-gray-900 px-6 py-2 rounded-full text-base font-semibold transition-all duration-300 backdrop-blur-sm hover:backdrop-blur-none">
+              <a href="/login" className="group border-2 border-white/30 text-white hover:bg-white hover:text-gray-900 px-6 py-2 rounded-full text-base font-semibold transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-white/25 backdrop-blur-sm hover:backdrop-blur-none flex items-center">
                 <span>Access Dashboard</span>
                 <svg className="ml-2 w-4 h-4 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -1671,7 +978,7 @@ const LandingPage = () => {
       <section id="impact" className="py-24 bg-gradient-to-br from-slate-50 via-white to-blue-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <div className="inline-block px-4 py-2 bg-[#2F4F4F]/10 text-[#2F4F4F] text-sm font-medium rounded-full mb-6">
+            <div className="inline-block px-4 py-2 bg-[#067d83]/10 text-[#067d83] text-sm font-medium rounded-full mb-6">
               OUR IMPACT
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -1691,7 +998,7 @@ const LandingPage = () => {
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-1"></div>
                 <span className="text-xs text-green-600 font-medium">LIVE</span>
               </div>
-              <div className="text-4xl font-bold text-[#2F4F4F] mb-2" id="lives-saved">
+              <div className="text-4xl font-bold text-[#067d83] mb-2" id="lives-saved">
                 0
               </div>
               <div className="text-gray-600 font-medium">Lives Saved</div>
@@ -1794,7 +1101,7 @@ const LandingPage = () => {
             </div>
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
-                <span className="font-semibold text-[#2F4F4F]">Total 2024 Alerts:</span> 172,690 alerts sent
+                <span className="font-semibold text-[#067d83]">Total 2024 Alerts:</span> 172,690 alerts sent
               </p>
               <p className="text-xs text-gray-500 mt-1">
                 Data reflects real disaster patterns: Hurricane season (Jun-Sep), Tornado season (Apr-May), Winter storms (Dec-Feb)
@@ -1866,7 +1173,7 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
               <div className="flex items-center justify-between mb-2">
-                <div className="text-3xl font-bold text-[#2F4F4F]">97.4%</div>
+                <div className="text-3xl font-bold text-[#067d83]">97.4%</div>
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               </div>
               <div className="text-gray-600 font-medium mb-2">Live Success Rate</div>
@@ -1898,19 +1205,19 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="order-2 lg:order-1">
               <div className="relative group">
-                <div className="absolute -inset-4 bg-gradient-to-r from-[#2F4F4F]/20 to-blue-500/20 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500"></div>
+                <div className="absolute -inset-4 bg-gradient-to-r from-[#067d83]/20 to-blue-500/20 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500"></div>
         <img
           src={masked}
                   alt="Advanced disaster response technology"
                   className="relative w-full h-[500px] object-cover rounded-3xl shadow-2xl group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-[#2F4F4F] rounded-full opacity-20 group-hover:opacity-30 transition-opacity duration-500 animate-pulse"></div>
+                <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-[#067d83] rounded-full opacity-20 group-hover:opacity-30 transition-opacity duration-500 animate-pulse"></div>
                 <div className="absolute -top-8 -left-8 w-24 h-24 bg-blue-500 rounded-full opacity-20 group-hover:opacity-30 transition-opacity duration-500 animate-pulse delay-1000"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-[#2F4F4F]/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#067d83]/10 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
                 {/* Floating stats */}
                 <div className="absolute top-8 right-8 bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-xl">
-                  <div className="text-2xl font-bold text-[#2F4F4F]">99.9%</div>
+                  <div className="text-2xl font-bold text-[#067d83]">99.9%</div>
                   <div className="text-xs text-gray-600">Accuracy Rate</div>
                 </div>
                 <div className="absolute bottom-8 left-8 bg-white/90 backdrop-blur-sm rounded-2xl p-4 shadow-xl">
@@ -1922,7 +1229,7 @@ const LandingPage = () => {
             
             <div className="order-1 lg:order-2">
               <div className="max-w-2xl">
-                <div className="inline-flex items-center px-6 py-3 bg-[#2F4F4F]/10 text-[#2F4F4F] text-sm font-semibold rounded-full mb-8 border border-[#2F4F4F]/20">
+                <div className="inline-flex items-center px-6 py-3 bg-[#067d83]/10 text-[#067d83] text-sm font-semibold rounded-full mb-8 border border-[#067d83]/20">
                   <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
@@ -1930,7 +1237,7 @@ const LandingPage = () => {
                 </div>
                 <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8 leading-tight">
                   Revolutionizing Disaster
-                  <span className="block text-[#2F4F4F]">Response Technology</span>
+                  <span className="block text-[#067d83]">Response Technology</span>
           </h2>
 
                 <p className="text-lg text-gray-600 mb-8 leading-relaxed">
@@ -1941,7 +1248,7 @@ const LandingPage = () => {
 
                 <div className="space-y-6 mb-8">
                   <div className="flex items-start">
-                    <div className="w-8 h-8 bg-[#2F4F4F] rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                    <div className="w-8 h-8 bg-[#067d83] rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
                       <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
@@ -1975,7 +1282,7 @@ const LandingPage = () => {
                   </div>
                 </div>
 
-                <button className="inline-flex items-center px-6 py-3 border-2 border-[#2F4F4F] text-[#2F4F4F] hover:bg-[#2F4F4F] hover:text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105">
+                <button className="inline-flex items-center px-6 py-3 border-2 border-[#067d83] text-[#067d83] hover:bg-[#067d83] hover:text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105">
                   Learn More
                   <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -1991,7 +1298,7 @@ const LandingPage = () => {
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center px-6 py-3 bg-[#2F4F4F]/10 text-[#2F4F4F] text-sm font-semibold rounded-full mb-6 border border-[#2F4F4F]/20">
+            <div className="inline-flex items-center px-6 py-3 bg-[#067d83]/10 text-[#067d83] text-sm font-semibold rounded-full mb-6 border border-[#067d83]/20">
               <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L3 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
               </svg>
@@ -1999,7 +1306,7 @@ const LandingPage = () => {
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               Trusted by Emergency
-              <span className="block text-[#2F4F4F]">Response Teams</span>
+              <span className="block text-[#067d83]">Response Teams</span>
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               See how our disaster alert system has helped communities worldwide prepare for and respond to emergencies.
@@ -2008,9 +1315,9 @@ const LandingPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Testimonial 1 */}
-            <div className="bg-gradient-to-br from-[#2F4F4F]/5 to-blue-50 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+            <div className="bg-gradient-to-br from-[#067d83]/5 to-blue-50 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
               <div className="flex items-center mb-6">
-                <div className="w-12 h-12 bg-[#2F4F4F] rounded-full flex items-center justify-center text-white font-bold text-lg">
+                <div className="w-12 h-12 bg-[#067d83] rounded-full flex items-center justify-center text-white font-bold text-lg">
                   M
                 </div>
                 <div className="ml-4">
@@ -2031,7 +1338,7 @@ const LandingPage = () => {
             </div>
 
             {/* Testimonial 2 */}
-            <div className="bg-gradient-to-br from-blue-50 to-[#2F4F4F]/5 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+            <div className="bg-gradient-to-br from-blue-50 to-[#067d83]/5 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
               <div className="flex items-center mb-6">
                 <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
                   D
@@ -2054,7 +1361,7 @@ const LandingPage = () => {
             </div>
 
             {/* Testimonial 3 */}
-            <div className="bg-gradient-to-br from-green-50 to-[#2F4F4F]/5 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 md:col-span-2 lg:col-span-1">
+            <div className="bg-gradient-to-br from-green-50 to-[#067d83]/5 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 md:col-span-2 lg:col-span-1">
               <div className="flex items-center mb-6">
                 <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
                   S
@@ -2081,7 +1388,7 @@ const LandingPage = () => {
 
 
       {/* Commitment Section */}
-      <section className="py-24 bg-gradient-to-br from-[#2F4F4F] via-[#1F3F3F] to-[#2F4F4F] relative overflow-hidden">
+      <section className="py-24 bg-gradient-to-br from-[#067d83] via-[#055a5f] to-[#067d83] relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
@@ -2423,7 +1730,7 @@ const LandingPage = () => {
             <div className="col-span-1 sm:col-span-2 lg:col-span-2">
               <div className="flex flex-col sm:flex-row items-start sm:items-center mb-4 md:mb-6">
                 <img alt="logo" src="/logo.jpg" className="h-8 md:h-10 w-auto mr-0 sm:mr-4 mb-2 sm:mb-0" />
-                <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#2F4F4F]">Disaster Alert System</h3>
+                <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#067d83]">Disaster Alert System</h3>
               </div>
               <p className="text-gray-300 mb-6 md:mb-8 max-w-lg text-sm md:text-base lg:text-lg leading-relaxed">
                 Advanced AI-powered disaster alert system protecting communities worldwide through 
@@ -2437,9 +1744,9 @@ const LandingPage = () => {
                 <input
                   type="email"
                     placeholder="Enter your email address"
-                    className="px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl bg-gray-800/50 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2F4F4F] focus:border-transparent backdrop-blur-sm text-sm md:text-base"
+                    className="px-3 md:px-4 py-2 md:py-3 rounded-lg md:rounded-xl bg-gray-800/50 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#067d83] focus:border-transparent backdrop-blur-sm text-sm md:text-base"
                 />
-                  <button className="bg-[#2F4F4F] hover:bg-[#1F3F3F] text-white px-4 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg text-sm md:text-base">
+                  <button className="bg-[#067d83] hover:bg-[#055a5f] text-white px-4 md:px-6 py-2 md:py-3 rounded-lg md:rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg text-sm md:text-base">
                   Subscribe
                 </button>
                 </div>
@@ -2493,10 +1800,10 @@ const LandingPage = () => {
             <div>
               <h4 className="text-base md:text-lg font-semibold mb-3 md:mb-4 text-white">Information</h4>
               <ul className="space-y-2">
-                <li><Link to="/traffic-report" className="text-gray-300 hover:text-[#2F4F4F] transition-colors text-sm md:text-base">Traffic Report</Link></li>
-                <li><Link to="/transparency-report" className="text-gray-300 hover:text-[#2F4F4F] transition-colors text-sm md:text-base">Transparency Report</Link></li>
-                <li><Link to="/faq" className="text-gray-300 hover:text-[#2F4F4F] transition-colors text-sm md:text-base">FAQ</Link></li>
-                <li><Link to="/privacy-policy" className="text-gray-300 hover:text-[#2F4F4F] transition-colors text-sm md:text-base">Privacy Policy</Link></li>
+                <li><Link to="/traffic-report" className="text-gray-300 hover:text-[#067d83] transition-colors text-sm md:text-base">Traffic Report</Link></li>
+                <li><Link to="/transparency-report" className="text-gray-300 hover:text-[#067d83] transition-colors text-sm md:text-base">Transparency Report</Link></li>
+                <li><Link to="/faq" className="text-gray-300 hover:text-[#067d83] transition-colors text-sm md:text-base">FAQ</Link></li>
+                <li><Link to="/privacy-policy" className="text-gray-300 hover:text-[#067d83] transition-colors text-sm md:text-base">Privacy Policy</Link></li>
           </ul>
         </div>
 
@@ -2504,10 +1811,10 @@ const LandingPage = () => {
             <div>
               <h4 className="text-base md:text-lg font-semibold mb-3 md:mb-4 text-white">Services</h4>
               <ul className="space-y-2">
-                <li><Link to="/about" className="text-gray-300 hover:text-[#2F4F4F] transition-colors text-sm md:text-base">About Us</Link></li>
-                <li><Link to="/contact" className="text-gray-300 hover:text-[#2F4F4F] transition-colors text-sm md:text-base">Contact Us</Link></li>
-                <li><Link to="/consulting" className="text-gray-300 hover:text-[#2F4F4F] transition-colors text-sm md:text-base">Consulting</Link></li>
-                <li><Link to="/support" className="text-gray-300 hover:text-[#2F4F4F] transition-colors text-sm md:text-base">Support</Link></li>
+                <li><Link to="/about" className="text-gray-300 hover:text-[#067d83] transition-colors text-sm md:text-base">About Us</Link></li>
+                <li><Link to="/contact" className="text-gray-300 hover:text-[#067d83] transition-colors text-sm md:text-base">Contact Us</Link></li>
+                <li><Link to="/consulting" className="text-gray-300 hover:text-[#067d83] transition-colors text-sm md:text-base">Consulting</Link></li>
+                <li><Link to="/support" className="text-gray-300 hover:text-[#067d83] transition-colors text-sm md:text-base">Support</Link></li>
           </ul>
         </div>
           </div>
@@ -2558,7 +1865,7 @@ const LandingPage = () => {
 
              {/* Mock Google Maps Container */}
              <div className="relative h-[75vh] bg-gradient-to-br from-blue-50 to-green-50">
-               <MockGoogleMap 
+               <LeafletMap 
                  disasters={disasterData} 
                  onDisasterClick={setSelectedDisaster}
                />
