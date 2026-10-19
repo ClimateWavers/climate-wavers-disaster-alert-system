@@ -14,8 +14,7 @@ ENV MYSQL_HOST=$MYSQL_HOST
 # Set work directory
 WORKDIR /backend
 
-# Install dependencies required for MySQL and other essentials
-RUN apt-get update -y && apt-get install -y python3-dev default-libmysqlclient-dev build-essential pkg-config && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -y && apt-get install -y --no-install-recommends build-essential && rm -rf /var/lib/apt/lists/*
 
 # Upgrade pip to the latest version
 RUN pip install --upgrade pip

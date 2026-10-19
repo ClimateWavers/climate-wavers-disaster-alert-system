@@ -83,7 +83,7 @@ ASGI_APPLICATION = "auth.asgi.application"
 DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+            "NAME": env("SQLITE_PATH", default=os.path.join(BASE_DIR, "db.sqlite3")),
         }
     }
 
@@ -179,8 +179,8 @@ FEMALE_AVATAR = env("FEMALE_AVATAR")
 REDIS_USE_SSL = env.bool("REDIS_USE_SSL", default=False)
 
 # Celery Configuration
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = env("REDIS", default="redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = env("REDIS", default="redis://localhost:6379/0")
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

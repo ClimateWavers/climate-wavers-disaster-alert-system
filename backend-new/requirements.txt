@@ -31,4 +31,5 @@ whitenoise
 gunicorn
 daphne
 uvicorn
+PyYAML==6.0.2
 openai==1.3.0

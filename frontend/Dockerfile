@@ -13,13 +13,7 @@ COPY package.json /app
 RUN npm install
 EXPOSE 5173
 
-# Copy everything from ourlocal directory to the image in the code directory
+# Copy everything from our local directory to the image
 COPY . /app
-RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
-USER appuser
-RUN chmod -R a+rwx /app
-
-
-# Navigate to the application entry point and run the image
 
 CMD [ "npm", "run", "dev" ]

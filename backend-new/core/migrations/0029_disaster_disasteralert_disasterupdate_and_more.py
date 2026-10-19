@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0026_alter_treeproject_cover_image_and_more'),
+        ('core', '0027_campaign'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

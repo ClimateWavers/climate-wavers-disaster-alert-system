@@ -1,0 +1,138 @@
+# Full local stack. Browser-facing URLs stay on localhost (published ports).
+# Service-to-service URLs use Docker DNS names and override each .env.
+
+services:
+  redis:
+    image: redis:6.2
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend-new
+    env_file:
+      - ./backend-new/.env
+    environment:
+      REDIS: redis://redis:6379/0
+      AMQP_URL: amqp://admin:admin@rabbitmq:5672/
+      SQLITE_PATH: /data/db.sqlite3
+      BACKEND_HOST: http://127.0.0.1:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend-new:/backend
+      - backend_data:/data
+    depends_on:
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s=socket.create_connection(('127.0.0.1',8000),2); s.close()"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  backend-worker:
+    build:
+      context: ./backend-new
+      dockerfile: Dockerfile.worker
+    env_file:
+      - ./backend-new/.env
+    environment:
+      REDIS: redis://redis:6379/0
+      AMQP_URL: amqp://admin:admin@rabbitmq:5672/
+      SQLITE_PATH: /data/db.sqlite3
+    volumes:
+      - ./backend-new:/backend
+      - backend_data:/data
+    depends_on:
+      backend:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  models:
+    build:
+      context: ./models
+    env_file:
+      - ./models/.env
+    environment:
+      API_KEY: dev-local-api-key
+    ports:
+      - "5000:5000"
+
+  response:
+    build:
+      context: ./response_system
+    env_file:
+      - ./response_system/.env
+    environment:
+      PORT: "3004"
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-sk-local-placeholder}
+      AMQP_URL: amqp://admin:admin@rabbitmq:5672/
+      ANALYSIS_MODEL_URL: http://models:5000/api/v1/analysis
+      RECOGNITION_MODEL_URL: http://models:5000/api/v1/recognition
+    ports:
+      - "3004:3004"
+    depends_on:
+      - models
+      - rabbitmq
+
+  notification:
+    build:
+      context: ./notification_service
+    env_file:
+      - ./notification_service/.env
+    environment:
+      PORT: "3000"
+      AMQP_URL: amqp://admin:admin@rabbitmq:5672/
+    ports:
+      - "3000:3000"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+    env_file:
+      - ./frontend/.env
+    environment:
+      API_PROXY_TARGET: http://backend:8000
+    ports:
+      - "5173:5173"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  redis_data:
+  rabbitmq_data:
+  backend_data:
